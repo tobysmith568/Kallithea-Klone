@@ -20,6 +20,8 @@ namespace Kallithea_Klone
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static List<string> CheckedURLs = new List<string>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -67,17 +69,54 @@ namespace Kallithea_Klone
 
         private void CreateTreeViewItem(Location location, TreeViewItem parent = null)
         {
-            TreeViewItem newItem = new TreeViewItem();
-            newItem.Header = location.Name;
+            if (location.Name.EndsWith(".pull"))
+            {
+                CheckBox newItem = new CheckBox
+                {
+                    Content = location.Name.Substring(0, location.Name.Length - 5),
+                    VerticalContentAlignment = VerticalAlignment.Center,
+                    Tag = parent.Tag + "/" + location.Name
+                };
+                newItem.Checked += NewItem_Checked;
+                newItem.Unchecked += NewItem_Unchecked;
 
-            if (parent == null)
-                MainTree.Items.Add(newItem);
+                if (parent == null)
+                    MainTree.Items.Add(newItem);
+                else
+                    parent.Items.Add(newItem);
+            }
             else
-                parent.Items.Add(newItem);
+            {
+                TreeViewItem newItem = new TreeViewItem
+                {
+                    Header = location.Name,
+                };
+                if (parent != null)
+                    newItem.Tag = parent.Tag + "/" + location.Name;
+                else
+                    newItem.Tag = location.Name;
 
-            foreach (Location subLocation in location.InnerLocations)
-                CreateTreeViewItem(subLocation, newItem);
+                if (parent == null)
+                    MainTree.Items.Add(newItem);
+                else
+                    parent.Items.Add(newItem);
 
+                foreach (Location subLocation in location.InnerLocations)
+                    CreateTreeViewItem(subLocation, newItem);
+            }
+
+        }
+
+        private void NewItem_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CheckedURLs.Remove(((Control)sender).Tag.ToString());
+            lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
+        }
+
+        private void NewItem_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckedURLs.Add(((Control)sender).Tag.ToString());
+            lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
         }
 
         private static Location GetOrCreate(Location current, string location)
@@ -98,6 +137,11 @@ namespace Kallithea_Klone
         private void Window_Deactivated(object sender, EventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void btnClone_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Cloning:" + string.Join("\n", CheckedURLs.ToArray()));
         }
     }
 }
