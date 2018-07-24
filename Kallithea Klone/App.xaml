@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:Kallithea_Klone"
              Startup="App_Startup">
     <Application.Resources>
-         
+        <FontFamily x:Key="OfficinaSans">pack://application:,,,/Fonts/officinasansstd-bold.ttf</FontFamily>
     </Application.Resources>
 </Application>

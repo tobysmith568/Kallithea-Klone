@@ -147,5 +147,11 @@ namespace Kallithea_Klone
         {
             Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.ToArray()));
         }
+
+        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        }
     }
 }

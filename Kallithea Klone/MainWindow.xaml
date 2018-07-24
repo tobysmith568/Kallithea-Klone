@@ -5,27 +5,82 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Kallithea_Klone"
         mc:Ignorable="d"
-        Title="MainWindow" Height="455.433" Width="392.555" WindowStyle="None" Deactivated="Window_Deactivated" Background="#FFF0FFB8" ResizeMode="NoResize">
-    <Border BorderThickness="1" BorderBrush="Black">
-        <Grid Margin="0,0,0,0">
+        Title="MainWindow" Height="455.433" Width="400" WindowStyle="None" Deactivated="Window_Deactivated" ResizeMode="NoResize" AllowsTransparency="True">
+    <Window.Background>
+        <SolidColorBrush Color="Black" Opacity="0.01"/>
+    </Window.Background>
+    <Window.Resources>
+        <Style x:Key="RoundedButton" TargetType="{x:Type Button}">
+            <Style.Setters>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="button" CornerRadius="5" BorderBrush="Black" BorderThickness="1" Background="Azure">
+                                <TextBlock  Text="{TemplateBinding Button.Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="button" Property="BorderBrush" Value="#FF5798d8" />
+                                    <Setter TargetName="button" Property="Background"  Value="Red"/>
+                                    <Setter Property="Foreground" Value="White" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="button"  Property="Background" Value="Green"/>
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter TargetName="button" Property="BorderBrush" Value="#FF282828" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="button" Property="Opacity" Value="0.7" />
+                                    <Setter Property="Foreground" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+        </Style>
+    </Window.Resources>
+    <Border BorderThickness="1" BorderBrush="Black" Margin="0,0,15,10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" Direction="315" RenderingBias="Quality" ShadowDepth="2"/>
+        </Border.Effect>
+        <Grid Margin="0,0,0,0" Background="#FFF0FFB8" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="402*"/>
+                <RowDefinition Height="50*"/>
+                <RowDefinition Height="365*"/>
                 <RowDefinition Height="50*"/>
             </Grid.RowDefinitions>
-            <TreeView x:Name="MainTree" Margin="-1" FontSize="18" Background="Transparent" BorderBrush="Black">
-                <!--<TreeView.Resources>
-                    <HierarchicalDataTemplate
-                        DataType="{x:Type local:CheckableItem}">
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox IsChecked="{Binding IsChecked}"/>
-                            <TextBlock Text="{Binding Value}"/>
-                        </StackPanel>
-                    </HierarchicalDataTemplate>
-                </TreeView.Resources>-->
-            </TreeView>
-            <Button x:Name="btnClone" Content="Clone" Margin="290,0,10,10" FontSize="18" Grid.Row="1" Height="30" VerticalAlignment="Bottom" Click="btnClone_Click"/>
-            <Label x:Name="lblNumberSelected" Content="0 Repositories selected" Margin="10,0,106,0" Grid.Row="1" FontSize="18" VerticalContentAlignment="Center" />
+            <Border x:Name="BdrHeader" Grid.ColumnSpan="2" >
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" Direction="-90" RenderingBias="Quality" ShadowDepth="2"/>
+                </Border.Effect>
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF577632" Offset="0"/>
+                        <GradientStop Color="#FF577632" Offset="0.163"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Button x:Name="button" Style="{DynamicResource RoundedButton}" Margin="0,5,5,5" Grid.Column="1" Width="{Binding ActualHeight, ElementName=button, Mode=OneWay}" HorizontalAlignment="Right" >
+                
+            </Button>
 
+            <Label Content="Kallithea Klone" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}"/>
+            <TreeView x:Name="MainTree" Margin="-1,5,-1,0" FontSize="18" Background="Transparent" BorderBrush="{x:Null}" Grid.Row="1" Grid.ColumnSpan="2" BorderThickness="0" />
+            <Button x:Name="btnClone" Content="Clone" Margin="282,0,10,10" FontSize="18" Grid.Row="2" Height="30" VerticalAlignment="Bottom" Click="btnClone_Click" Grid.ColumnSpan="2" Grid.Column="0"/>
+            <Label x:Name="lblNumberSelected" Content="0 Repositories selected" Margin="10,0,106,0" Grid.Row="2" FontSize="18" VerticalContentAlignment="Center" Grid.ColumnSpan="2" />
+            <Rectangle Margin="-1" Grid.Row="2" Stroke="Black" Grid.ColumnSpan="2"/>
+
+            <Border x:Name="BrdDragger" Grid.ColumnSpan="2" MouseDown="BdrHeader_MouseDown" >
+                <Border.Background>
+                    <SolidColorBrush Color="#FFF0FFB8" Opacity="0.01"/>
+                </Border.Background>
+            </Border>
         </Grid>
     </Border>
 </Window>
