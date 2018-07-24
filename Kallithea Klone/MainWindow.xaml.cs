@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,30 +22,31 @@ namespace Kallithea_Klone
     public partial class MainWindow : Window
     {
         private static List<string> CheckedURLs = new List<string>();
+        private static string RepoFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone\\AllRepositories.dat";
 
         public MainWindow()
         {
-            InitializeComponent();
-
-            List<string> allRepositories = new List<string>
+            List<string> allRepositories = new List<string>();
+            try
             {
-                "VCM/Krispy Kreme/VCM001.pull",
-                "VCM/Krispy Kreme/VCM002.pull",
-                "VCM/Krispy Kreme/VCM003.pull",
-                "VCM/Krispy Kreme/VCM004.pull",
-                "VCM/Lego/VCM001.pull",
-                "VCM/Lego/VCM002.pull",
-                "VCM/Lego/VCM003.pull",
-                "VCM/Jack Wills/VCM001.pull",
-                "VCM/Jack Wills/VCM002.pull",
-                "VCM/Jack Wills/VCM003.pull",
-                "VCM/Jack Wills/VCM004.pull",
-                "VCM/Jack Wills/VCM005.pull",
-                "VCM/Jack Wills/VCM006.pull",
-                "VCM/Jack Wills/VCM007.pull",
-                "Something/Jack Wills/JW 1.pull",
-                "Something/Jack Wills/JW 2.pull",
-            };
+                allRepositories = new List<string>(File.ReadAllLines(RepoFile));
+            }
+            catch
+            {
+                MessageBoxResult result = MessageBox.Show("Unable to read repositories!\t\t\t\t\nDo you want to re-load them?", "Critical error!", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
+                switch (result)
+                {
+                    case MessageBoxResult.Cancel:
+                        Environment.Exit(1);
+                        break;
+                    case MessageBoxResult.Yes:
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             //Create tree of menu items
             Location baseLocation = new Location("Base Location");
@@ -60,6 +62,8 @@ namespace Kallithea_Klone
                 }
             }
 
+            InitializeComponent();
+
             //Create a treeview node for each location node
             foreach (Location location in baseLocation.InnerLocations)
             {
@@ -69,7 +73,7 @@ namespace Kallithea_Klone
 
         private void CreateTreeViewItem(Location location, TreeViewItem parent = null)
         {
-            if (location.Name.EndsWith(".pull"))
+            if (location.InnerLocations.Count == 0)
             {
                 CheckBox newItem = new CheckBox
                 {
@@ -141,7 +145,7 @@ namespace Kallithea_Klone
 
         private void btnClone_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Cloning:" + string.Join("\n", CheckedURLs.ToArray()));
+            Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.ToArray()));
         }
     }
 }
