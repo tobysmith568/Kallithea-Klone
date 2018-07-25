@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static Kallithea_Klone.Properties.Settings;
+using Newtonsoft.Json;
 
 namespace Kallithea_Klone
 {
@@ -26,27 +29,59 @@ namespace Kallithea_Klone
 
         public MainWindow()
         {
+            InitializeComponent();
+            LoadRepositories();
+        }
+
+        public async void DownloadRepositories()
+        {
+            var client = new RestClient(Default.Host + "/_admin/api");
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Cache-Control", "no-cache");
+            request.AddHeader("Content-Type", "application/json");
+            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + Default.APIKey + "\",\"method\":\"get_repos\",\"args\":{}}", ParameterType.RequestBody);
+
+            //Get the data async
+            IRestResponse response = await Task.Run(() =>
+            {
+                return client.Execute(request);
+            });
+            Repository[] repos = JsonConvert.DeserializeObject<Response>(response.Content).Repositories;
+
+            // TODO: Save the repos to the file
+
+            LoadRepositories(repos.Select(r => r.URL).ToList());
+        }
+
+        public void LoadRepositories(List<string> defaultRepositories = null)
+        {
             List<string> allRepositories = new List<string>();
-            try
+
+            if (defaultRepositories == null)
             {
-                allRepositories = new List<string>(File.ReadAllLines(RepoFile));
-            }
-            catch
-            {
-                MessageBoxResult result = MessageBox.Show("Unable to read repositories!\t\t\t\t\nDo you want to re-load them?", "Critical error!", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
-                switch (result)
+                try
                 {
-                    case MessageBoxResult.Cancel:
-                        Environment.Exit(1);
-                        break;
-                    case MessageBoxResult.Yes:
-                        break;
-                    case MessageBoxResult.No:
-                        break;
-                    default:
-                        break;
+                    allRepositories = new List<string>(File.ReadAllLines(RepoFile));
+                }
+                catch
+                {
+                    MessageBoxResult result = MessageBox.Show("Unable to read repositories!\t\t\t\t\nDo you want to re-load them?", "Critical error!", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Cancel:
+                            Environment.Exit(1);
+                            break;
+                        case MessageBoxResult.Yes:
+                            break;
+                        case MessageBoxResult.No:
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
+            else
+                allRepositories = defaultRepositories;
 
             //Create tree of menu items
             Location baseLocation = new Location("Base Location");
@@ -62,7 +97,7 @@ namespace Kallithea_Klone
                 }
             }
 
-            InitializeComponent();
+            MainTree.Items.Clear();
 
             //Create a treeview node for each location node
             foreach (Location location in baseLocation.InnerLocations)
@@ -77,7 +112,7 @@ namespace Kallithea_Klone
             {
                 CheckBox newItem = new CheckBox
                 {
-                    Content = location.Name.Substring(0, location.Name.Length - 5),
+                    Content = location.Name,
                     VerticalContentAlignment = VerticalAlignment.Center,
                     Tag = parent.Tag + "/" + location.Name
                 };
@@ -152,6 +187,11 @@ namespace Kallithea_Klone
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
+        }
+
+        private void BtnReload_Click(object sender, RoutedEventArgs e)
+        {
+            DownloadRepositories();
         }
     }
 }
