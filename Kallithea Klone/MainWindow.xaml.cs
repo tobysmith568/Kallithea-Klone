@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static Kallithea_Klone.Properties.Settings;
 using Newtonsoft.Json;
+using System.Windows.Media.Animation;
 
 namespace Kallithea_Klone
 {
@@ -33,7 +34,7 @@ namespace Kallithea_Klone
             LoadRepositories();
         }
 
-        public async void DownloadRepositories()
+        public async Task DownloadRepositories()
         {
             var client = new RestClient(Default.Host + "/_admin/api");
             var request = new RestRequest(Method.POST);
@@ -189,9 +190,17 @@ namespace Kallithea_Klone
                 DragMove();
         }
 
-        private void BtnReload_Click(object sender, RoutedEventArgs e)
+        private async void BtnReload_Click(object sender, RoutedEventArgs e)
         {
-            DownloadRepositories();
+            PbProgress.Visibility = Visibility.Visible;
+            PbProgress.IsIndeterminate = true;
+            BtnReload.IsEnabled = false;
+
+            await DownloadRepositories();
+
+            PbProgress.Visibility = Visibility.Hidden;
+            PbProgress.IsIndeterminate = false;
+            BtnReload.IsEnabled = true;
         }
     }
 }
