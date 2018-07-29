@@ -29,8 +29,11 @@ namespace Kallithea_Klone
         private static List<string> CheckedURLs = new List<string>();
         private static string RepoFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone\\AllRepositories.dat";
 
-        public MainWindow()
+        private string runFrom;
+
+        public MainWindow(string runFrom)
         {
+            this.runFrom = runFrom;
             InitializeComponent();
             LoadRepositories();
         }
@@ -232,6 +235,17 @@ namespace Kallithea_Klone
         private void BtnClone_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Default.Email)}@{Default.Host}/", u)).ToArray()));
+
+            foreach (string url in CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Default.Email)}:{HttpUtility.UrlEncode(Default.Password)}@{Default.Host}/", u)).ToArray())
+            {
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = $"/C cd {runFrom}&hg clone {url}";
+                process.StartInfo = startInfo;
+                process.Start();
+            }
         }
 
         private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)

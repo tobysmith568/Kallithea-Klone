@@ -11,5 +11,8 @@
     <Setting Name="Email" Type="System.String" Scope="User">
       <Value Profile="(Default)">toby.smith@pcmsgroup.com</Value>
     </Setting>
+    <Setting Name="Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)">jira4Gamers.</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

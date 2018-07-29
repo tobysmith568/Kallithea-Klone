@@ -24,7 +24,10 @@ namespace Kallithea_Klone
                         Settings();
                         break;
                     case nameof(RunTypes.Clone):
-                        Clone();
+                        if (e.Args.Length >= 2)
+                            Clone(e.Args[1]);
+                        else
+                            goto default;
                         break;
                     default:
                         Environment.Exit(0);
@@ -40,9 +43,9 @@ namespace Kallithea_Klone
             throw new NotImplementedException();
         }
 
-        private void Clone()
+        private void Clone(string ranFrom)
         {
-            MainWindow window = new MainWindow();
+            MainWindow window = new MainWindow(ranFrom);
             window.Left = Cursor.Position.X;
             window.Top = Cursor.Position.Y;
 
