@@ -55,7 +55,10 @@ namespace Kallithea_Klone
                     case ResponseStatus.Completed:
                         Repository[] repos = JsonConvert.DeserializeObject<Response>(response.Content).Repositories;
 
-                        // TODO: Save the repos to the file
+                        if (repos.Length != 0)
+                        {
+                            File.WriteAllLines(RepoFile, repos.Select(r => r.URL).ToArray());
+                        }
 
                         LoadRepositories(repos.Select(r => r.URL).ToList());
                         break;
@@ -87,7 +90,7 @@ namespace Kallithea_Klone
                 }
                 catch
                 {
-                    MessageBoxResult result = MessageBox.Show("Unable to read repositories!\t\t\t\t\nDo you want to re-load them?", "Critical error!", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
+                    MessageBoxResult result = MessageBox.Show("Unable to read repositories!\t\t\t\t\nDo you want to re-load them?", "Error!", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
                     switch (result)
                     {
                         case MessageBoxResult.Cancel:
@@ -119,6 +122,9 @@ namespace Kallithea_Klone
                 }
             }
 
+            //Sort all children
+            SortChildren(baseLocation);
+
             MainTree.Items.Clear();
 
             //Create a treeview node for each location node
@@ -126,6 +132,16 @@ namespace Kallithea_Klone
             {
                 CreateTreeViewItem(location);
             }
+        }
+
+        private void SortChildren(Location location)
+        {
+            foreach (Location subLocation in location.InnerLocations)
+            {
+                SortChildren(subLocation);
+            }
+
+            location.InnerLocations = location.InnerLocations.OrderBy(l => l.InnerLocations.Count == 0 ? 1 : 0).ThenBy(l => l.Name).ToList();
         }
 
         private void CreateTreeViewItem(Location location, TreeViewItem parent = null)
@@ -138,8 +154,8 @@ namespace Kallithea_Klone
                     VerticalContentAlignment = VerticalAlignment.Center,
                     Tag = parent.Tag + "/" + location.Name
                 };
-                newItem.Checked += NewItem_Checked;
-                newItem.Unchecked += NewItem_Unchecked;
+                newItem.Checked += SelectionUpdated;
+                newItem.Unchecked += SelectionUpdated;
 
                 if (parent == null)
                     MainTree.Items.Add(newItem);
@@ -165,19 +181,13 @@ namespace Kallithea_Klone
                 foreach (Location subLocation in location.InnerLocations)
                     CreateTreeViewItem(subLocation, newItem);
             }
-
         }
 
-        private void NewItem_Unchecked(object sender, RoutedEventArgs e)
+        private void SelectionUpdated(object sender, RoutedEventArgs e)
         {
             CheckedURLs.Remove(((Control)sender).Tag.ToString());
             lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
-        }
-
-        private void NewItem_Checked(object sender, RoutedEventArgs e)
-        {
-            CheckedURLs.Add(((Control)sender).Tag.ToString());
-            lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
+            BtnClone.IsEnabled = CheckedURLs.Count > 0;
         }
 
         private static Location GetOrCreate(Location current, string location)
