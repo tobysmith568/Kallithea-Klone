@@ -36,22 +36,43 @@ namespace Kallithea_Klone
 
         public async Task DownloadRepositories()
         {
-            var client = new RestClient(Default.Host + "/_admin/api");
-            var request = new RestRequest(Method.POST);
+            RestClient client = new RestClient(Default.Host + "/_admin/api");
+            RestRequest request = new RestRequest(Method.POST);
             request.AddHeader("Cache-Control", "no-cache");
             request.AddHeader("Content-Type", "application/json");
             request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + Default.APIKey + "\",\"method\":\"get_repos\",\"args\":{}}", ParameterType.RequestBody);
 
-            //Get the data async
-            IRestResponse response = await Task.Run(() =>
+            try
             {
-                return client.Execute(request);
-            });
-            Repository[] repos = JsonConvert.DeserializeObject<Response>(response.Content).Repositories;
+                //Get the data async
+                IRestResponse response = await Task.Run(() =>
+                {
+                    return client.Execute(request);
+                });
 
-            // TODO: Save the repos to the file
+                switch (response.ResponseStatus)
+                {
+                    case ResponseStatus.Completed:
+                        Repository[] repos = JsonConvert.DeserializeObject<Response>(response.Content).Repositories;
 
-            LoadRepositories(repos.Select(r => r.URL).ToList());
+                        // TODO: Save the repos to the file
+
+                        LoadRepositories(repos.Select(r => r.URL).ToList());
+                        break;
+                    case ResponseStatus.TimedOut:
+                        MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    case ResponseStatus.Error:
+                    case ResponseStatus.Aborted:
+                    default:
+                        MessageBox.Show("Error: " + response.ErrorMessage, "Uncaught Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                        break;
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("Error: " + ee.Message, "Uncaught Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+            }
         }
 
         public void LoadRepositories(List<string> defaultRepositories = null)
