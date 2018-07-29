@@ -1,11 +1,16 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using static Kallithea_Klone.Properties.Settings;
 
 namespace Kallithea_Klone
 {
@@ -20,6 +25,9 @@ namespace Kallithea_Klone
             {
                 switch (UppercaseFirst(e.Args[0]))
                 {
+                    case nameof(RunTypes.Setup):
+                        Setup();
+                        goto default;
                     case nameof(RunTypes.Settings):
                         Settings();
                         break;
@@ -35,7 +43,49 @@ namespace Kallithea_Klone
                 }
             }
             else
+            {
+                System.Windows.MessageBox.Show("To use this program right click in the folder where\nyou want to clone a repository", "Oops, that's not how to use me!", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, System.Windows.MessageBoxOptions.ServiceNotification);
                 Environment.Exit(0);
+            }
+        }
+
+        private void Setup()
+        {
+            Default.APIKey = Default.Email = Default.Password = "";
+            if (IsAdministrator() == false)
+            {
+                // Restart program and run as admin
+                var exeName = Process.GetCurrentProcess().MainModule.FileName;
+                ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                {
+                    Verb = "runas",
+                    Arguments = "Setup"
+                };
+                Process.Start(startInfo);
+                Current.Shutdown();
+                return;
+            }
+            else
+            {
+                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
+                {
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", true))
+                    {
+                        subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
+                        using (RegistryKey commandKey = subKey.CreateSubKey("command", true))
+                        {
+                            commandKey.SetValue("", $"{System.Reflection.Assembly.GetEntryAssembly().Location} Clone \"%V\"");
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool IsAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
         private void Settings()

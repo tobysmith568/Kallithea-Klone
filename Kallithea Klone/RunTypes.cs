@@ -9,6 +9,7 @@ namespace Kallithea_Klone
     enum RunTypes
     {
         Settings,
-        Clone
+        Clone,
+        Setup
     }
 }

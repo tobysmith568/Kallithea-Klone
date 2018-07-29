@@ -37,7 +37,7 @@ namespace Kallithea_Klone.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://pgukcsource04.pcms.local")]
+        [global::System.Configuration.DefaultSettingValueAttribute("pgukcsource04.pcms.local")]
         public string Host {
             get {
                 return ((string)(this["Host"]));

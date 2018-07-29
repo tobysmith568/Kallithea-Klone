@@ -18,6 +18,7 @@ using static Kallithea_Klone.Properties.Settings;
 using Newtonsoft.Json;
 using System.Windows.Media.Animation;
 using System.Web;
+using System.Net;
 
 namespace Kallithea_Klone
 {
@@ -27,9 +28,13 @@ namespace Kallithea_Klone
     public partial class MainWindow : Window
     {
         private static List<string> CheckedURLs = new List<string>();
-        private static string RepoFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone\\AllRepositories.dat";
+        private static string RepoFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone";
+        private static string RepoFile = RepoFolder + "\\AllRepositories.dat";
 
         private string runFrom;
+        private bool settingsOpen;
+        private int cloningCount;
+        private int clonedCount = 0;
 
         public MainWindow(string runFrom)
         {
@@ -40,7 +45,7 @@ namespace Kallithea_Klone
 
         public async Task DownloadRepositories()
         {
-            RestClient client = new RestClient(Default.Host + "/_admin/api");
+            RestClient client = new RestClient($"http://{Default.Host}/_admin/api");
             RestRequest request = new RestRequest(Method.POST);
             request.AddHeader("Cache-Control", "no-cache");
             request.AddHeader("Content-Type", "application/json");
@@ -61,6 +66,8 @@ namespace Kallithea_Klone
 
                         if (repos.Length != 0)
                         {
+                            if (!Directory.Exists(RepoFolder))
+                                Directory.CreateDirectory(RepoFolder);
                             File.WriteAllLines(RepoFile, repos.Select(r => r.URL).ToArray());
                         }
 
@@ -94,19 +101,9 @@ namespace Kallithea_Klone
                 }
                 catch
                 {
-                    MessageBoxResult result = MessageBox.Show("Unable to read repositories!\t\t\t\t\nDo you want to re-load them?", "Error!", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
-                    switch (result)
-                    {
-                        case MessageBoxResult.Cancel:
-                            Environment.Exit(1);
-                            break;
-                        case MessageBoxResult.Yes:
-                            break;
-                        case MessageBoxResult.No:
-                            break;
-                        default:
-                            break;
-                    }
+                    if (!Directory.Exists(RepoFolder))
+                        Directory.CreateDirectory(RepoFolder);
+                    File.WriteAllText(RepoFile, "");
                 }
             }
             else
@@ -229,22 +226,49 @@ namespace Kallithea_Klone
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            if (!settingsOpen)
+                Environment.Exit(0);
         }
 
         private void BtnClone_Click(object sender, RoutedEventArgs e)
         {
+            DisableAll();
+
             Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Default.Email)}@{Default.Host}/", u)).ToArray()));
 
-            foreach (string url in CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Default.Email)}:{HttpUtility.UrlEncode(Default.Password)}@{Default.Host}/", u)).ToArray())
+            string[] cloneURLs = CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Default.Email)}:{HttpUtility.UrlEncode(Default.Password)}@{Default.Host}/", u)).ToArray();
+            cloningCount = cloneURLs.Length;
+            foreach (string url in cloneURLs)
             {
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
-                startInfo.Arguments = $"/C cd {runFrom}&hg clone {url}";
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                    FileName = "cmd.exe",
+                    Arguments = $"/C hg clone {url} \"{runFrom}\\{url.Split('/').Last()}\""
+                };
                 process.StartInfo = startInfo;
+                process.EnableRaisingEvents = true;
+                process.Exited += Process_Exited;
+
                 process.Start();
+            }
+        }
+
+        private void DisableAll()
+        {
+            Topmost = true;
+            settingsOpen = true;
+            GridCoverAll.Visibility = Visibility.Visible;
+        }
+
+        private void Process_Exited(object sender, EventArgs e)
+        {
+            clonedCount++;
+
+            if (clonedCount == cloningCount)
+            {
+                Environment.Exit(0);
             }
         }
 
@@ -265,6 +289,14 @@ namespace Kallithea_Klone
             PbProgress.Visibility = Visibility.Hidden;
             PbProgress.IsIndeterminate = false;
             BtnReload.IsEnabled = true;
+        }
+
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            settingsOpen = true;
+            Settings s = new Settings();
+            s.ShowDialog();
+            settingsOpen = false;
         }
     }
 }
