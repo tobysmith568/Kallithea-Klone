@@ -8,5 +8,8 @@
     <Setting Name="Host" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://pgukcsource04.pcms.local</Value>
     </Setting>
+    <Setting Name="Email" Type="System.String" Scope="User">
+      <Value Profile="(Default)">toby.smith@pcmsgroup.com</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using static Kallithea_Klone.Properties.Settings;
 using Newtonsoft.Json;
 using System.Windows.Media.Animation;
+using System.Web;
 
 namespace Kallithea_Klone
 {
@@ -151,16 +152,21 @@ namespace Kallithea_Klone
                 CheckBox newItem = new CheckBox
                 {
                     Content = location.Name,
-                    VerticalContentAlignment = VerticalAlignment.Center,
-                    Tag = parent.Tag + "/" + location.Name
+                    VerticalContentAlignment = VerticalAlignment.Center
                 };
-                newItem.Checked += SelectionUpdated;
-                newItem.Unchecked += SelectionUpdated;
+                newItem.Checked += NewItem_Checked;
+                newItem.Unchecked += NewItem_Unchecked;
 
                 if (parent == null)
+                {
+                    newItem.Tag = location.Name;
                     MainTree.Items.Add(newItem);
+                }
                 else
+                {
+                    newItem.Tag = parent.Tag + "/" + location.Name;
                     parent.Items.Add(newItem);
+                }
             }
             else
             {
@@ -168,24 +174,37 @@ namespace Kallithea_Klone
                 {
                     Header = location.Name,
                 };
-                if (parent != null)
-                    newItem.Tag = parent.Tag + "/" + location.Name;
-                else
-                    newItem.Tag = location.Name;
 
                 if (parent == null)
+                {
+                    newItem.Tag = location.Name;
                     MainTree.Items.Add(newItem);
+                }
                 else
+                {
+                    newItem.Tag = parent.Tag + "/" + location.Name;
                     parent.Items.Add(newItem);
+                }
 
                 foreach (Location subLocation in location.InnerLocations)
                     CreateTreeViewItem(subLocation, newItem);
             }
         }
 
-        private void SelectionUpdated(object sender, RoutedEventArgs e)
+        private void NewItem_Unchecked(object sender, RoutedEventArgs e)
         {
             CheckedURLs.Remove(((Control)sender).Tag.ToString());
+            SelectionUpdated(sender, e);
+        }
+
+        private void NewItem_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckedURLs.Add(((Control)sender).Tag.ToString());
+            SelectionUpdated(sender, e);
+        }
+
+        private void SelectionUpdated(object sender, RoutedEventArgs e)
+        {
             lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
             BtnClone.IsEnabled = CheckedURLs.Count > 0;
         }
@@ -210,9 +229,9 @@ namespace Kallithea_Klone
             Environment.Exit(0);
         }
 
-        private void btnClone_Click(object sender, RoutedEventArgs e)
+        private void BtnClone_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.ToArray()));
+            Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Default.Email)}@{Default.Host}/", u)).ToArray()));
         }
 
         private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
