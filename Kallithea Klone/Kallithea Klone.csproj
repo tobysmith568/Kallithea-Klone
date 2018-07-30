@@ -128,5 +128,11 @@
   <ItemGroup>
     <Resource Include="Images\Reload.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\gears.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\kallithea-logo-png-transparent.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

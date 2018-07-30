@@ -35,6 +35,7 @@ namespace Kallithea_Klone
         private bool settingsOpen;
         private int cloningCount;
         private int clonedCount = 0;
+        private List<string> errorCodes = new List<string>();
 
         public MainWindow(string runFrom)
         {
@@ -264,10 +265,14 @@ namespace Kallithea_Klone
 
         private void Process_Exited(object sender, EventArgs e)
         {
+            if (((System.Diagnostics.Process)sender).ExitCode != 0)
+                errorCodes.Add(((System.Diagnostics.Process)sender).MainWindowTitle + ": " + ((System.Diagnostics.Process)sender).ExitCode.ToString());
             clonedCount++;
 
             if (clonedCount == cloningCount)
             {
+                if (errorCodes.Count > 0)
+                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 Environment.Exit(0);
             }
         }
