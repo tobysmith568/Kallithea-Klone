@@ -25,7 +25,7 @@ namespace Kallithea_Klone.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("c3c422b842f2f94be0255ff8207e3f9171d8f038")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string APIKey {
             get {
                 return ((string)(this["APIKey"]));
@@ -37,7 +37,7 @@ namespace Kallithea_Klone.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("pgukcsource04.pcms.local")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Host {
             get {
                 return ((string)(this["Host"]));
@@ -49,7 +49,7 @@ namespace Kallithea_Klone.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("toby.smith@pcmsgroup.com")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Email {
             get {
                 return ((string)(this["Email"]));
@@ -61,7 +61,7 @@ namespace Kallithea_Klone.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("jira4Gamers.")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Password {
             get {
                 return ((string)(this["Password"]));

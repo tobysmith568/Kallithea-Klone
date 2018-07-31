@@ -3,16 +3,16 @@
   <Profiles />
   <Settings>
     <Setting Name="APIKey" Type="System.String" Scope="User">
-      <Value Profile="(Default)">c3c422b842f2f94be0255ff8207e3f9171d8f038</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Host" Type="System.String" Scope="User">
-      <Value Profile="(Default)">pgukcsource04.pcms.local</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Email" Type="System.String" Scope="User">
-      <Value Profile="(Default)">toby.smith@pcmsgroup.com</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Password" Type="System.String" Scope="User">
-      <Value Profile="(Default)">jira4Gamers.</Value>
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

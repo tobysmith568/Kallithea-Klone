@@ -14,11 +14,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static Kallithea_Klone.Properties.Settings;
 using Newtonsoft.Json;
 using System.Windows.Media.Animation;
 using System.Web;
 using System.Net;
+using System.Security.Cryptography;
 
 namespace Kallithea_Klone
 {
@@ -37,8 +37,67 @@ namespace Kallithea_Klone
         private int clonedCount = 0;
         private List<string> errorCodes = new List<string>();
 
+        public static string APIKey
+        {
+            get
+            {
+                return Properties.Settings.Default.APIKey;
+            }
+            set
+            {
+                Properties.Settings.Default.APIKey = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        public static string Host
+        {
+            get
+            {
+                return Properties.Settings.Default.Host;
+            }
+            set
+            {
+                Properties.Settings.Default.Host = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        public static string Email
+        {
+            get
+            {
+                return Properties.Settings.Default.Email;
+            }
+            set
+            {
+                Properties.Settings.Default.Email = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        public static string Password
+        {
+            get
+            {
+                return Encoding.Unicode.GetString(ProtectedData.Unprotect(
+                    Convert.FromBase64String(Properties.Settings.Default.Password),
+                    null,
+                    DataProtectionScope.CurrentUser));
+            }
+            set
+            {
+                Properties.Settings.Default.Password = Convert.ToBase64String(ProtectedData.Protect(
+                    Encoding.Unicode.GetBytes(value),
+                    null,
+                    DataProtectionScope.CurrentUser));
+                Properties.Settings.Default.Save();
+            }
+        }
+
         public MainWindow(string runFrom)
         {
+            Password = "hello";
             this.runFrom = runFrom;
             InitializeComponent();
             LoadRepositories();
@@ -46,11 +105,11 @@ namespace Kallithea_Klone
 
         public async Task DownloadRepositories()
         {
-            RestClient client = new RestClient($"http://{Default.Host}/_admin/api");
+            RestClient client = new RestClient($"http://{Host}/_admin/api");
             RestRequest request = new RestRequest(Method.POST);
             request.AddHeader("Cache-Control", "no-cache");
             request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + Default.APIKey + "\",\"method\":\"get_repos\",\"args\":{}}", ParameterType.RequestBody);
+            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + APIKey + "\",\"method\":\"get_repos\",\"args\":{}}", ParameterType.RequestBody);
 
             try
             {
@@ -235,9 +294,9 @@ namespace Kallithea_Klone
         {
             DisableAll();
 
-            Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Default.Email)}@{Default.Host}/", u)).ToArray()));
+            Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Email)}@{Host}/", u)).ToArray()));
 
-            string[] cloneURLs = CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Default.Email)}:{HttpUtility.UrlEncode(Default.Password)}@{Default.Host}/", u)).ToArray();
+            string[] cloneURLs = CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Email)}:{HttpUtility.UrlEncode(Password)}@{Host}/", u)).ToArray();
             cloningCount = cloneURLs.Length;
             foreach (string url in cloneURLs)
             {
@@ -266,7 +325,7 @@ namespace Kallithea_Klone
         private void Process_Exited(object sender, EventArgs e)
         {
             if (((System.Diagnostics.Process)sender).ExitCode != 0)
-                errorCodes.Add(((System.Diagnostics.Process)sender).MainWindowTitle + ": " + ((System.Diagnostics.Process)sender).ExitCode.ToString());
+                errorCodes.Add(((System.Diagnostics.Process)sender).ExitCode.ToString());
             clonedCount++;
 
             if (clonedCount == cloningCount)

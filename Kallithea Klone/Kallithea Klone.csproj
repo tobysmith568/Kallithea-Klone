@@ -44,6 +44,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -133,6 +134,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\kallithea-logo-png-transparent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Close.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
