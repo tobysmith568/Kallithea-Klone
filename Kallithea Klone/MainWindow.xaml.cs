@@ -19,6 +19,7 @@ using System.Windows.Media.Animation;
 using System.Web;
 using System.Net;
 using System.Security.Cryptography;
+using System.Deployment.Application;
 
 namespace Kallithea_Klone
 {
@@ -36,6 +37,8 @@ namespace Kallithea_Klone
         private int cloningCount;
         private int clonedCount = 0;
         private List<string> errorCodes = new List<string>();
+
+        About about = new About();
 
         public static string APIKey
         {
@@ -360,6 +363,45 @@ namespace Kallithea_Klone
             Settings s = new Settings();
             s.ShowDialog();
             settingsOpen = false;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            string GetVersion()
+            {
+                try
+                {
+                    return ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                }
+                catch (InvalidDeploymentException)
+                {
+                    return "not installed";
+                }
+            }
+
+            MenuItem MIVersion = new MenuItem
+            {
+                Header = GetVersion(),
+                IsEnabled = false,
+            };
+
+            MenuItem MIAbout = new MenuItem
+            {
+                Header = "About"
+            };
+            MIAbout.Click += (ss, ee) =>
+            {
+                settingsOpen = true;
+                about.ShowDialog();
+                settingsOpen = false;
+            };
+
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.Items.Add(MIVersion);
+            contextMenu.Items.Add(new Separator());
+            contextMenu.Items.Add(MIAbout);
+
+            BdrHeader.ContextMenu = contextMenu;
         }
     }
 }

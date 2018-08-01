@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Kallithea_Klone"
         mc:Ignorable="d"
-        Title="MainWindow" Height="587.433" Width="419.5" WindowStyle="None" Deactivated="Window_Deactivated" AllowsTransparency="True" ResizeMode="NoResize">
+        Title="MainWindow" Height="587.433" Width="419.5" WindowStyle="None" Deactivated="Window_Deactivated" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Window_Loaded">
     <Window.Background>
         <SolidColorBrush Color="Black" Opacity="0.01"/>
     </Window.Background>
