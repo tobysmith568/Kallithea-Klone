@@ -50,6 +50,19 @@ namespace Kallithea_Klone
             }
         }
 
+        public static string Username
+        {
+            get
+            {
+                return Properties.Settings.Default.Username;
+            }
+            set
+            {
+                Properties.Settings.Default.Username = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
         public static string Host
         {
             get
@@ -59,19 +72,6 @@ namespace Kallithea_Klone
             set
             {
                 Properties.Settings.Default.Host = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static string Email
-        {
-            get
-            {
-                return Properties.Settings.Default.Email;
-            }
-            set
-            {
-                Properties.Settings.Default.Email = value;
                 Properties.Settings.Default.Save();
             }
         }
@@ -97,7 +97,6 @@ namespace Kallithea_Klone
 
         public MainWindow(string runFrom)
         {
-            Password = "hello";
             this.runFrom = runFrom;
             InitializeComponent();
             LoadRepositories();
@@ -105,7 +104,7 @@ namespace Kallithea_Klone
 
         public async Task DownloadRepositories()
         {
-            RestClient client = new RestClient($"http://{Host}/_admin/api");
+            RestClient client = new RestClient($"{Host}/_admin/api");
             RestRequest request = new RestRequest(Method.POST);
             request.AddHeader("Cache-Control", "no-cache");
             request.AddHeader("Content-Type", "application/json");
@@ -122,7 +121,7 @@ namespace Kallithea_Klone
                 switch (response.ResponseStatus)
                 {
                     case ResponseStatus.Completed:
-                        Repository[] repos = JsonConvert.DeserializeObject<Response>(response.Content).Repositories;
+                        Repository[] repos = JsonConvert.DeserializeObject<Response<Repository[]>>(response.Content).Result;
 
                         if (repos.Length != 0)
                         {
@@ -293,19 +292,19 @@ namespace Kallithea_Klone
         private void BtnClone_Click(object sender, RoutedEventArgs e)
         {
             DisableAll();
+            Uri uri = new Uri(Host);
 
-            Console.WriteLine("Cloning:\n" + string.Join("\n", CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Email)}@{Host}/", u)).ToArray()));
-
-            string[] cloneURLs = CheckedURLs.Select(u => string.Concat($"http://{HttpUtility.UrlEncode(Email)}:{HttpUtility.UrlEncode(Password)}@{Host}/", u)).ToArray();
-            cloningCount = cloneURLs.Length;
-            foreach (string url in cloneURLs)
+            cloningCount = CheckedURLs.Count;
+            foreach (string url in CheckedURLs)
             {
+                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(Username)}:{HttpUtility.UrlEncode(Password)}@{uri.Host}{uri.PathAndQuery}{url}";
+
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
                 {
                     WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
                     FileName = "cmd.exe",
-                    Arguments = $"/C hg clone {url} \"{runFrom}\\{url.Split('/').Last()}\""
+                    Arguments = $"/C hg clone {fullURL} \"{runFrom}\\{url.Split('/').Last()}\""
                 };
                 process.StartInfo = startInfo;
                 process.EnableRaisingEvents = true;

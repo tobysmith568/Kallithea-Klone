@@ -51,7 +51,7 @@ namespace Kallithea_Klone
 
         private void Setup()
         {
-            Default.APIKey = Default.Email = Default.Password = "";
+            Default.APIKey = Default.Host = Default.Username = Default.Password = "";
             if (IsAdministrator() == false)
             {
                 // Restart program and run as admin

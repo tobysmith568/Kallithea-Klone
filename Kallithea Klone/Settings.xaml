@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Kallithea_Klone"
         mc:Ignorable="d"
-        Title="Settings" Height="462" Width="409" Loaded="Window_Loaded" FontSize="18" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize">
+        Title="Settings" Height="420" Width="298" Loaded="Window_Loaded" FontSize="18" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <Style x:Key="CloseButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -68,7 +68,7 @@
             <DropShadowEffect BlurRadius="10" Direction="315" RenderingBias="Quality" ShadowDepth="2"/>
         </Border.Effect>
         <Grid Margin="0,0,0,0" Background="#FFF0FFB8" >
-            <Border x:Name="BdrHeader" Height="61" VerticalAlignment="Top">
+            <Border x:Name="BdrHeader" Height="61" VerticalAlignment="Top" MouseDown="BdrHeader_MouseDown">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15" Direction="-90" RenderingBias="Quality" ShadowDepth="2"/>
                 </Border.Effect>
@@ -79,15 +79,15 @@
                     </LinearGradientBrush>
                 </Border.Background>
             </Border>
-            <Button x:Name="BtnSave" Content="Save" Margin="0,0,10,10" Click="Button_Click" HorizontalAlignment="Right" Width="95" Height="28" VerticalAlignment="Bottom"/>
+            <Button x:Name="BtnSave" Content="Save" Margin="0,0,10,10" Click="BtnSave_Click" HorizontalAlignment="Right" Width="95" Height="28" VerticalAlignment="Bottom"/>
 
             <!-- Header -->
-            <Label Content="Settings" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,0,60,0" Height="61" VerticalAlignment="Top"/>
+            <Label Content="Settings" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,0,60,0" Height="61" VerticalAlignment="Top" IsHitTestVisible="False"/>
             <Button x:Name="BtnClose" Style="{DynamicResource CloseButton}" Margin="0,10,10,0" Width="{Binding ActualHeight, ElementName=BtnClose, Mode=OneWay}" HorizontalAlignment="Right" Click="BtnClose_Click" Height="45" VerticalAlignment="Top"/>
 
             <!-- API Key -->
-            <Label x:Name="LblAPIKey" Content="Kallithea API Key" Margin="10,66,10,0" VerticalAlignment="Top"/>
-            <Grid Margin="10,95,10,0" Height="36" VerticalAlignment="Top">
+            <Label x:Name="LblAPIKey" Content="Kallithea API Key" Margin="10,144,10,0" VerticalAlignment="Top"/>
+            <Grid Margin="10,173,10,0" Height="36" VerticalAlignment="Top">
                 <TextBox x:Name="TbxAPIKey" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
@@ -108,7 +108,7 @@
                     </TextBlock.Style>
                 </TextBlock>
             </Grid>
-            <TextBlock x:Name="TbAPIKey" Margin="0,130,10,0" TextWrapping="Wrap" Text="What is my API key?" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}" HorizontalAlignment="Right" FontSize="14" Cursor="Hand" MouseEnter="TbAPIKey_MouseEnter" MouseLeave="TbAPIKey_MouseLeave" Width="181" TextAlignment="Right">
+            <TextBlock x:Name="TbAPIKey" Margin="0,209,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}" HorizontalAlignment="Right" FontSize="14" Cursor="Hand" MouseEnter="TbAPIKey_MouseEnter" MouseLeave="TbAPIKey_MouseLeave" Width="181" TextAlignment="Right">
                 <TextBlock.TextDecorations>
                     <TextDecoration>
                         <TextDecoration.Pen>
@@ -116,11 +116,12 @@
                         </TextDecoration.Pen>
                     </TextDecoration>
                 </TextBlock.TextDecorations>
+                <Hyperlink NavigateUri="/_admin/my_account/api_keys" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">What is my API key?</Hyperlink>
             </TextBlock>
 
             <!-- Host -->
-            <Label x:Name="LblHost_URL" Content="Host URL" Margin="10,131,10,0" VerticalAlignment="Top"/>
-            <Grid Margin="10,160,10,0" Height="36" VerticalAlignment="Top">
+            <Label x:Name="LblHost_URL" Content="Host URL" Margin="10,74,10,0" VerticalAlignment="Top"/>
+            <Grid Margin="10,103,10,0" Height="36" VerticalAlignment="Top">
                 <TextBox x:Name="TbxHost" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
@@ -142,36 +143,36 @@
                 </TextBlock>
             </Grid>
 
-            <!-- Email -->
-            <Label x:Name="lblEmail" Content="Email" Margin="10,196,10,0" VerticalAlignment="Top"/>
-            <Grid Margin="10,225,10,0" Height="36" VerticalAlignment="Top">
-                <TextBox x:Name="TbxEmail" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center">
-                    <TextBox.Resources>
-                        <Style TargetType="{x:Type Border}">
-                            <Setter Property="CornerRadius" Value="5"/>
-                        </Style>
-                    </TextBox.Resources>
-                </TextBox>
-                <TextBlock IsHitTestVisible="False" Text="@" Padding="6,3,0,0" Margin="0,0,0,0" Foreground="#FF607D8B" VerticalAlignment="Center" FontSize="18">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=TbxEmail}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
-
             <!-- Password -->
-            <Label x:Name="LblPassword" Content="Password" Margin="10,261,10,0" VerticalAlignment="Top"/>
-            <PasswordBox x:Name="PbOne" Margin="10,290,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" />
-            <PasswordBox x:Name="PbTwo" Margin="10,355,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" />
-            <Label x:Name="LblPasswordConfirm" Content="Confirm Password" Margin="10,326,10,0" VerticalAlignment="Top" FontSize="18"/>
+            <Label x:Name="LblPassword" Content="Password" Margin="10,228,10,0" VerticalAlignment="Top"/>
+            <PasswordBox x:Name="PbOne" Margin="10,257,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" />
+            <PasswordBox x:Name="PbTwo" Margin="10,322,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" />
+            <Label x:Name="LblPasswordConfirm" Content="Confirm Password" Margin="10,293,10,0" VerticalAlignment="Top" FontSize="18"/>
             <Label x:Name="LblNotMatching" Margin="191,384,10,38" FontSize="14" Content="Passwords do not match!" HorizontalContentAlignment="Right" Foreground="Red" Visibility="Hidden"/>
+
+            
+            <Grid x:Name="GridCoverAll" Margin="0" Visibility="Hidden">
+                <Grid.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.7"/>
+                </Grid.Background>
+                <Image x:Name="ImgLoadingImg" Margin="70,100" Source="Images/kallithea-logo-png-transparent.png">
+                    <Image.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="ImgLoadingImg"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="1"
+                                     To="0"
+                                     Duration="0:0:0.75"
+                                     AutoReverse="True"
+                                     RepeatBehavior="Forever"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Image.Triggers>
+                </Image>
+            </Grid>
         </Grid>
     </Border>
 </Window>

@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using RestSharp;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +14,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Kallithea_Klone
@@ -24,20 +29,73 @@ namespace Kallithea_Klone
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.APIKey = TbxAPIKey.Text;
-            MainWindow.Host = TbxHost.Text;
-            MainWindow.Email = TbxEmail.Text;
-            MainWindow.Password = PbOne.Password;
-            Close();
+            BtnSave.IsEnabled = false;
+            GridCoverAll.Visibility = Visibility.Visible;
+
+            RestClient client = new RestClient($"{TbxHost.Text}/_admin/api");
+            RestRequest request = new RestRequest(Method.POST);
+            request.AddHeader("Cache-Control", "no-cache");
+            request.AddHeader("Content-Type", "application/json");
+            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + TbxAPIKey.Text + "\",\"method\":\"get_user\",\"args\":{}}", ParameterType.RequestBody);
+
+            try
+            {
+                //Get the data async
+                IRestResponse response = await Task.Run(() =>
+                {
+                    return client.Execute(request);
+                });
+
+                switch (response.ResponseStatus)
+                {
+                    case ResponseStatus.Completed:
+                        Response<User> user = JsonConvert.DeserializeObject<Response<User>>(response.Content);
+                        if (user.Result == null)
+                        {
+                            MessageBox.Show("Error: " + user.Error, "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                            BtnSave.IsEnabled = true;
+                            GridCoverAll.Visibility = Visibility.Hidden;
+                            break;
+                        }
+                        MainWindow.APIKey = TbxAPIKey.Text;
+                        MainWindow.Host = TbxHost.Text;
+                        MainWindow.Username = user.Result.Username;
+                        MainWindow.Password = PbOne.Password;
+                        Close();
+                        break;
+                    case ResponseStatus.TimedOut:
+                        MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
+                        BtnSave.IsEnabled = true;
+                        GridCoverAll.Visibility = Visibility.Hidden;
+                        break;
+                    case ResponseStatus.Error:
+                    case ResponseStatus.Aborted:
+                    default:
+                        MessageBox.Show("Error: " + response.ErrorMessage, "Uncaught Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                        BtnSave.IsEnabled = true;
+                        GridCoverAll.Visibility = Visibility.Hidden;
+                        break;
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("Error: " + ee.Message, "Uncaught Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                BtnSave.IsEnabled = true;
+                GridCoverAll.Visibility = Visibility.Hidden;
+            }
+        }
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(TbxHost.Text + "/_admin/my_account/api_keys"));
+            e.Handled = true;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             TbxAPIKey.Text = MainWindow.APIKey;
             TbxHost.Text = MainWindow.Host;
-            TbxEmail.Text = MainWindow.Email;
             PbOne.Password = MainWindow.Password;
             PbTwo.Password = MainWindow.Password;
 
@@ -76,6 +134,12 @@ namespace Kallithea_Klone
                 return false;
 
             return true;
+        }
+
+        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
         }
     }
 }
