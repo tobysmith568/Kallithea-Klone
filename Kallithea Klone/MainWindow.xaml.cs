@@ -32,6 +32,8 @@ namespace Kallithea_Klone
         private static string RepoFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone";
         private static string RepoFile = RepoFolder + "\\AllRepositories.dat";
 
+        private List<string> allRepositories;
+
         private string runFrom;
         private bool settingsOpen;
         private int cloningCount;
@@ -102,6 +104,19 @@ namespace Kallithea_Klone
         {
             this.runFrom = runFrom;
             InitializeComponent();
+
+            try
+            {
+                allRepositories = new List<string>(File.ReadAllLines(RepoFile));
+            }
+            catch
+            {
+                if (!Directory.Exists(RepoFolder))
+                    Directory.CreateDirectory(RepoFolder);
+                File.WriteAllText(RepoFile, "");
+                allRepositories = new List<string>();
+            }
+
             LoadRepositories();
         }
 
@@ -151,31 +166,15 @@ namespace Kallithea_Klone
             }
         }
 
-        public void LoadRepositories(List<string> defaultRepositories = null)
+        public void LoadRepositories(List<string> customRepositories = null, bool expandAll = false)
         {
-            List<string> allRepositories = new List<string>();
-
-            if (defaultRepositories == null)
-            {
-                try
-                {
-                    allRepositories = new List<string>(File.ReadAllLines(RepoFile));
-                }
-                catch
-                {
-                    if (!Directory.Exists(RepoFolder))
-                        Directory.CreateDirectory(RepoFolder);
-                    File.WriteAllText(RepoFile, "");
-                }
-            }
-            else
-                allRepositories = defaultRepositories;
+            List<string> repositories = customRepositories ?? allRepositories;
 
             //Create tree of menu items
             Location baseLocation = new Location("Base Location");
 
             string[] parts;
-            foreach (string location in allRepositories)
+            foreach (string location in repositories)
             {
                 parts = location.Split('/');
                 Location current = baseLocation;
@@ -193,7 +192,7 @@ namespace Kallithea_Klone
             //Create a treeview node for each location node
             foreach (Location location in baseLocation.InnerLocations)
             {
-                CreateTreeViewItem(location);
+                CreateTreeViewItem(location, expandAll);
             }
         }
 
@@ -207,7 +206,7 @@ namespace Kallithea_Klone
             location.InnerLocations = location.InnerLocations.OrderBy(l => l.InnerLocations.Count == 0 ? 1 : 0).ThenBy(l => l.Name).ToList();
         }
 
-        private void CreateTreeViewItem(Location location, TreeViewItem parent = null)
+        private void CreateTreeViewItem(Location location, bool expandAll, TreeViewItem parent = null)
         {
             if (location.InnerLocations.Count == 0)
             {
@@ -235,6 +234,7 @@ namespace Kallithea_Klone
                 TreeViewItem newItem = new TreeViewItem
                 {
                     Header = location.Name,
+                    IsExpanded = expandAll
                 };
 
                 if (parent == null)
@@ -249,7 +249,7 @@ namespace Kallithea_Klone
                 }
 
                 foreach (Location subLocation in location.InnerLocations)
-                    CreateTreeViewItem(subLocation, newItem);
+                    CreateTreeViewItem(subLocation, expandAll, newItem);
             }
         }
 
@@ -402,6 +402,20 @@ namespace Kallithea_Klone
             contextMenu.Items.Add(MIAbout);
 
             BdrHeader.ContextMenu = contextMenu;
+        }
+
+        private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if (textBox.Text == "")
+            {
+                LoadRepositories();
+                return;
+            }
+
+            List<string> filtered = allRepositories.Where(r => r.ToLower().Contains(textBox.Text.ToLower())).ToList();
+            LoadRepositories(filtered, true);
         }
     }
 }

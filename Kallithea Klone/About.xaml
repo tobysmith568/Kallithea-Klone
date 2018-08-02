@@ -12,7 +12,7 @@
             Developed by Toby Smith - <Hyperlink NavigateUri="https://tobysmith.uk" RequestNavigate="Hyperlink_RequestNavigate">https://tobysmith.uk</Hyperlink>.
         </TextBlock>
         <TextBlock Margin="10,101,10,0" VerticalAlignment="Top">
-            This software is in no way associated with <Hyperlink NavigateUri="https://kallithea-scm.org" RequestNavigate="Hyperlink_RequestNavigate">Kallithea</Hyperlink>.
+            This software is in no way associated with <Hyperlink NavigateUri="https://kallithea-scm.org" RequestNavigate="Hyperlink_RequestNavigate">kallithea-scm.org</Hyperlink>.
         </TextBlock>
         <TextBlock Margin="10,131,10,0" VerticalAlignment="Top">
             This software uses the following software libraries:<LineBreak/>
