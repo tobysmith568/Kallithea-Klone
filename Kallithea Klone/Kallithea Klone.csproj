@@ -70,6 +70,7 @@
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
     <Compile Include="CheckableItem.cs" />
+    <Compile Include="About Licence.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="RunTypes.cs" />

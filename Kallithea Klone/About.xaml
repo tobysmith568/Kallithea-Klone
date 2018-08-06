@@ -20,7 +20,7 @@
             <Run Text="        "/><Hyperlink NavigateUri="http://restsharp.org/" RequestNavigate="Hyperlink_RequestNavigate">RestSharp</Hyperlink> - Apache License 2.0<LineBreak/>
             Icons used with permission from <Hyperlink NavigateUri="https://icons8.com" RequestNavigate="Hyperlink_RequestNavigate">Icons8</Hyperlink> - Creative Commons Attribution-NoDerivs 3.0 Unported
         </TextBlock>
-        <TextBox x:Name="TblLicence" Margin="10,210,10,55" Background="White" Text="" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextAlignment="Center" IsReadOnly="True" IsReadOnlyCaretVisible="True" FontSize="12"/>
+        <TextBox x:Name="TbxLicence" Margin="10,210,10,55" Background="White" Text="" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextAlignment="Center" IsReadOnly="True" IsReadOnlyCaretVisible="True" FontSize="12"/>
         <Button x:Name="BtnClone" Content="Close" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="97" Height="30" Click="BtnClone_Click"/>
 
     </Grid>

@@ -20,6 +20,7 @@ using System.Web;
 using System.Net;
 using System.Security.Cryptography;
 using System.Deployment.Application;
+using System.Threading;
 
 namespace Kallithea_Klone
 {
@@ -39,8 +40,6 @@ namespace Kallithea_Klone
         private int cloningCount;
         private int clonedCount = 0;
         private List<string> errorCodes = new List<string>();
-
-        About about = new About();
 
         public static string APIKey
         {
@@ -148,7 +147,8 @@ namespace Kallithea_Klone
                             File.WriteAllLines(RepoFile, repos.Select(r => r.URL).ToArray());
                         }
 
-                        LoadRepositories(repos.Select(r => r.URL).ToList());
+                        allRepositories = repos.Select(r => r.URL).ToList();
+                        LoadRepositories();
                         break;
                     case ResponseStatus.TimedOut:
                         MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -166,9 +166,9 @@ namespace Kallithea_Klone
             }
         }
 
-        public void LoadRepositories(List<string> customRepositories = null, bool expandAll = false)
+        public void LoadRepositories(bool expandAll = false)
         {
-            List<string> repositories = customRepositories ?? allRepositories;
+            List<string> repositories = allRepositories;
 
             //Create tree of menu items
             Location baseLocation = new Location("Base Location");
@@ -261,6 +261,7 @@ namespace Kallithea_Klone
 
         private void NewItem_Checked(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show(((Control)sender).Tag.ToString(), "", MessageBoxButton.OK, MessageBoxImage.Asterisk, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
             CheckedURLs.Add(((Control)sender).Tag.ToString());
             SelectionUpdated(sender, e);
         }
@@ -392,7 +393,10 @@ namespace Kallithea_Klone
             MIAbout.Click += (ss, ee) =>
             {
                 settingsOpen = true;
+
+                About about = new About();
                 about.ShowDialog();
+
                 settingsOpen = false;
             };
 
@@ -408,14 +412,90 @@ namespace Kallithea_Klone
         {
             TextBox textBox = (TextBox)sender;
 
-            if (textBox.Text == "")
+            if (textBox.Text.Length == 0)
             {
-                LoadRepositories();
-                return;
+                ShowAndCollapse(MainTree);
             }
+            else
+            {
+                Filter(MainTree, textBox.Text);
+            }
+        }
 
-            List<string> filtered = allRepositories.Where(r => r.ToLower().Contains(textBox.Text.ToLower())).ToList();
-            LoadRepositories(filtered, true);
+        private void ShowAndCollapse(ItemsControl parent)
+        {
+            foreach (Control control in parent.Items)
+            {
+                control.Visibility = Visibility.Visible;
+
+                if (control is TreeViewItem treeViewItem)
+                {
+                    ShowAndCollapse(treeViewItem);
+
+                    treeViewItem.IsExpanded = false;
+                }
+            }
+        }
+
+        private void Filter(ItemsControl parent, string searchTerm)
+        {
+            foreach (Control child in parent.Items)
+            {
+                if (child is TreeViewItem treeViewItem)
+                {
+                    Filter(treeViewItem, searchTerm);
+
+                    if (IsEmpty(treeViewItem))
+                    {
+                        treeViewItem.IsExpanded = false;
+                        treeViewItem.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        treeViewItem.IsExpanded = true;
+                        treeViewItem.Visibility = Visibility.Visible;
+                    }
+                }
+                else if (child is CheckBox checkBox)
+                {
+                    foreach (string term in searchTerm.ToLower().Split(' '))
+                    {
+                        if (!checkBox.Tag.ToString().ToLower().Contains(term))
+                        {
+                            checkBox.Visibility = Visibility.Collapsed;
+                            return;
+                        }
+                    }
+                    checkBox.Visibility = Visibility.Visible;
+                }
+                else
+                    throw new Exception("Unexpected child type!");
+            }
+        }
+
+        private bool IsEmpty(TreeViewItem treeViewItem)
+        {
+            foreach (Control item in treeViewItem.Items)
+            {
+                if (item.Visibility == Visibility.Visible)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                TextBox textBox = (TextBox)sender;
+
+                if (textBox.Text.Length != 0)
+                {
+                    Filter(MainTree, textBox.Text);
+                }
+            }
         }
     }
 }

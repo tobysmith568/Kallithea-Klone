@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,8 +30,33 @@ namespace Kallithea_Klone
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            TblLicence.Text = File.ReadAllText("Licence.txt");
+            TbxLicence.Text = Licence;
+            //Thread newThread = new Thread(new ThreadStart(LoadFile));
+            //newThread.Start();
+            //TbxLicence.Text = File.ReadAllText("Licence.txt");
         }
+
+        public delegate void UpdateTextCallback(string message);
+
+        private void LoadFile()
+        {
+            using (StreamReader reader = new StreamReader("Licence.txt"))
+            {
+                string currentLine;
+                while ((currentLine = reader.ReadLine()) != null)
+                {
+                    TbxLicence.Dispatcher.Invoke(
+                        new UpdateTextCallback(UpdateText),
+                        new object[] { currentLine }
+                    );
+                }
+            }
+        }
+        private void UpdateText(string message)
+        {
+            TbxLicence.AppendText(message + "\n");
+        }
+
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
