@@ -23,10 +23,16 @@ namespace Kallithea_Klone
     /// </summary>
     public partial class About : Window
     {
+        //  Constructors
+        //  ============
+
         public About()
         {
             InitializeComponent();
         }
+
+        //  Events
+        //  ======
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {

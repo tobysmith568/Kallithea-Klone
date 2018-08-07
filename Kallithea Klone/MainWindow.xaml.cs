@@ -20,6 +20,9 @@ namespace Kallithea_Klone
     /// </summary>
     public partial class MainWindow : Window
     {
+        //  Variables
+        //  =========
+
         private static List<string> CheckedURLs = new List<string>();
         private static string RepoFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone";
         private static string RepoFile = RepoFolder + "\\AllRepositories.dat";
@@ -90,6 +93,9 @@ namespace Kallithea_Klone
             }
         }
 
+        //  Constructors
+        //  ============
+
         public MainWindow(string runFrom)
         {
             this.runFrom = runFrom;
@@ -109,6 +115,172 @@ namespace Kallithea_Klone
 
             LoadRepositories();
         }
+
+        //  Events
+        //  ======
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            string GetVersion()
+            {
+                try
+                {
+                    return ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                }
+                catch (InvalidDeploymentException)
+                {
+                    return "not installed";
+                }
+            }
+
+            MenuItem MIVersion = new MenuItem
+            {
+                Header = GetVersion(),
+                IsEnabled = false,
+            };
+
+            MenuItem MIAbout = new MenuItem
+            {
+                Header = "About"
+            };
+            MIAbout.Click += (ss, ee) =>
+            {
+                settingsOpen = true;
+
+                About about = new About();
+                about.ShowDialog();
+
+                settingsOpen = false;
+            };
+
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.Items.Add(MIVersion);
+            contextMenu.Items.Add(new Separator());
+            contextMenu.Items.Add(MIAbout);
+
+            BdrHeader.ContextMenu = contextMenu;
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            if (!settingsOpen)
+                Environment.Exit(0);
+        }
+
+        private void NewItem_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CheckedURLs.Remove(((Control)sender).Tag.ToString());
+            SelectionUpdated(sender, e);
+        }
+
+        private void NewItem_Checked(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(((Control)sender).Tag.ToString(), "", MessageBoxButton.OK, MessageBoxImage.Asterisk, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+            CheckedURLs.Add(((Control)sender).Tag.ToString());
+            SelectionUpdated(sender, e);
+        }
+
+        private void SelectionUpdated(object sender, RoutedEventArgs e)
+        {
+            lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
+            BtnClone.IsEnabled = CheckedURLs.Count > 0;
+        }
+
+        private void Process_Exited(object sender, EventArgs e)
+        {
+            if (((System.Diagnostics.Process)sender).ExitCode != 0)
+                errorCodes.Add(((System.Diagnostics.Process)sender).ExitCode.ToString());
+            clonedCount++;
+
+            if (clonedCount == cloningCount)
+            {
+                if (errorCodes.Count > 0)
+                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                Environment.Exit(0);
+            }
+        }
+
+        private void BtnClone_Click(object sender, RoutedEventArgs e)
+        {
+            DisableAll();
+            Uri uri = new Uri(Host);
+
+            cloningCount = CheckedURLs.Count;
+            foreach (string url in CheckedURLs)
+            {
+                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(Username)}:{HttpUtility.UrlEncode(Password)}@{uri.Host}{uri.PathAndQuery}{url}";
+
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                    FileName = "cmd.exe",
+                    Arguments = $"/C hg clone {fullURL} \"{runFrom}\\{url.Split('/').Last()}\""
+                };
+                process.StartInfo = startInfo;
+                process.EnableRaisingEvents = true;
+                process.Exited += Process_Exited;
+
+                process.Start();
+            }
+        }
+
+        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        }
+
+        private async void BtnReload_Click(object sender, RoutedEventArgs e)
+        {
+            PbProgress.Visibility = Visibility.Visible;
+            PbProgress.IsIndeterminate = true;
+            BtnReload.IsEnabled = false;
+
+            await DownloadRepositories();
+
+            PbProgress.Visibility = Visibility.Hidden;
+            PbProgress.IsIndeterminate = false;
+            BtnReload.IsEnabled = true;
+        }
+
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            settingsOpen = true;
+            Settings s = new Settings();
+            s.ShowDialog();
+            settingsOpen = false;
+        }
+
+        private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+
+            if (textBox.Text.Length == 0)
+            {
+                ShowAndCollapse(MainTree);
+            }
+            else
+            {
+                Filter(MainTree, textBox.Text);
+            }
+        }
+
+        private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                TextBox textBox = (TextBox)sender;
+
+                if (textBox.Text.Length != 0)
+                {
+                    Filter(MainTree, textBox.Text);
+                }
+            }
+        }
+
+        //  Methods
+        //  =======
 
         public async Task DownloadRepositories()
         {
@@ -244,25 +416,6 @@ namespace Kallithea_Klone
             }
         }
 
-        private void NewItem_Unchecked(object sender, RoutedEventArgs e)
-        {
-            CheckedURLs.Remove(((Control)sender).Tag.ToString());
-            SelectionUpdated(sender, e);
-        }
-
-        private void NewItem_Checked(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(((Control)sender).Tag.ToString(), "", MessageBoxButton.OK, MessageBoxImage.Asterisk, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-            CheckedURLs.Add(((Control)sender).Tag.ToString());
-            SelectionUpdated(sender, e);
-        }
-
-        private void SelectionUpdated(object sender, RoutedEventArgs e)
-        {
-            lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
-            BtnClone.IsEnabled = CheckedURLs.Count > 0;
-        }
-
         private static Location GetOrCreate(Location current, string location)
         {
             if (current.InnerLocations.Count(l => l.Name == location) > 0)
@@ -278,139 +431,11 @@ namespace Kallithea_Klone
             }
         }
 
-        private void Window_Deactivated(object sender, EventArgs e)
-        {
-            if (!settingsOpen)
-                Environment.Exit(0);
-        }
-
-        private void BtnClone_Click(object sender, RoutedEventArgs e)
-        {
-            DisableAll();
-            Uri uri = new Uri(Host);
-
-            cloningCount = CheckedURLs.Count;
-            foreach (string url in CheckedURLs)
-            {
-                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(Username)}:{HttpUtility.UrlEncode(Password)}@{uri.Host}{uri.PathAndQuery}{url}";
-
-                System.Diagnostics.Process process = new System.Diagnostics.Process();
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
-                {
-                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                    FileName = "cmd.exe",
-                    Arguments = $"/C hg clone {fullURL} \"{runFrom}\\{url.Split('/').Last()}\""
-                };
-                process.StartInfo = startInfo;
-                process.EnableRaisingEvents = true;
-                process.Exited += Process_Exited;
-
-                process.Start();
-            }
-        }
-
         private void DisableAll()
         {
             Topmost = true;
             settingsOpen = true;
             GridCoverAll.Visibility = Visibility.Visible;
-        }
-
-        private void Process_Exited(object sender, EventArgs e)
-        {
-            if (((System.Diagnostics.Process)sender).ExitCode != 0)
-                errorCodes.Add(((System.Diagnostics.Process)sender).ExitCode.ToString());
-            clonedCount++;
-
-            if (clonedCount == cloningCount)
-            {
-                if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
-            }
-        }
-
-        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                DragMove();
-        }
-
-        private async void BtnReload_Click(object sender, RoutedEventArgs e)
-        {
-            PbProgress.Visibility = Visibility.Visible;
-            PbProgress.IsIndeterminate = true;
-            BtnReload.IsEnabled = false;
-
-            await DownloadRepositories();
-
-            PbProgress.Visibility = Visibility.Hidden;
-            PbProgress.IsIndeterminate = false;
-            BtnReload.IsEnabled = true;
-        }
-
-        private void BtnSettings_Click(object sender, RoutedEventArgs e)
-        {
-            settingsOpen = true;
-            Settings s = new Settings();
-            s.ShowDialog();
-            settingsOpen = false;
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            string GetVersion()
-            {
-                try
-                {
-                    return ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
-                }
-                catch (InvalidDeploymentException)
-                {
-                    return "not installed";
-                }
-            }
-
-            MenuItem MIVersion = new MenuItem
-            {
-                Header = GetVersion(),
-                IsEnabled = false,
-            };
-
-            MenuItem MIAbout = new MenuItem
-            {
-                Header = "About"
-            };
-            MIAbout.Click += (ss, ee) =>
-            {
-                settingsOpen = true;
-
-                About about = new About();
-                about.ShowDialog();
-
-                settingsOpen = false;
-            };
-
-            ContextMenu contextMenu = new ContextMenu();
-            contextMenu.Items.Add(MIVersion);
-            contextMenu.Items.Add(new Separator());
-            contextMenu.Items.Add(MIAbout);
-
-            BdrHeader.ContextMenu = contextMenu;
-        }
-
-        private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-
-            if (textBox.Text.Length == 0)
-            {
-                ShowAndCollapse(MainTree);
-            }
-            else
-            {
-                Filter(MainTree, textBox.Text);
-            }
         }
 
         private void ShowAndCollapse(ItemsControl parent)
@@ -474,19 +499,6 @@ namespace Kallithea_Klone
                 }
             }
             return true;
-        }
-
-        private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Return)
-            {
-                TextBox textBox = (TextBox)sender;
-
-                if (textBox.Text.Length != 0)
-                {
-                    Filter(MainTree, textBox.Text);
-                }
-            }
         }
     }
 }

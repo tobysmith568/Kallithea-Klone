@@ -24,9 +24,26 @@ namespace Kallithea_Klone
     /// </summary>
     public partial class Settings : Window
     {
+        //  Constructors
+        //  ============
+
         public Settings()
         {
             InitializeComponent();
+        }
+
+        //  Events
+        //  ======
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            TbxAPIKey.Text = MainWindow.APIKey;
+            TbxHost.Text = MainWindow.Host;
+            PbOne.Password = MainWindow.Password;
+            PbTwo.Password = MainWindow.Password;
+
+            PbOne.PasswordChanged += PasswordChanged;
+            PbTwo.PasswordChanged += PasswordChanged;
         }
 
         private async void BtnSave_Click(object sender, RoutedEventArgs e)
@@ -86,21 +103,16 @@ namespace Kallithea_Klone
                 GridCoverAll.Visibility = Visibility.Hidden;
             }
         }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(TbxHost.Text + "/_admin/my_account/api_keys"));
             e.Handled = true;
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            TbxAPIKey.Text = MainWindow.APIKey;
-            TbxHost.Text = MainWindow.Host;
-            PbOne.Password = MainWindow.Password;
-            PbTwo.Password = MainWindow.Password;
-
-            PbOne.PasswordChanged += PasswordChanged;
-            PbTwo.PasswordChanged += PasswordChanged;
         }
 
         private void TbAPIKey_MouseEnter(object sender, MouseEventArgs e)
@@ -117,16 +129,20 @@ namespace Kallithea_Klone
             textBlock.TextDecorations.Add(new TextDecoration(TextDecorationLocation.Underline, null, 0, TextDecorationUnit.Pixel, TextDecorationUnit.Pixel));
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
         private void PasswordChanged(object sender, RoutedEventArgs e)
         {
             LblNotMatching.Visibility = PbOne.Password == PbTwo.Password ? Visibility.Hidden : Visibility.Visible;
             BtnSave.IsEnabled = GetSaveButtonEnabled();
         }
+
+        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        }
+
+        //  Methods
+        //  =======
 
         private bool GetSaveButtonEnabled()
         {
@@ -134,12 +150,6 @@ namespace Kallithea_Klone
                 return false;
 
             return true;
-        }
-
-        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                DragMove();
         }
     }
 }
