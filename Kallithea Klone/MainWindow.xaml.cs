@@ -7,20 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Newtonsoft.Json;
-using System.Windows.Media.Animation;
 using System.Web;
-using System.Net;
 using System.Security.Cryptography;
 using System.Deployment.Application;
-using System.Threading;
 
 namespace Kallithea_Klone
 {
@@ -458,15 +449,15 @@ namespace Kallithea_Klone
                 }
                 else if (child is CheckBox checkBox)
                 {
+                    checkBox.Visibility = Visibility.Visible;
                     foreach (string term in searchTerm.ToLower().Split(' '))
                     {
                         if (!checkBox.Tag.ToString().ToLower().Contains(term))
                         {
                             checkBox.Visibility = Visibility.Collapsed;
-                            return;
+                            break;
                         }
                     }
-                    checkBox.Visibility = Visibility.Visible;
                 }
                 else
                     throw new Exception("Unexpected child type!");
