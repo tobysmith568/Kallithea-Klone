@@ -150,7 +150,6 @@ namespace Kallithea_Klone
             MIAbout.Click += (ss, ee) =>
             {
                 settingsOpen = true;
-                MessageBox.Show(Password, "", MessageBoxButton.OK, MessageBoxImage.Asterisk, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
 
                 About about = new About();
                 about.ShowDialog();
