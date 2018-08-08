@@ -10,6 +10,7 @@ namespace Kallithea_Klone
     {
         Settings,
         Clone,
-        Setup
+        Setup,
+        Uninstall
     }
 }

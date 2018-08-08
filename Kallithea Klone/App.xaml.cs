@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -30,6 +31,9 @@ namespace Kallithea_Klone
                 {
                     case nameof(RunTypes.Setup):
                         Setup();
+                        goto default;
+                    case nameof(RunTypes.Uninstall):
+                        Uninstall();
                         goto default;
                     case nameof(RunTypes.Settings):
                         Settings();
@@ -89,6 +93,51 @@ namespace Kallithea_Klone
                         }
                     }
                 }
+            }
+        }
+
+        private void Uninstall()
+        {
+            try
+            {
+                Default.Reset();
+                Default.Save();
+                foreach (string file in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone"))
+                {
+                    File.Delete(file);
+                }
+                Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone");
+            }
+            catch
+            {
+
+            }
+            try
+            {
+                if (IsAdministrator() == false)
+                {
+                    // Restart program and run as admin
+                    var exeName = Process.GetCurrentProcess().MainModule.FileName;
+                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                    {
+                        Verb = "runas",
+                        Arguments = "Setup"
+                    };
+                    Process.Start(startInfo);
+                    Current.Shutdown();
+                    return;
+                }
+                else
+                {
+                    using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
+                    {
+                        key.DeleteSubKeyTree("KallitheaKlone", false);
+                    }
+                }
+            }
+            catch
+            {
+
             }
         }
 

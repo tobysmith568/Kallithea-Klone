@@ -133,6 +133,20 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_0B47B1B8D7C64C98A68EB8586B9B35BB"
+            {
+            "Name" = "8:Primary output from Kallithea Klone (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_B8E325AADA614AF4BEF415C86905EAA8"
+            "FileType" = "3:2"
+            "InstallAction" = "3:4"
+            "Arguments" = "8:uninstall"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_E3AC849B_85E7_4FCE_A9A5_EC315F7EAE1F"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_848C2A4836104AF38DF9F83F576A5A81"
             {
             "Name" = "8:Primary output from Kallithea Klone (Active)"
@@ -320,7 +334,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Kallithea Klone"
         "ProductCode" = "8:{847CEC6F-0761-4328-8F8D-1E7C546C3B16}"
-        "PackageCode" = "8:{BD47684F-B3EA-4A99-8274-FC684548C7E0}"
+        "PackageCode" = "8:{22A93438-5DE3-446B-9CF2-FCCEF66CDE28}"
         "UpgradeCode" = "8:{6DB75753-DB50-400C-BD72-E4C2253DADBE}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
