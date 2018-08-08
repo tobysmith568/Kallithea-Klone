@@ -88,7 +88,7 @@
             <!-- API Key -->
             <Label x:Name="LblAPIKey" Content="Kallithea API Key" Margin="10,144,10,0" VerticalAlignment="Top"/>
             <Grid Margin="10,173,10,0" Height="36" VerticalAlignment="Top">
-                <TextBox x:Name="TbxAPIKey" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center">
+                <TextBox x:Name="TbxAPIKey" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" KeyDown="Tbx_KeyDown">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
                             <Setter Property="CornerRadius" Value="5"/>
@@ -122,7 +122,7 @@
             <!-- Host -->
             <Label x:Name="LblHost_URL" Content="Host URL" Margin="10,74,10,0" VerticalAlignment="Top"/>
             <Grid Margin="10,103,10,0" Height="36" VerticalAlignment="Top">
-                <TextBox x:Name="TbxHost" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center">
+                <TextBox x:Name="TbxHost" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" KeyDown="Tbx_KeyDown">
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
                             <Setter Property="CornerRadius" Value="5"/>
@@ -145,8 +145,8 @@
 
             <!-- Password -->
             <Label x:Name="LblPassword" Content="Password" Margin="10,228,10,0" VerticalAlignment="Top"/>
-            <PasswordBox x:Name="PbOne" Margin="10,257,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" />
-            <PasswordBox x:Name="PbTwo" Margin="10,322,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" />
+            <PasswordBox x:Name="PbOne" Margin="10,257,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
+            <PasswordBox x:Name="PbTwo" Margin="10,322,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
             <Label x:Name="LblPasswordConfirm" Content="Confirm Password" Margin="10,293,10,0" VerticalAlignment="Top" FontSize="18"/>
             <Label x:Name="LblNotMatching" Margin="191,384,10,38" FontSize="14" Content="Passwords do not match!" HorizontalContentAlignment="Right" Foreground="Red" Visibility="Hidden"/>
 

@@ -46,7 +46,74 @@ namespace Kallithea_Klone
             PbTwo.PasswordChanged += PasswordChanged;
         }
 
-        private async void BtnSave_Click(object sender, RoutedEventArgs e)
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveAndClose();
+        }
+
+        private void Tbx_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+                SaveAndClose();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Uri uriResult;
+            bool result = Uri.TryCreate(TbxHost.Text + "/_admin/my_account/api_keys", UriKind.Absolute, out uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+            if (result)
+                Process.Start(new ProcessStartInfo(uriResult.AbsoluteUri));
+            else
+                MessageBox.Show("In order to find your API key you must correctly enter your host domain above.", "Incorrect Host!", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            e.Handled = true;
+        }
+
+        private void TbAPIKey_MouseEnter(object sender, MouseEventArgs e)
+        {
+            TextBlock textBlock = (TextBlock)sender;
+
+            textBlock.TextDecorations.Clear();
+        }
+
+        private void TbAPIKey_MouseLeave(object sender, MouseEventArgs e)
+        {
+            TextBlock textBlock = (TextBlock)sender;
+
+            textBlock.TextDecorations.Add(new TextDecoration(TextDecorationLocation.Underline, null, 0, TextDecorationUnit.Pixel, TextDecorationUnit.Pixel));
+        }
+
+        private void PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            LblNotMatching.Visibility = PbOne.Password == PbTwo.Password ? Visibility.Hidden : Visibility.Visible;
+            BtnSave.IsEnabled = GetSaveButtonEnabled();
+        }
+
+        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        }
+
+        //  Methods
+        //  =======
+
+        private bool GetSaveButtonEnabled()
+        {
+            if (PbOne.Password != PbTwo.Password)
+                return false;
+
+            return true;
+        }
+
+        private async void SaveAndClose()
         {
             BtnSave.IsEnabled = false;
             GridCoverAll.Visibility = Visibility.Visible;
@@ -102,54 +169,6 @@ namespace Kallithea_Klone
                 BtnSave.IsEnabled = true;
                 GridCoverAll.Visibility = Visibility.Hidden;
             }
-        }
-
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo(TbxHost.Text + "/_admin/my_account/api_keys"));
-            e.Handled = true;
-        }
-
-        private void TbAPIKey_MouseEnter(object sender, MouseEventArgs e)
-        {
-            TextBlock textBlock = (TextBlock)sender;
-
-            textBlock.TextDecorations.Clear();
-        }
-
-        private void TbAPIKey_MouseLeave(object sender, MouseEventArgs e)
-        {
-            TextBlock textBlock = (TextBlock)sender;
-
-            textBlock.TextDecorations.Add(new TextDecoration(TextDecorationLocation.Underline, null, 0, TextDecorationUnit.Pixel, TextDecorationUnit.Pixel));
-        }
-
-        private void PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            LblNotMatching.Visibility = PbOne.Password == PbTwo.Password ? Visibility.Hidden : Visibility.Visible;
-            BtnSave.IsEnabled = GetSaveButtonEnabled();
-        }
-
-        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                DragMove();
-        }
-
-        //  Methods
-        //  =======
-
-        private bool GetSaveButtonEnabled()
-        {
-            if (PbOne.Password != PbTwo.Password)
-                return false;
-
-            return true;
         }
     }
 }
