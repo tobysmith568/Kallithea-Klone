@@ -79,10 +79,13 @@ namespace Kallithea_Klone
                 {
                     using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", true))
                     {
+                        string location = System.Reflection.Assembly.GetExecutingAssembly().Location;
+
                         subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
+                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
                         using (RegistryKey commandKey = subKey.CreateSubKey("command", true))
                         {
-                            commandKey.SetValue("", $"{System.Reflection.Assembly.GetEntryAssembly().Location} Clone \"%V\"");
+                            commandKey.SetValue("", "\"" + location + "\" Clone \"%V\"");
                         }
                     }
                 }
