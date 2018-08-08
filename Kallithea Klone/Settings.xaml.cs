@@ -65,7 +65,7 @@ namespace Kallithea_Klone
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             if (ValidHost())
-                Process.Start(new ProcessStartInfo(TbxHost.Text));
+                Process.Start(new ProcessStartInfo(TbxHost.Text + "/_admin/my_account/api_keys"));
             else
                 MessageBox.Show("In order to find your API key you must correctly enter your host domain above.", "Incorrect Host!", MessageBoxButton.OK, MessageBoxImage.Error);
 
