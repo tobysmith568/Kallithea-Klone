@@ -8,10 +8,10 @@
         Title="About Kallithea Klone" Height="450" Width="715" Loaded="Window_Loaded" FontSize="14">
     <Grid Background="#FFF0FFB8">
         <Label Content="About Kallithea Klone" FontSize="38" FontWeight="Bold" Foreground="#FF577632" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,10,10,0" IsHitTestVisible="False" Height="62" VerticalAlignment="Top"/>
-        <TextBlock Margin="10,72,10,0" VerticalAlignment="Top" >
+        <TextBlock Margin="10,74,10,0" VerticalAlignment="Top" >
             Developed by Toby Smith - <Hyperlink NavigateUri="https://tobysmith.uk" RequestNavigate="Hyperlink_RequestNavigate">https://tobysmith.uk</Hyperlink>.
         </TextBlock>
-        <TextBlock Margin="10,101,10,0" VerticalAlignment="Top">
+        <TextBlock Margin="10,112,10,0" VerticalAlignment="Top">
             This software is in no way associated with <Hyperlink NavigateUri="https://kallithea-scm.org" RequestNavigate="Hyperlink_RequestNavigate">kallithea-scm.org</Hyperlink>.
         </TextBlock>
         <TextBlock Margin="10,131,10,0" VerticalAlignment="Top">
@@ -22,6 +22,7 @@
         </TextBlock>
         <TextBox x:Name="TbxLicence" Margin="10,210,10,55" Background="White" Text="" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextAlignment="Center" IsReadOnly="True" IsReadOnlyCaretVisible="True" FontSize="12"/>
         <Button x:Name="BtnClone" Content="Close" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="97" Height="30" Click="BtnClone_Click"/>
+        <TextBlock Margin="10,93,10,0" VerticalAlignment="Top" >Source code can be found on <Hyperlink NavigateUri="https://github.com/tobysmith568/Kallithea-Klone" RequestNavigate="Hyperlink_RequestNavigate">Github</Hyperlink><Run Text="."/></TextBlock>
 
     </Grid>
 </Window>
