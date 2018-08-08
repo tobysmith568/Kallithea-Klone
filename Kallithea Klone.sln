@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kallithea Klone", "Kallithea Klone\Kallithea Klone.csproj", "{8B61B581-EE18-4227-9D58-A525A24C7E47}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{B89A2749-7692-4025-82C4-8C44B0F98C4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{8B61B581-EE18-4227-9D58-A525A24C7E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B61B581-EE18-4227-9D58-A525A24C7E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B61B581-EE18-4227-9D58-A525A24C7E47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B89A2749-7692-4025-82C4-8C44B0F98C4E}.Debug|Any CPU.ActiveCfg = Debug
+		{B89A2749-7692-4025-82C4-8C44B0F98C4E}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
