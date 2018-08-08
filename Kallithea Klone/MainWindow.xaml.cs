@@ -78,6 +78,9 @@ namespace Kallithea_Klone
         {
             get
             {
+                if (Properties.Settings.Default.Password == "")
+                    return Properties.Settings.Default.Password;
+
                 return Encoding.Unicode.GetString(ProtectedData.Unprotect(
                     Convert.FromBase64String(Properties.Settings.Default.Password),
                     null,

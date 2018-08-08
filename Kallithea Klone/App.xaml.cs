@@ -104,6 +104,7 @@ namespace Kallithea_Klone
         private void Clone(string ranFrom)
         {
             MainWindow window = new MainWindow(ranFrom);
+
             window.Left = Cursor.Position.X;
             window.Top = Cursor.Position.Y;
 
