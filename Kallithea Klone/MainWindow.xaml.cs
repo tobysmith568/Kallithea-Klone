@@ -250,7 +250,10 @@ namespace Kallithea_Klone
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
             settingsOpen = true;
-            Settings s = new Settings();
+            Settings s = new Settings
+            {
+                Owner = this
+            };
             s.ShowDialog();
             settingsOpen = false;
         }
