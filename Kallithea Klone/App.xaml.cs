@@ -6,10 +6,13 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using static Kallithea_Klone.Properties.Settings;
 
 namespace Kallithea_Klone
@@ -51,7 +54,12 @@ namespace Kallithea_Klone
 
         private void Setup()
         {
-            Default.APIKey = Default.Host = Default.Username = Default.Password = "";
+            Default.APIKey = Default.Host = Default.Username = "";
+            Default.Password = Convert.ToBase64String(ProtectedData.Protect(
+                    Encoding.Unicode.GetBytes(""),
+                    null,
+                    DataProtectionScope.LocalMachine));
+            Default.Save();
             if (IsAdministrator() == false)
             {
                 // Restart program and run as admin
@@ -120,6 +128,16 @@ namespace Kallithea_Klone
                 return string.Empty;
 
             return char.ToUpper(s[0]) + s.Substring(1);
+        }
+        void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
+        {
+
+            System.Windows.MessageBox.Show("An unexpected exception has occurred. Shutting down the application:\n" + args.Exception);
+
+            // Prevent default unhandled exception processing
+            args.Handled = true;
+
+            Environment.Exit(0);
         }
     }
 }

@@ -23,17 +23,17 @@ namespace Kallithea_Klone
         //  Variables
         //  =========
 
-        private static List<string> CheckedURLs = new List<string>();
         private static string RepoFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone";
         private static string RepoFile = RepoFolder + "\\AllRepositories.dat";
 
+        private static List<string> CheckedURLs = new List<string>();
         private List<string> allRepositories;
+        private List<string> errorCodes = new List<string>();
 
         private string runFrom;
         private bool settingsOpen;
         private int cloningCount;
         private int clonedCount = 0;
-        private List<string> errorCodes = new List<string>();
 
         public static string APIKey
         {
@@ -81,14 +81,14 @@ namespace Kallithea_Klone
                 return Encoding.Unicode.GetString(ProtectedData.Unprotect(
                     Convert.FromBase64String(Properties.Settings.Default.Password),
                     null,
-                    DataProtectionScope.CurrentUser));
+                    DataProtectionScope.LocalMachine));
             }
             set
             {
                 Properties.Settings.Default.Password = Convert.ToBase64String(ProtectedData.Protect(
                     Encoding.Unicode.GetBytes(value),
                     null,
-                    DataProtectionScope.CurrentUser));
+                    DataProtectionScope.LocalMachine));
                 Properties.Settings.Default.Save();
             }
         }
@@ -146,6 +146,7 @@ namespace Kallithea_Klone
             MIAbout.Click += (ss, ee) =>
             {
                 settingsOpen = true;
+                MessageBox.Show(Password, "", MessageBoxButton.OK, MessageBoxImage.Asterisk, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
 
                 About about = new About();
                 about.ShowDialog();
@@ -175,7 +176,6 @@ namespace Kallithea_Klone
 
         private void NewItem_Checked(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(((Control)sender).Tag.ToString(), "", MessageBoxButton.OK, MessageBoxImage.Asterisk, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
             CheckedURLs.Add(((Control)sender).Tag.ToString());
             SelectionUpdated(sender, e);
         }
@@ -258,11 +258,13 @@ namespace Kallithea_Klone
 
             if (textBox.Text.Length == 0)
             {
-                ShowAndCollapse(MainTree);
+                //ShowAndCollapse(MainTree);
+
+                LoadRepositories();
             }
             else
             {
-                Filter(MainTree, textBox.Text);
+                //Filter(MainTree, textBox.Text);
             }
         }
 
@@ -274,7 +276,12 @@ namespace Kallithea_Klone
 
                 if (textBox.Text.Length != 0)
                 {
-                    Filter(MainTree, textBox.Text);
+                    IEnumerable<string> repositories = allRepositories;
+                    foreach (string term in textBox.Text.ToLower().Split(' '))
+                    {
+                        repositories = repositories.Where(r => r.ToLower().Contains(term));
+                    }
+                    LoadRepositories(repositories.ToList(), true);
                 }
             }
         }
@@ -329,9 +336,31 @@ namespace Kallithea_Klone
             }
         }
 
-        public void LoadRepositories(bool expandAll = false)
+        public void LoadRepositories(List<string> customRepositories = null, bool allCheckboxes = false)
         {
-            List<string> repositories = allRepositories;
+            List<string> repositories = customRepositories ?? allRepositories;
+
+            MainTree.Items.Clear();
+
+            if (allCheckboxes)
+            {
+                foreach (string location in repositories)
+                {
+                    CheckBox newItem = new CheckBox
+                    {
+                        Content = location.Split('/').Last(),
+                        Tag = location,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                        IsChecked = CheckedURLs.Contains(location)
+                    };
+                    newItem.Checked += NewItem_Checked;
+                    newItem.Unchecked += NewItem_Unchecked;
+
+                    MainTree.Items.Add(newItem);
+                }
+
+                return;
+            }
 
             //Create tree of menu items
             Location baseLocation = new Location("Base Location");
@@ -350,12 +379,10 @@ namespace Kallithea_Klone
             //Sort all children
             SortChildren(baseLocation);
 
-            MainTree.Items.Clear();
-
             //Create a treeview node for each location node
             foreach (Location location in baseLocation.InnerLocations)
             {
-                CreateTreeViewItem(location, expandAll);
+                CreateTreeViewItem(location);
             }
         }
 
@@ -369,35 +396,31 @@ namespace Kallithea_Klone
             location.InnerLocations = location.InnerLocations.OrderBy(l => l.InnerLocations.Count == 0 ? 1 : 0).ThenBy(l => l.Name).ToList();
         }
 
-        private void CreateTreeViewItem(Location location, bool expandAll, TreeViewItem parent = null)
+        private void CreateTreeViewItem(Location location, TreeViewItem parent = null)
         {
             if (location.InnerLocations.Count == 0)
             {
+                string newTag = (parent == null) ? location.Name : parent.Tag + "/" + location.Name;
                 CheckBox newItem = new CheckBox
                 {
                     Content = location.Name,
-                    VerticalContentAlignment = VerticalAlignment.Center
+                    VerticalContentAlignment = VerticalAlignment.Center,
+                    Tag = newTag,
+                    IsChecked = CheckedURLs.Contains(newTag)
                 };
                 newItem.Checked += NewItem_Checked;
                 newItem.Unchecked += NewItem_Unchecked;
 
                 if (parent == null)
-                {
-                    newItem.Tag = location.Name;
                     MainTree.Items.Add(newItem);
-                }
                 else
-                {
-                    newItem.Tag = parent.Tag + "/" + location.Name;
                     parent.Items.Add(newItem);
-                }
             }
             else
             {
                 TreeViewItem newItem = new TreeViewItem
                 {
-                    Header = location.Name,
-                    IsExpanded = expandAll
+                    Header = location.Name
                 };
 
                 if (parent == null)
@@ -412,7 +435,7 @@ namespace Kallithea_Klone
                 }
 
                 foreach (Location subLocation in location.InnerLocations)
-                    CreateTreeViewItem(subLocation, expandAll, newItem);
+                    CreateTreeViewItem(subLocation, newItem);
             }
         }
 
