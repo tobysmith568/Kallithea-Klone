@@ -5,8 +5,164 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Kallithea_Klone"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        FocusManager.FocusedElement="{Binding ElementName=TbxSearch}"
+        Title="MainWindow" Height="587.433" Width="419.5" WindowStyle="None" Deactivated="Window_Deactivated" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Window_Loaded">
+    <Window.Background>
+        <SolidColorBrush Color="Black" Opacity="0.01"/>
+    </Window.Background>
+    <Window.Resources>
+        <Style x:Key="SettingsButton" TargetType="{x:Type Button}">
+            <Style.Setters>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="button" CornerRadius="5" BorderBrush="Black" BorderThickness="1" Background="#FFB1D597">
+                                <Image Source="Images/Settings.png"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="button" Property="BorderBrush" Value="Black" />
+                                    <Setter TargetName="button" Property="Background"  Value="#FF93B07E"/>
+                                    <Setter Property="Foreground" Value="White" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="button"  Property="Background" Value="#FFB1D597"/>
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter TargetName="button" Property="BorderBrush" Value="Black" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="button" Property="Opacity" Value="0.7" />
+                                    <Setter Property="Foreground" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+        </Style>
+        <Style x:Key="ReloadButton" TargetType="{x:Type Button}">
+            <Style.Setters>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="button" CornerRadius="5" BorderBrush="Black" BorderThickness="1" Background="#FFB1D597">
+                                <Image x:Name="ImgIcon" Source="Images/Reload.png" RenderTransformOrigin="0.5, 0.5"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="button" Property="BorderBrush" Value="Black" />
+                                    <Setter TargetName="button" Property="Background"  Value="#FF93B07E"/>
+                                    <Setter Property="Foreground" Value="White" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="button"  Property="Background" Value="#FFB1D597"/>
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter TargetName="button" Property="BorderBrush" Value="Black" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="button" Property="Opacity" Value="0.5" />
+                                    <Setter Property="Foreground" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+        </Style>
+    </Window.Resources>
+    <Border BorderThickness="1" BorderBrush="Black" Margin="0,0,15,10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" Direction="315" RenderingBias="Quality" ShadowDepth="2"/>
+        </Border.Effect>
+        <Grid Margin="0,0,0,0" Background="#FFF0FFB8" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.8*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="96*"/>
+                <RowDefinition Height="419*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Border x:Name="BdrHeader" Grid.ColumnSpan="2" MouseDown="BdrHeader_MouseDown" >
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" Direction="-90" RenderingBias="Quality" ShadowDepth="2"/>
+                </Border.Effect>
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF577632" Offset="0"/>
+                        <GradientStop Color="#FF577632" Offset="0.163"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <!-- Header -->
+            <Button x:Name="BtnSettings" Style="{DynamicResource SettingsButton}" Margin="0,5,10,50" Grid.Column="1" Width="{Binding ActualHeight, ElementName=BtnSettings, Mode=OneWay}" HorizontalAlignment="Right" Click="BtnSettings_Click"/>
+            <Button x:Name="BtnReload" Style="{DynamicResource ReloadButton}" Margin="0,5,60,50" Width="{Binding ActualHeight, ElementName=BtnReload, Mode=OneWay}" HorizontalAlignment="Right" Click="BtnReload_Click" Grid.Column="1" />
+            <Label Content="Kallithea Klone" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,0,0,50" IsHitTestVisible="False"/>
+            <Grid Grid.ColumnSpan="2" Margin="10,55,10,5">
+                <TextBox x:Name="TbxSearch" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" TextChanged="SearchTermTextBox_TextChanged" KeyDown="SearchTermTextBox_KeyDown">
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+                <TextBlock IsHitTestVisible="False" Text="Search..." Padding="6,3,0,0" Margin="0,0,0,0" Foreground="#FF607D8B" VerticalAlignment="Center" FontSize="18">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=TbxSearch}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+
+            <!-- MainTree -->
+            <TreeView x:Name="MainTree" Margin="0,10,0,0" FontSize="18" Background="Transparent" BorderBrush="Black" Grid.Row="1" Grid.ColumnSpan="2" BorderThickness="0,0,0,1" />
+
+            <!-- Footer -->
+            <Border x:Name="BdrFooter" Grid.ColumnSpan="2" MouseDown="BdrHeader_MouseDown" Grid.Row="2" >
+                <!--<Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF577632" Offset="0"/>
+                        <GradientStop Color="#FF577632" Offset="0.163"/>
+                    </LinearGradientBrush>
+                </Border.Background>-->
+            </Border>
+            <Button x:Name="BtnClone" Content="Clone" Margin="282,0,10,5" FontSize="18" Grid.Row="2" Height="30" VerticalAlignment="Bottom" Click="BtnClone_Click" Grid.ColumnSpan="2" Grid.Column="0" IsEnabled="False"/>
+            <Label x:Name="lblNumberSelected" Content="0 Repositories selected" Margin="10,0,81,0" Grid.Row="2" FontSize="18" Foreground="Black" VerticalContentAlignment="Center" />
+            <ProgressBar x:Name="PbProgress"  Value="0" BorderBrush="Black" Height="16" Grid.ColumnSpan="2" Grid.Row="1" VerticalAlignment="Bottom" BorderThickness="0,1" Visibility="Hidden" />
+
+            <!-- Cover all -->
+            <Grid x:Name="GridCoverAll" Margin="0" Grid.ColumnSpan="2" Grid.RowSpan="3" Visibility="Hidden">
+                <Grid.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.7"/>
+                </Grid.Background>
+                <Image x:Name="ImgLoadingImg" Margin="106,176,106,117" Source="Images/kallithea-logo-png-transparent.png">
+                    <Image.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="ImgLoadingImg"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="1"
+                                     To="0"
+                                     Duration="0:0:0.75"
+                                     AutoReverse="True"
+                                     RepeatBehavior="Forever"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Image.Triggers>
+                </Image>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>
