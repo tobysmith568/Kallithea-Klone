@@ -64,12 +64,8 @@ namespace Kallithea_Klone
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Uri uriResult;
-            bool result = Uri.TryCreate(TbxHost.Text + "/_admin/my_account/api_keys", UriKind.Absolute, out uriResult)
-                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-
-            if (result)
-                Process.Start(new ProcessStartInfo(uriResult.AbsoluteUri));
+            if (ValidHost())
+                Process.Start(new ProcessStartInfo(TbxHost.Text));
             else
                 MessageBox.Show("In order to find your API key you must correctly enter your host domain above.", "Incorrect Host!", MessageBoxButton.OK, MessageBoxImage.Error);
 
@@ -102,11 +98,28 @@ namespace Kallithea_Klone
                 DragMove();
         }
 
+        private void Tbx_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            BtnSave.IsEnabled = GetSaveButtonEnabled();
+        }
+
         //  Methods
         //  =======
 
         private bool GetSaveButtonEnabled()
         {
+            if (TbxAPIKey.Text == "")
+                return false;
+
+            if (TbxHost.Text == "")
+                return false;
+
+            if (PbOne.Password == "")
+                return false;
+
+            if (PbTwo.Password == "")
+                return false;
+
             if (PbOne.Password != PbTwo.Password)
                 return false;
 
@@ -115,6 +128,12 @@ namespace Kallithea_Klone
 
         private async void SaveAndClose()
         {
+            if (!ValidHost())
+            {
+                MessageBox.Show("Your Host doesn't appear to be a fully formed URL.", "Incorrect Host!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             BtnSave.IsEnabled = false;
             GridCoverAll.Visibility = Visibility.Visible;
 
@@ -169,6 +188,12 @@ namespace Kallithea_Klone
                 BtnSave.IsEnabled = true;
                 GridCoverAll.Visibility = Visibility.Hidden;
             }
+        }
+
+        private bool ValidHost()
+        {
+            return Uri.TryCreate(TbxHost.Text, UriKind.Absolute, out Uri uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
     }
 }

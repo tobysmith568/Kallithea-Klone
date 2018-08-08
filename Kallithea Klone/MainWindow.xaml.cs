@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.Web;
 using System.Security.Cryptography;
 using System.Deployment.Application;
+using System.Reflection;
 
 namespace Kallithea_Klone
 {
@@ -128,7 +129,7 @@ namespace Kallithea_Klone
             {
                 try
                 {
-                    return ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                    return Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 }
                 catch (InvalidDeploymentException)
                 {
@@ -205,26 +206,43 @@ namespace Kallithea_Klone
 
         private void BtnClone_Click(object sender, RoutedEventArgs e)
         {
-            DisableAll();
-            Uri uri = new Uri(Host);
-
-            cloningCount = CheckedURLs.Count;
-            foreach (string url in CheckedURLs)
+            if (!ValidSettings())
             {
-                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(Username)}:{HttpUtility.UrlEncode(Password)}@{uri.Host}{uri.PathAndQuery}{url}";
+               MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
+                    "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
 
-                System.Diagnostics.Process process = new System.Diagnostics.Process();
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
+                switch (result)
                 {
-                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                    FileName = "cmd.exe",
-                    Arguments = $"/C hg clone {fullURL} \"{runFrom}\\{url.Split('/').Last()}\""
-                };
-                process.StartInfo = startInfo;
-                process.EnableRaisingEvents = true;
-                process.Exited += Process_Exited;
+                    case MessageBoxResult.OK:
+                        OpenSettings();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                DisableAll();
+                Uri uri = new Uri(Host);
 
-                process.Start();
+                cloningCount = CheckedURLs.Count;
+                foreach (string url in CheckedURLs)
+                {
+                    string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(Username)}:{HttpUtility.UrlEncode(Password)}@{uri.Host}{uri.PathAndQuery}{url}";
+
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                        FileName = "cmd.exe",
+                        Arguments = $"/C hg clone {fullURL} \"{runFrom}\\{url.Split('/').Last()}\""
+                    };
+                    process.StartInfo = startInfo;
+                    process.EnableRaisingEvents = true;
+                    process.Exited += Process_Exited;
+
+                    process.Start();
+                }
             }
         }
 
@@ -236,26 +254,37 @@ namespace Kallithea_Klone
 
         private async void BtnReload_Click(object sender, RoutedEventArgs e)
         {
-            PbProgress.Visibility = Visibility.Visible;
-            PbProgress.IsIndeterminate = true;
-            BtnReload.IsEnabled = false;
+            if (!ValidSettings())
+            {
+                MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
+                     "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
 
-            await DownloadRepositories();
+                switch (result)
+                {
+                    case MessageBoxResult.OK:
+                        OpenSettings();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                PbProgress.Visibility = Visibility.Visible;
+                PbProgress.IsIndeterminate = true;
+                BtnReload.IsEnabled = false;
 
-            PbProgress.Visibility = Visibility.Hidden;
-            PbProgress.IsIndeterminate = false;
-            BtnReload.IsEnabled = true;
+                await DownloadRepositories();
+
+                PbProgress.Visibility = Visibility.Hidden;
+                PbProgress.IsIndeterminate = false;
+                BtnReload.IsEnabled = true;
+            }
         }
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
-            settingsOpen = true;
-            Settings s = new Settings
-            {
-                Owner = this
-            };
-            s.ShowDialog();
-            settingsOpen = false;
+            OpenSettings();
         }
 
         private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -528,6 +557,25 @@ namespace Kallithea_Klone
                 }
             }
             return true;
+        }
+
+        private bool ValidSettings()
+        {
+            return Host != ""
+                && APIKey != ""
+                && Username != ""
+                && Password != "";
+        }
+
+        private void OpenSettings()
+        {
+            settingsOpen = true;
+            Settings s = new Settings
+            {
+                Owner = this
+            };
+            s.ShowDialog();
+            settingsOpen = false;
         }
     }
 }
