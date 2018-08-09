@@ -36,7 +36,7 @@ namespace Kallithea_Klone
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            TbxLicence.Text = Licence;
+            CbUpdates.IsChecked = MainWindow.Updates;
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -48,6 +48,11 @@ namespace Kallithea_Klone
         private void BtnClone_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void CbUpdates_Toggled(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Updates = ((CheckBox)sender).IsChecked == true;
         }
     }
 }

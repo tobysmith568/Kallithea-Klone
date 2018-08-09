@@ -97,6 +97,19 @@ namespace Kallithea_Klone
             }
         }
 
+        public static bool Updates
+        {
+            get
+            {
+                return Properties.Settings.Default.CheckForUpdates;
+            }
+            set
+            {
+                Properties.Settings.Default.CheckForUpdates = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
         //  Constructors
         //  ============
 
