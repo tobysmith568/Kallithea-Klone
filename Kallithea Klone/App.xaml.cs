@@ -81,13 +81,13 @@ namespace Kallithea_Klone
             {
                 using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
                 {
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", true))
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", RegistryKeyPermissionCheck.ReadWriteSubTree))
                     {
                         string location = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
                         subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
                         subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
-                        using (RegistryKey commandKey = subKey.CreateSubKey("command", true))
+                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
                         {
                             commandKey.SetValue("", "\"" + location + "\" Clone \"%V\"");
                         }
