@@ -13,6 +13,8 @@ using System.Web;
 using System.Security.Cryptography;
 using System.Deployment.Application;
 using System.Reflection;
+using System.Diagnostics;
+using System.Net;
 
 namespace Kallithea_Klone
 {
@@ -136,17 +138,17 @@ namespace Kallithea_Klone
         //  Events
         //  ======
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             string GetVersion()
             {
                 try
                 {
-                    return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                    return "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 }
                 catch (InvalidDeploymentException)
                 {
-                    return "not installed";
+                    return "Not installed";
                 }
             }
 
@@ -176,6 +178,64 @@ namespace Kallithea_Klone
             contextMenu.Items.Add(MIAbout);
 
             BdrHeader.ContextMenu = contextMenu;
+
+            await CheckForUpdate();
+        }
+
+        private async Task CheckForUpdate()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            RestClient client = new RestClient("http://api.github.com/repos/tobysmith568/kallithea-klone/releases/latest");
+            RestRequest request = new RestRequest(Method.GET);
+            request.AddHeader("Cache-Control", "no-cache");
+            request.AddHeader("Accept", "application/vnd.github.v3+json");
+
+            try
+            {
+                IRestResponse response = await Task.Run(() =>
+                {
+                    return client.Execute(request);
+                });
+
+                switch (response.ResponseStatus)
+                {
+                    case ResponseStatus.Completed:
+                        GithubRelease release = JsonConvert.DeserializeObject<GithubRelease>(response.Content);
+                        if (release != null)
+                        {
+                            if (release.Assets.Count(a => a.URL.EndsWith(".msi")) > 0
+                                    && !release.IsDraft
+                                    && Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version))
+                            {
+                                if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) < 0)
+                                {
+                                    MessageBoxResult result = MessageBox.Show("A new version of Kallithea Klone has been found!\n" +
+                                        "Do you want to update to it now?", "Update found!",
+                                        MessageBoxButton.OKCancel, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+
+                                    switch (result)
+                                    {
+                                        case MessageBoxResult.OK:
+                                            Process.Start(new ProcessStartInfo(release.Assets.First(r => r.URL.EndsWith(".msi")).URL));
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case ResponseStatus.TimedOut:
+                    case ResponseStatus.Error:
+                    case ResponseStatus.Aborted:
+                    default:
+                        break;
+                }
+            }
+            catch
+            {
+
+            }
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
@@ -355,7 +415,7 @@ namespace Kallithea_Klone
                 switch (response.ResponseStatus)
                 {
                     case ResponseStatus.Completed:
-                        Repository[] repos = JsonConvert.DeserializeObject<Response<Repository[]>>(response.Content).Result;
+                        Repository[] repos = JsonConvert.DeserializeObject<KallitheaResponse<Repository[]>>(response.Content).Result;
 
                         if (repos.Length != 0)
                         {

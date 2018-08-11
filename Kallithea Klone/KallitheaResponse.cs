@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Kallithea_Klone
 {
-    class Response<T>
+    class KallitheaResponse<T>
     {
         [JsonProperty("error")]
         public string Error { get; set; }

@@ -154,7 +154,7 @@ namespace Kallithea_Klone
                 switch (response.ResponseStatus)
                 {
                     case ResponseStatus.Completed:
-                        Response<User> user = JsonConvert.DeserializeObject<Response<User>>(response.Content);
+                        KallitheaResponse<User> user = JsonConvert.DeserializeObject<KallitheaResponse<User>>(response.Content);
                         if (user.Result == null)
                         {
                             MessageBox.Show("Error: " + user.Error, "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
