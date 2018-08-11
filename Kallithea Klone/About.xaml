@@ -11,7 +11,7 @@
         <TextBlock Margin="10,91,10,0" VerticalAlignment="Top" >
             Developed by Toby Smith - <Hyperlink NavigateUri="https://tobysmith.uk" RequestNavigate="Hyperlink_RequestNavigate">https://tobysmith.uk</Hyperlink>.
         </TextBlock>
-        <TextBlock Margin="10,67,10,0" VerticalAlignment="Top" Text="Version: " />
+        <TextBlock x:Name="tbVersion" Margin="10,67,10,0" VerticalAlignment="Top" Text="" />
         <TextBlock Margin="10,139,10,0" VerticalAlignment="Top">
             This software is in no way associated with <Hyperlink NavigateUri="https://kallithea-scm.org" RequestNavigate="Hyperlink_RequestNavigate">kallithea-scm.org</Hyperlink>.
         </TextBlock>

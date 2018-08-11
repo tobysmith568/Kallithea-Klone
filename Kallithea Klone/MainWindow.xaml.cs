@@ -179,7 +179,8 @@ namespace Kallithea_Klone
 
             BdrHeader.ContextMenu = contextMenu;
 
-            await CheckForUpdate();
+            if (Updates)
+                await CheckForUpdate();
         }
 
         private async Task CheckForUpdate()
