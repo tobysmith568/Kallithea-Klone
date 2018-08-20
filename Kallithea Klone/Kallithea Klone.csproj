@@ -53,7 +53,7 @@
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
-    <ApplicationIcon>Images\Logo.ico</ApplicationIcon>
+    <ApplicationIcon>Images\Kallithea Klone.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -171,9 +171,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Logo.ico" />
-    <Content Include="Licence.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Images\Kallithea Klone.png" />
+    <Resource Include="Images\Kallithea Klone.ico" />
+    <None Include="Licence.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7">
