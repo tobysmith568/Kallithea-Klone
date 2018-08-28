@@ -91,7 +91,9 @@
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
     <Compile Include="CheckableItem.cs" />
+    <Compile Include="CloneState.cs" />
     <Compile Include="GithubRelease.cs" />
+    <Compile Include="IState.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="KallitheaResponse.cs" />
     <Compile Include="RunTypes.cs" />
