@@ -36,7 +36,10 @@ namespace Kallithea_Klone
                             goto default;
                         break;
                     case nameof(RunTypes.LocalRevert):
-                        LocalRevert();
+                        if (e.Args.Length >= 2)
+                            Open(RunTypes.LocalRevert, e.Args[1]);
+                        else
+                            goto default;
                         break;
                     case nameof(RunTypes.Settings):
                         Settings();
@@ -61,10 +64,11 @@ namespace Kallithea_Klone
 
         private void Open(RunTypes runType, string ranFrom)
         {
-            MainWindow window = new MainWindow(runType, ranFrom);
-
-            window.Left = Cursor.Position.X;
-            window.Top = Cursor.Position.Y;
+            MainWindow window = new MainWindow(runType, ranFrom)
+            {
+                Left = Cursor.Position.X,
+                Top = Cursor.Position.Y
+            };
 
             int windowHeight = (int)window.Height;
             int windowWidth = (int)window.Width;
@@ -79,11 +83,6 @@ namespace Kallithea_Klone
                 window.Left -= 1;
 
             window.Show();
-        }
-
-        private void LocalRevert()
-        {
-            throw new NotImplementedException();
         }
 
         private void Setup()

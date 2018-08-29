@@ -26,6 +26,7 @@ namespace Kallithea_Klone
                 case RunTypes.Clone:
                     return new CloneState();
                 case RunTypes.LocalRevert:
+                    return new LocalRevertState();
                 case RunTypes.Settings:
                 case RunTypes.Setup:
                 case RunTypes.Uninstall:

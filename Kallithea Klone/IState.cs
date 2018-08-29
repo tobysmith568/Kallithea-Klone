@@ -8,7 +8,8 @@ namespace Kallithea_Klone
 {
     public interface IState
     {
-        void Onload();
+        void OnLoad();
+        void OnLoaded();
         void OnLoseFocus();
 
         void OnSettings();

@@ -31,6 +31,8 @@ namespace Kallithea_Klone
         public string runFrom;
         public bool settingsOpen;
 
+        public static List<string> CheckedURLs = new List<string>();
+
         private IState state;
 
         public static string APIKey
@@ -122,7 +124,7 @@ namespace Kallithea_Klone
             this.runFrom = runFrom;
             InitializeComponent();
 
-            state.Onload();
+            state.OnLoad();
         }
 
         //  Events
@@ -130,6 +132,8 @@ namespace Kallithea_Klone
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            state.OnLoaded();
+
             string GetVersion()
             {
                 try
@@ -268,6 +272,18 @@ namespace Kallithea_Klone
             }
         }
 
+        public void NewItem_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CheckedURLs.Remove(((Control)sender).Tag.ToString());
+            SelectionUpdated();
+        }
+
+        public void NewItem_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckedURLs.Add(((Control)sender).Tag.ToString());
+            SelectionUpdated();
+        }
+
         //  Methods
         //  =======
 
@@ -350,6 +366,12 @@ namespace Kallithea_Klone
             };
             s.ShowDialog();
             settingsOpen = false;
+        }
+
+        public void SelectionUpdated()
+        {
+            lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
+            BtnClone.IsEnabled = CheckedURLs.Count > 0;
         }
     }
 }

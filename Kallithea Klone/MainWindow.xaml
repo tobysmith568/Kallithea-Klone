@@ -101,7 +101,7 @@
             <!-- Header -->
             <Button x:Name="BtnSettings" Style="{DynamicResource SettingsButton}" Margin="0,5,10,50" Grid.Column="1" Width="{Binding ActualHeight, ElementName=BtnSettings, Mode=OneWay}" HorizontalAlignment="Right" Click="BtnSettings_Click"/>
             <Button x:Name="BtnReload" Style="{DynamicResource ReloadButton}" Margin="0,5,60,50" Width="{Binding ActualHeight, ElementName=BtnReload, Mode=OneWay}" HorizontalAlignment="Right" Click="BtnReload_Click" Grid.Column="1" />
-            <Label Content="Kallithea Klone" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,0,0,50" IsHitTestVisible="False"/>
+            <Label x:Name="LblTitle" Content="Kallithea Klone" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,0,60,50" IsHitTestVisible="False" Grid.ColumnSpan="2"/>
             <Grid Grid.ColumnSpan="2" Margin="10,55,10,5">
                 <TextBox x:Name="TbxSearch" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" TextChanged="SearchTermTextBox_TextChanged" KeyDown="SearchTermTextBox_KeyDown">
                     <TextBox.Resources>

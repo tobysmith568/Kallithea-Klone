@@ -18,34 +18,29 @@ using System.Net;
 
 namespace Kallithea_Klone
 {
-    public class CloneState : IState
+    public class CloneState : TemplateState
     {
-        private MainWindow mainWindow;
-
         private static string RepoFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone";
         private static string RepoFile = RepoFolder + "\\AllRepositories.dat";
 
         private List<string> allRepositories;
 
-        private static List<string> CheckedURLs = new List<string>();
         private int cloningCount;
         private int clonedCount = 0;
-
         private List<string> errorCodes = new List<string>();
 
         //  Constructors
         //  ============
 
-        public CloneState()
+        public CloneState() : base()
         {
-            mainWindow = MainWindow.singleton;
-        }
 
+        }
 
         //  State Pattern
         //  =============
 
-        public void Onload()
+        public override void OnLoad()
         {
             try
             {
@@ -62,13 +57,7 @@ namespace Kallithea_Klone
             LoadRepositories();
         }
 
-        public void OnLoseFocus()
-        {
-            if (!mainWindow.settingsOpen)
-                Environment.Exit(0);
-        }
-
-        public void OnMainAction()
+        public override void OnMainAction()
         {
             if (!ValidSettings())
             {
@@ -89,8 +78,8 @@ namespace Kallithea_Klone
                 mainWindow.DisableAll();
                 Uri uri = new Uri(MainWindow.Host);
 
-                cloningCount = CheckedURLs.Count;
-                foreach (string url in CheckedURLs)
+                cloningCount = MainWindow.CheckedURLs.Count;
+                foreach (string url in MainWindow.CheckedURLs)
                 {
                     string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}{url}";
 
@@ -110,7 +99,7 @@ namespace Kallithea_Klone
             }
         }
 
-        public async void OnReload()
+        public override async void OnReload()
         {
             if (!ValidSettings())
             {
@@ -140,26 +129,15 @@ namespace Kallithea_Klone
             }
         }
 
-        public void OnSettings()
-        {
-            mainWindow.OpenSettings();
-        }
-
-        public void OnSearchTermChanged()
+        public override void OnSearchTermChanged()
         {
             if (mainWindow.TbxSearch.Text.Length == 0)
             {
-                //ShowAndCollapse(MainTree);
-
                 LoadRepositories();
-            }
-            else
-            {
-                //Filter(MainTree, textBox.Text);
             }
         }
 
-        public void OnSearch()
+        public override void OnSearch()
         {
             if (mainWindow.TbxSearch.Text.Length != 0)
             {
@@ -190,10 +168,10 @@ namespace Kallithea_Klone
                         Content = location.Split('/').Last(),
                         Tag = location,
                         VerticalContentAlignment = VerticalAlignment.Center,
-                        IsChecked = CheckedURLs.Contains(location)
+                        IsChecked = MainWindow.CheckedURLs.Contains(location)
                     };
-                    newItem.Checked += NewItem_Checked;
-                    newItem.Unchecked += NewItem_Unchecked;
+                    newItem.Checked += mainWindow.NewItem_Checked;
+                    newItem.Unchecked += mainWindow.NewItem_Unchecked;
 
                     mainWindow.MainTree.Items.Add(newItem);
                 }
@@ -260,10 +238,10 @@ namespace Kallithea_Klone
                     Content = location.Name,
                     VerticalContentAlignment = VerticalAlignment.Center,
                     Tag = newTag,
-                    IsChecked = CheckedURLs.Contains(newTag)
+                    IsChecked = MainWindow.CheckedURLs.Contains(newTag)
                 };
-                newItem.Checked += NewItem_Checked;
-                newItem.Unchecked += NewItem_Unchecked;
+                newItem.Checked += mainWindow.NewItem_Checked;
+                newItem.Unchecked += mainWindow.NewItem_Unchecked;
 
                 if (parent == null)
                     mainWindow.MainTree.Items.Add(newItem);
@@ -291,14 +269,6 @@ namespace Kallithea_Klone
                 foreach (Location subLocation in location.InnerLocations)
                     CreateTreeViewItem(subLocation, newItem);
             }
-        }
-
-        private bool ValidSettings()
-        {
-            return MainWindow.Host != ""
-                && MainWindow.APIKey != ""
-                && MainWindow.Username != ""
-                && MainWindow.Password != "";
         }
 
         public async Task DownloadRepositories()
@@ -350,24 +320,6 @@ namespace Kallithea_Klone
 
         //  Events
         //  ======
-
-        private void NewItem_Unchecked(object sender, RoutedEventArgs e)
-        {
-            CheckedURLs.Remove(((Control)sender).Tag.ToString());
-            SelectionUpdated();
-        }
-
-        private void NewItem_Checked(object sender, RoutedEventArgs e)
-        {
-            CheckedURLs.Add(((Control)sender).Tag.ToString());
-            SelectionUpdated();
-        }
-
-        private void SelectionUpdated()
-        {
-            mainWindow.lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
-            mainWindow.BtnClone.IsEnabled = CheckedURLs.Count > 0;
-        }
 
         private void Process_Exited(object sender, EventArgs e)
         {
