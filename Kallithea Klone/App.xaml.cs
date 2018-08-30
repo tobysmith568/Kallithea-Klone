@@ -185,7 +185,8 @@ namespace Kallithea_Klone
 
         private void Settings()
         {
-            throw new NotImplementedException();
+            Settings s = new Settings();
+            s.ShowDialog();
         }
 
         string UppercaseFirst(string s)
