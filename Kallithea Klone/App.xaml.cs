@@ -41,6 +41,12 @@ namespace Kallithea_Klone
                         else
                             goto default;
                         break;
+                    case nameof(RunTypes.Reclone):
+                        if (e.Args.Length >= 2)
+                            Open(RunTypes.Reclone, e.Args[1]);
+                        else
+                            goto default;
+                        break;
                     case nameof(RunTypes.Settings):
                         Settings();
                         break;

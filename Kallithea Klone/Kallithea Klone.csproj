@@ -91,18 +91,19 @@
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
     <Compile Include="CheckableItem.cs" />
-    <Compile Include="CloneState.cs" />
+    <Compile Include="States\CloneState.cs" />
     <Compile Include="GithubRelease.cs" />
-    <Compile Include="IState.cs" />
-    <Compile Include="LocalRevertState.cs" />
+    <Compile Include="States\IState.cs" />
+    <Compile Include="States\ReCloneState.cs" />
+    <Compile Include="States\LocalRevertState.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="KallitheaResponse.cs" />
-    <Compile Include="RunTypes.cs" />
+    <Compile Include="States\RunTypes.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TemplateState.cs" />
+    <Compile Include="States\TemplateState.cs" />
     <Compile Include="User.cs" />
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
