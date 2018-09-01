@@ -94,6 +94,7 @@
     <Compile Include="States\CloneState.cs" />
     <Compile Include="GithubRelease.cs" />
     <Compile Include="States\IState.cs" />
+    <Compile Include="States\UpdateState.cs" />
     <Compile Include="States\ReCloneState.cs" />
     <Compile Include="States\LocalRevertState.cs" />
     <Compile Include="Repository.cs" />

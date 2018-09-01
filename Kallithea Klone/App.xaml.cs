@@ -47,6 +47,12 @@ namespace Kallithea_Klone
                         else
                             goto default;
                         break;
+                    case nameof(RunTypes.Update):
+                        if (e.Args.Length >= 2)
+                            Open(RunTypes.Update, e.Args[1]);
+                        else
+                            goto default;
+                        break;
                     case nameof(RunTypes.Settings):
                         Settings();
                         break;

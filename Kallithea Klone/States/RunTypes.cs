@@ -11,6 +11,7 @@ namespace Kallithea_Klone
         Clone,
         LocalRevert,
         Reclone,
+        Update,
 
         Settings,
 
@@ -30,6 +31,8 @@ namespace Kallithea_Klone
                     return new LocalRevertState();
                 case RunTypes.Reclone:
                     return new ReCloneState();
+                case RunTypes.Update:
+                    return new UpdateState();
                 case RunTypes.Settings:
                 case RunTypes.Setup:
                 case RunTypes.Uninstall:
