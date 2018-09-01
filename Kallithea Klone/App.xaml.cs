@@ -120,17 +120,66 @@ namespace Kallithea_Klone
             }
             else
             {
+                string location = System.Reflection.Assembly.GetExecutingAssembly().Location;
+
                 using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
                 {
                     using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", RegistryKeyPermissionCheck.ReadWriteSubTree))
                     {
-                        string location = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
                         subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
                         subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
                         using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
                         {
                             commandKey.SetValue("", "\"" + location + "\" Clone \"%V\"");
+                        }
+                    }
+
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Other", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "Other Kallithea Klone Options", RegistryValueKind.String);
+                        subKey.SetValue("SubCommands", "KallitheaKlone_LocalRevert;KallitheaKlone_Reclone;KallitheaKlone_Update;|;KallitheaKlone_Settings", RegistryValueKind.String);
+                    }
+                }
+
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell", true))
+                {
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_LocalRevert", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "Revert all uncommited changes", RegistryValueKind.String);
+                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                        {
+                            commandKey.SetValue("", "\"" + location + "\" LocalRevert \"%V\"");
+                        }
+                    }
+
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Reclone", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "Delete and re-clone", RegistryValueKind.String);
+                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                        {
+                            commandKey.SetValue("", "\"" + location + "\" Reclone \"%V\"");
+                        }
+                    }
+
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Update", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "Update to latest commit", RegistryValueKind.String);
+                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                        {
+                            commandKey.SetValue("", "\"" + location + "\" Update \"%V\"");
+                        }
+                    }
+
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Settings", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "Settings", RegistryValueKind.String);
+                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                        {
+                            commandKey.SetValue("", "\"" + location + "\" Settings \"%V\"");
                         }
                     }
                 }
@@ -187,7 +236,7 @@ namespace Kallithea_Klone
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
+        }   
 
         private void Settings()
         {
