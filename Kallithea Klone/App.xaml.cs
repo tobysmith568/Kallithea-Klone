@@ -137,12 +137,48 @@ namespace Kallithea_Klone
                     using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Other", RegistryKeyPermissionCheck.ReadWriteSubTree))
                     {
                         subKey.SetValue("MUIVerb", "Other Kallithea Klone Options", RegistryValueKind.String);
-                        subKey.SetValue("SubCommands", "KallitheaKlone_LocalRevert;KallitheaKlone_Reclone;KallitheaKlone_Update;|;KallitheaKlone_Settings", RegistryValueKind.String);
+                        subKey.SetValue("SubCommands", "KallitheaKlone_msg1;KallitheaKlone_msg2;|;KallitheaKlone_LocalRevert;KallitheaKlone_Reclone;KallitheaKlone_Update;|;KallitheaKlone_Settings", RegistryValueKind.String);
+                    }
+                }
+
+                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\shell", true))
+                {
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
+                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                        {
+                            commandKey.SetValue("", "\"" + location + "\" Clone \"%V\"");
+                        }
+                    }
+
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Other", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "Other Kallithea Klone Options", RegistryValueKind.String);
+                        subKey.SetValue("SubCommands", "KallitheaKlone_msg1;KallitheaKlone_msg2;|;KallitheaKlone_LocalRevert;KallitheaKlone_Reclone;KallitheaKlone_Update;|;KallitheaKlone_Settings", RegistryValueKind.String);
                     }
                 }
 
                 using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell", true))
                 {
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_msg1", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "The options below are all EXPERIMENAL!", RegistryValueKind.String);
+                        //using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                        //{
+                        //    commandKey.SetValue("", "\"" + location + "\" LocalRevert \"%V\"");
+                        //}
+                    }
+                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_msg2", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        subKey.SetValue("MUIVerb", "But please test them where it is safe :)", RegistryValueKind.String);
+                        //using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                        //{
+                        //    commandKey.SetValue("", "\"" + location + "\" LocalRevert \"%V\"");
+                        //}
+                    }
+
                     using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_LocalRevert", RegistryKeyPermissionCheck.ReadWriteSubTree))
                     {
                         subKey.SetValue("MUIVerb", "Revert all uncommited changes", RegistryValueKind.String);
