@@ -177,62 +177,6 @@ namespace Kallithea_Klone
                 await CheckForUpdate();
         }
 
-        private async Task CheckForUpdate()
-        {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            RestClient client = new RestClient("http://api.github.com/repos/tobysmith568/kallithea-klone/releases/latest");
-            RestRequest request = new RestRequest(Method.GET);
-            request.AddHeader("Cache-Control", "no-cache");
-            request.AddHeader("Accept", "application/vnd.github.v3+json");
-
-            try
-            {
-                IRestResponse response = await Task.Run(() =>
-                {
-                    return client.Execute(request);
-                });
-
-                switch (response.ResponseStatus)
-                {
-                    case ResponseStatus.Completed:
-                        GithubRelease release = JsonConvert.DeserializeObject<GithubRelease>(response.Content);
-                        if (release != null)
-                        {
-                            if (release.Assets.Count(a => a.URL.EndsWith(".msi")) > 0
-                                    && !release.IsDraft
-                                    && Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version))
-                            {
-                                if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) < 0)
-                                {
-                                    MessageBoxResult result = MessageBox.Show("A new version of Kallithea Klone has been found!\n" +
-                                        "Do you want to update to it now?", "Update found!",
-                                        MessageBoxButton.OKCancel, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-
-                                    switch (result)
-                                    {
-                                        case MessageBoxResult.OK:
-                                            Process.Start(new ProcessStartInfo(release.Assets.First(r => r.URL.EndsWith(".msi")).URL));
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case ResponseStatus.TimedOut:
-                    case ResponseStatus.Error:
-                    case ResponseStatus.Aborted:
-                    default:
-                        break;
-                }
-            }
-            catch
-            {
-
-            }
-        }
-
         private void Window_Deactivated(object sender, EventArgs e)
         {
             state.OnLoseFocus();
@@ -286,6 +230,62 @@ namespace Kallithea_Klone
 
         //  Methods
         //  =======
+
+        private async Task CheckForUpdate()
+        {
+            RestClient client = new RestClient("https://api.tobysmith.uk/github?repo=kallithea-klone");
+            RestRequest request = new RestRequest(Method.GET);
+
+            try
+            {
+                IRestResponse response = await Task.Run(() =>
+                {
+                    return client.Execute(request);
+                });
+
+                switch (response.ResponseStatus)
+                {
+                    case ResponseStatus.Completed:
+                        if (response.StatusCode != HttpStatusCode.OK)
+                            return;
+
+                        GithubRelease release = JsonConvert.DeserializeObject<GithubRelease>(response.Content);
+                        if (release != null)
+                        {
+                            if (release.Assets.Count(a => a.URL.EndsWith(".msi")) > 0
+                                    && !release.IsDraft
+                                    && Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version))
+                            {
+                                if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) < 0)
+                                {
+                                    MessageBoxResult result = MessageBox.Show("A new version of Kallithea Klone has been found!\n" +
+                                        "Do you want to update to it now?", "Update found!",
+                                        MessageBoxButton.OKCancel, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+
+                                    switch (result)
+                                    {
+                                        case MessageBoxResult.OK:
+                                            Process.Start(new ProcessStartInfo(release.Assets.First(r => r.URL.EndsWith(".msi")).URL));
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case ResponseStatus.TimedOut:
+                    case ResponseStatus.Error:
+                    case ResponseStatus.Aborted:
+                    default:
+                        return;
+                }
+            }
+            catch
+            {
+
+            }
+        }
 
         public void DisableAll()
         {

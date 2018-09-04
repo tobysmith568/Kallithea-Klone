@@ -101,7 +101,7 @@ namespace Kallithea_Klone
                     Process process = new Process();
                     ProcessStartInfo startInfo = new ProcessStartInfo
                     {
-                        WindowStyle = ProcessWindowStyle.Normal,
+                        WindowStyle = ProcessWindowStyle.Hidden,
                         FileName = "cmd.exe",
                         Arguments = $"/C cd {url}" +
                         $"&hg --config \"extensions.shelve = \" shelve --name {DateTime.Now.ToString("ddMMyyHHmmss")}" +
