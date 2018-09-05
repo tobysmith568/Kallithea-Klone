@@ -12,6 +12,9 @@ namespace Kallithea_Klone
 {
     public class CheckableItem : TreeViewItem
     {
+        //  Properties
+        //  ==========
+
         private Visibility _isChecked;
 
         public Visibility IsChecked
@@ -29,6 +32,9 @@ namespace Kallithea_Klone
                 }
             }
         }
+
+        //  Constructors
+        //  ============
 
         public CheckableItem()
         {

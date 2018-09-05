@@ -9,6 +9,9 @@ namespace Kallithea_Klone
 {
     class Repository
     {
+        //  JSON Properties
+        //  ===============
+
         [JsonProperty("repo_name")]
         public string URL { get; set; }
     }

@@ -20,6 +20,9 @@ namespace Kallithea_Klone
 {
     class UpdateState : TemplateState
     {
+        //  Variables
+        //  =========
+
         private int updatingCount;
         private int updatedCount = 0;
         private List<string> errorCodes = new List<string>();
@@ -30,6 +33,23 @@ namespace Kallithea_Klone
         public UpdateState() : base()
         {
 
+        }
+
+        //  Events
+        //  ======
+
+        private void Process_Exited(object sender, EventArgs e)
+        {
+            if (((Process)sender).ExitCode != 0)
+                errorCodes.Add(((Process)sender).ExitCode.ToString());
+            updatedCount++;
+
+            if (updatedCount == updatingCount)
+            {
+                if (errorCodes.Count > 0)
+                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                Environment.Exit(0);
+            }
         }
 
         //  State Pattern
@@ -191,23 +211,6 @@ namespace Kallithea_Klone
             newItem.Unchecked += mainWindow.NewItem_Unchecked;
 
             return newItem;
-        }
-
-        //  Events
-        //  ======
-
-        private void Process_Exited(object sender, EventArgs e)
-        {
-            if (((Process)sender).ExitCode != 0)
-                errorCodes.Add(((Process)sender).ExitCode.ToString());
-            updatedCount++;
-
-            if (updatedCount == updatingCount)
-            {
-                if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
-            }
         }
     }
 }

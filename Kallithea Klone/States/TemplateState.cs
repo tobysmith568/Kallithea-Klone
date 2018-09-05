@@ -20,7 +20,13 @@ namespace Kallithea_Klone
 {
     public abstract class TemplateState : IState
     {
+        //  Variables
+        //  =========
+
         protected MainWindow mainWindow;
+
+        //  Constructors
+        //  ============
 
         public TemplateState()
         {

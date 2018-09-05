@@ -9,6 +9,9 @@ namespace Kallithea_Klone
 {
     class GithubRelease
     {
+        //  JSON Properties
+        //  ===============
+
         [JsonProperty("tag_name")]
         public string Tag { get; set; }
 
@@ -20,6 +23,9 @@ namespace Kallithea_Klone
 
         public class Asset
         {
+            //  JSON Properties
+            //  ===============
+
             [JsonProperty("browser_download_url")]
             public string URL { get; set; }
         }

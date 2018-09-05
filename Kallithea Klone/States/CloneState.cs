@@ -20,6 +20,9 @@ namespace Kallithea_Klone
 {
     public class CloneState : TemplateState
     {
+        //  Variables
+        //  =========
+
         private static string RepoFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone";
         private static string RepoFile = RepoFolder + "\\AllRepositories.dat";
 
@@ -35,6 +38,23 @@ namespace Kallithea_Klone
         public CloneState() : base()
         {
 
+        }
+
+        //  Events
+        //  ======
+
+        private void Process_Exited(object sender, EventArgs e)
+        {
+            if (((Process)sender).ExitCode != 0)
+                errorCodes.Add(((Process)sender).ExitCode.ToString());
+            clonedCount++;
+
+            if (clonedCount == cloningCount)
+            {
+                if (errorCodes.Count > 0)
+                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                Environment.Exit(0);
+            }
         }
 
         //  State Pattern
@@ -315,23 +335,6 @@ namespace Kallithea_Klone
             catch (Exception ee)
             {
                 MessageBox.Show("Error: " + ee.Message, "Uncaught Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-            }
-        }
-
-        //  Events
-        //  ======
-
-        private void Process_Exited(object sender, EventArgs e)
-        {
-            if (((Process)sender).ExitCode != 0)
-                errorCodes.Add(((Process)sender).ExitCode.ToString());
-            clonedCount++;
-
-            if (clonedCount == cloningCount)
-            {
-                if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
             }
         }
     }

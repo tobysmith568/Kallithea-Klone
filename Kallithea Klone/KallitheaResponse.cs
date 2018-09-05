@@ -9,6 +9,9 @@ namespace Kallithea_Klone
 {
     class KallitheaResponse<T>
     {
+        //  JSON Properties
+        //  ===============
+
         [JsonProperty("error")]
         public string Error { get; set; }
 

@@ -9,6 +9,9 @@ namespace Kallithea_Klone
 {
     class User
     {
+        //  JSON Properties
+        //  ===============
+
         [JsonProperty("username")]
         public string Username { get; set; }
     }
