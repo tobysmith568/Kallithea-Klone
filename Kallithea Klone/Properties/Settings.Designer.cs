@@ -82,5 +82,17 @@ namespace Kallithea_Klone.Properties {
                 this["CheckForUpdates"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool JustInstalled {
+            get {
+                return ((bool)(this["JustInstalled"]));
+            }
+            set {
+                this["JustInstalled"] = value;
+            }
+        }
     }
 }

@@ -25,6 +25,13 @@ namespace Kallithea_Klone
     {
         void App_Startup(object sender, StartupEventArgs e)
         {
+            if (Default.JustInstalled)
+            {
+                Default.Upgrade();
+                Default.JustInstalled = false;
+                Default.Save();
+            }
+
             if (e.Args.Length > 0)
             {
                 switch (UppercaseFirst(e.Args[0]))
@@ -99,12 +106,6 @@ namespace Kallithea_Klone
 
         private void Setup()
         {
-            Default.APIKey = Default.Host = Default.Username = "";
-            Default.Password = Convert.ToBase64String(ProtectedData.Protect(
-                    Encoding.Unicode.GetBytes(""),
-                    null,
-                    DataProtectionScope.LocalMachine));
-            Default.Save();
             if (IsAdministrator() == false)
             {
                 // Restart program and run as admin
