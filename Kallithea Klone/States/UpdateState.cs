@@ -15,6 +15,7 @@ using System.Deployment.Application;
 using System.Reflection;
 using System.Diagnostics;
 using System.Net;
+using Kallithea_Klone.States;
 
 namespace Kallithea_Klone
 {
@@ -82,59 +83,34 @@ namespace Kallithea_Klone
                     default:
                         break;
                 }
+                return;
             }
-            else
+
+            mainWindow.DisableAll();
+
+            updatingCount = MainWindow.CheckedURLs.Count;
+            foreach (string url in MainWindow.CheckedURLs)
             {
-                mainWindow.DisableAll();
+                string remotePath = GetDefaultPath(url);
+                Uri uri = new Uri(remotePath);
+                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}";
 
-                updatingCount = MainWindow.CheckedURLs.Count;
-                foreach (string url in MainWindow.CheckedURLs)
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    Process getPathProcess = new Process();
-                    ProcessStartInfo getPathStartInfo = new ProcessStartInfo
-                    {
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        FileName = "cmd.exe",
-                        Arguments = $"/C cd {url}" +
-                            $"&hg paths",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false
-                    };
-                    getPathProcess.StartInfo = getPathStartInfo;
-                    getPathProcess.EnableRaisingEvents = true;
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    FileName = "cmd.exe",
+                    Arguments = $"/C cd {url}" +
+                    $"&hg --config \"extensions.shelve = \" shelve --name {DateTime.Now.ToString("ddMMyyHHmmss")}" +
+                    $"&hg pull {fullURL}" +
+                    $"&hg update -m" +
+                    $"&hg --config \"extensions.shelve = \" unshelve --name {DateTime.Now.ToString("ddMMyyHHmmss")} --tool :other"
+                };
+                process.StartInfo = startInfo;
+                process.EnableRaisingEvents = true;
+                process.Exited += Process_Exited;
 
-                    getPathProcess.Start();
-
-                    string output = getPathProcess.StandardOutput.ReadToEnd();
-                    getPathProcess.WaitForExit();
-
-                    if (!output.Contains("default = "))
-                    {
-                        MessageBox.Show($"Error: the default remote path for \"{url.Split('\\').Last()}\" could not be found in it's .hg/hgrc file!\nThis repository has been skipped.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                        continue;
-                    }
-
-                    string remotePath = output.Substring(10);
-                    Uri uri = new Uri(remotePath);
-                    string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}";
-
-                    Process process = new Process();
-                    ProcessStartInfo startInfo = new ProcessStartInfo
-                    {
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        FileName = "cmd.exe",
-                        Arguments = $"/C cd {url}" +
-                        $"&hg --config \"extensions.shelve = \" shelve --name {DateTime.Now.ToString("ddMMyyHHmmss")}" +
-                        $"&hg pull {fullURL}" +
-                        $"&hg update -m" +
-                        $"&hg --config \"extensions.shelve = \" unshelve --name {DateTime.Now.ToString("ddMMyyHHmmss")} --tool :other"
-                    };
-                    process.StartInfo = startInfo;
-                    process.EnableRaisingEvents = true;
-                    process.Exited += Process_Exited;
-
-                    process.Start();
-                }
+                process.Start();
             }
         }
 

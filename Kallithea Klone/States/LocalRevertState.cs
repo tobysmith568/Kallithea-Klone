@@ -82,28 +82,27 @@ namespace Kallithea_Klone
                     default:
                         break;
                 }
+                return;
             }
-            else
+
+            mainWindow.DisableAll();
+            Uri uri = new Uri(MainWindow.Host);
+
+            revertingCount = MainWindow.CheckedURLs.Count;
+            foreach (string url in MainWindow.CheckedURLs)
             {
-                mainWindow.DisableAll();
-                Uri uri = new Uri(MainWindow.Host);
-
-                revertingCount = MainWindow.CheckedURLs.Count;
-                foreach (string url in MainWindow.CheckedURLs)
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    Process process = new Process();
-                    ProcessStartInfo startInfo = new ProcessStartInfo
-                    {
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        FileName = "cmd.exe",
-                        Arguments = $"/C cd {url}&hg revert --all&hg --config \"extensions.purge = \" purge --all"
-                    };
-                    process.StartInfo = startInfo;
-                    process.EnableRaisingEvents = true;
-                    process.Exited += Process_Exited;
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    FileName = "cmd.exe",
+                    Arguments = $"/C cd {url}&hg revert --all&hg --config \"extensions.purge = \" purge --all"
+                };
+                process.StartInfo = startInfo;
+                process.EnableRaisingEvents = true;
+                process.Exited += Process_Exited;
 
-                    process.Start();
-                }
+                process.Start();
             }
         }
 

@@ -15,6 +15,7 @@ using System.Deployment.Application;
 using System.Reflection;
 using System.Diagnostics;
 using System.Net;
+using Kallithea_Klone.States;
 
 namespace Kallithea_Klone
 {
@@ -74,6 +75,27 @@ namespace Kallithea_Klone
                 && MainWindow.APIKey != ""
                 && MainWindow.Username != ""
                 && MainWindow.Password != "";
+        }
+
+        protected string GetDefaultPath(string repoLocation)
+        {
+            string hgrcFile = Path.Combine(repoLocation, ".hg\\hgrc");
+
+            if (!File.Exists(hgrcFile))
+            {
+                MessageBox.Show($"Error: the hgrc file for \"{repoLocation.Split('\\').Last()}\" could not be found!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return null;
+            }
+
+            IniFile hgrc = new IniFile(hgrcFile);
+
+            if (!hgrc.KeyExists("default", "paths"))
+            {
+                MessageBox.Show($"Error: the default property \"{repoLocation.Split('\\').Last()}\" could not be found in it's .hg/hgrc file under \"[paths]\"!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return null;
+            }
+
+            return hgrc.Read("default", "paths");
         }
     }
 }

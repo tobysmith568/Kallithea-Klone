@@ -82,65 +82,40 @@ namespace Kallithea_Klone
                     default:
                         break;
                 }
+                return;
             }
-            else
+
+            mainWindow.DisableAll();
+
+            reCloningCount = MainWindow.CheckedURLs.Count;
+            foreach (string url in MainWindow.CheckedURLs)
             {
-                mainWindow.DisableAll();
+                string remotePath = GetDefaultPath(url);
+                Uri uri = new Uri(remotePath);
+                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}";
 
-                reCloningCount = MainWindow.CheckedURLs.Count;
-                foreach (string url in MainWindow.CheckedURLs)
+                try
                 {
-                    Process getPathProcess = new Process();
-                    ProcessStartInfo getPathStartInfo = new ProcessStartInfo
-                    {
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        FileName = "cmd.exe",
-                        Arguments = $"/C cd {url}" +
-                            $"&hg paths",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false
-                    };
-                    getPathProcess.StartInfo = getPathStartInfo;
-                    getPathProcess.EnableRaisingEvents = true;
-
-                    getPathProcess.Start();
-
-                    string output = getPathProcess.StandardOutput.ReadToEnd();
-                    getPathProcess.WaitForExit();
-
-                    if (!output.Contains("default = "))
-                    {
-                        MessageBox.Show($"Error: the default remote path for \"{url.Split('\\').Last()}\" could not be found in it's .hg/hgrc file!\nThis repository has been skipped.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                        continue;
-                    }
-
-                    string remotePath = output.Substring(10);
-                    Uri uri = new Uri(remotePath);
-                    string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}";
-
-                    try
-                    {
-                        Directory.Delete(url, true);
-                    }
-                    catch
-                    {
-                        MessageBox.Show($"Error: Could not delete \"{url.Split('\\').Last()}\"\nThis repository has been skipped.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                        continue;
-                    }
-
-                    Process process = new Process();
-                    ProcessStartInfo startInfo = new ProcessStartInfo
-                    {
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        FileName = "cmd.exe",
-                        Arguments = $"/C hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('\\').Last()}\""
-                    };
-                    process.StartInfo = startInfo;
-                    process.EnableRaisingEvents = true;
-                    process.Exited += Process_Exited;
-
-                    process.Start();
+                    Directory.Delete(url, true);
                 }
+                catch
+                {
+                    MessageBox.Show($"Error: Could not delete \"{url.Split('\\').Last()}\"\nThis repository has been skipped.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                    continue;
+                }
+
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    FileName = "cmd.exe",
+                    Arguments = $"/C hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('\\').Last()}\""
+                };
+                process.StartInfo = startInfo;
+                process.EnableRaisingEvents = true;
+                process.Exited += Process_Exited;
+
+                process.Start();
             }
         }
 
