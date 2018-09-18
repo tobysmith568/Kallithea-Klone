@@ -96,11 +96,21 @@ namespace Kallithea_Klone
 
                 try
                 {
-                    Directory.Delete(url, true);
+                    foreach (string folder in Directory.GetDirectories(url))
+                    {
+                        string last = folder.Split('\\').Last();
+                        if (last == ".hg" || last.First() != '.')
+                            Directory.Delete(folder, true);
+                    }
+
+                    foreach (string file in Directory.GetFiles(url))
+                    {
+                        File.Delete(file);
+                    }
                 }
                 catch
                 {
-                    MessageBox.Show($"Error: Could not delete \"{url.Split('\\').Last()}\"\nThis repository has been skipped.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                    MessageBox.Show($"Error: Failed to properly delete \"{url.Split('\\').Last()}\"\nThis repository is now probably half deleted.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                     continue;
                 }
 
