@@ -127,7 +127,7 @@ namespace Kallithea_Klone
                         $"&hg --config \"extensions.shelve = \" shelve --name {DateTime.Now.ToString("ddMMyyHHmmss")}" +
                         $"&hg pull {fullURL}" +
                         $"&hg update -m" +
-                        $"&hg --config \"extensions.shelve = \" unshelve --name {DateTime.Now.ToString("ddMMyyHHmmss")}"
+                        $"&hg --config \"extensions.shelve = \" unshelve --name {DateTime.Now.ToString("ddMMyyHHmmss")} --tool :other"
                     };
                     process.StartInfo = startInfo;
                     process.EnableRaisingEvents = true;
