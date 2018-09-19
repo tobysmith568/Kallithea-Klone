@@ -227,6 +227,47 @@ namespace Kallithea_Klone
         {
             try
             {
+                if (!IsAdministrator())
+                {
+                    var exeName = Process.GetCurrentProcess().MainModule.FileName;
+                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                    {
+                        Verb = "runas",
+                        Arguments = "Uninstall"
+                    };
+                    Process.Start(startInfo);
+                    Current.Shutdown();
+                    return;
+                }
+
+                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
+                {
+                    key.DeleteSubKeyTree("KallitheaKlone", false);
+                    key.DeleteSubKeyTree("KallitheaKlone_Other", false);
+                }
+
+                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\shell", true))
+                {
+                    key.DeleteSubKeyTree("KallitheaKlone", false);
+                    key.DeleteSubKeyTree("KallitheaKlone_Other", false);
+                }
+
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell", true))
+                {
+                    foreach (string subkey in key.GetSubKeyNames())
+                    {
+                        if (subkey.StartsWith("KallitheaKlone"))
+                            key.DeleteSubKeyTree(subkey, false);
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+
+            }
+
+            try
+            {
                 Default.Reset();
                 Default.Save();
                 foreach (string file in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone"))
@@ -234,33 +275,6 @@ namespace Kallithea_Klone
                     File.Delete(file);
                 }
                 Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone");
-            }
-            catch
-            {
-
-            }
-            try
-            {
-                if (IsAdministrator() == false)
-                {
-                    // Restart program and run as admin
-                    var exeName = Process.GetCurrentProcess().MainModule.FileName;
-                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
-                    {
-                        Verb = "runas",
-                        Arguments = "Setup"
-                    };
-                    Process.Start(startInfo);
-                    Current.Shutdown();
-                    return;
-                }
-                else
-                {
-                    using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
-                    {
-                        key.DeleteSubKeyTree("KallitheaKlone", false);
-                    }
-                }
             }
             catch
             {
