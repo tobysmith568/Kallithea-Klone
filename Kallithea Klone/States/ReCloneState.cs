@@ -119,7 +119,7 @@ namespace Kallithea_Klone
                 {
                     WindowStyle = ProcessWindowStyle.Hidden,
                     FileName = "cmd.exe",
-                    Arguments = $"/C hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('\\').Last()}\""
+                    Arguments = $"/C hg clone {fullURL} \"{url}\""
                 };
                 process.StartInfo = startInfo;
                 process.EnableRaisingEvents = true;
