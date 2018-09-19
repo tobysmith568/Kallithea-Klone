@@ -24,6 +24,7 @@ namespace Kallithea_Klone
         //  Variables
         //  =========
 
+        protected const string CmdExe = "cmd.exe";
         protected MainWindow mainWindow;
 
         //  Constructors

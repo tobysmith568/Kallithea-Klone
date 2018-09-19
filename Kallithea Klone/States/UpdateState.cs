@@ -92,6 +92,10 @@ namespace Kallithea_Klone
             foreach (string url in MainWindow.CheckedURLs)
             {
                 string remotePath = GetDefaultPath(url);
+
+                if (remotePath == null)
+                    continue;
+
                 Uri uri = new Uri(remotePath);
                 string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}";
 
@@ -99,12 +103,12 @@ namespace Kallithea_Klone
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
                     WindowStyle = ProcessWindowStyle.Hidden,
-                    FileName = "cmd.exe",
-                    Arguments = $"/C cd {url}" +
-                    $"&hg --config \"extensions.shelve = \" shelve --name {DateTime.Now.ToString("ddMMyyHHmmss")}" +
-                    $"&hg pull {fullURL}" +
-                    $"&hg update -m" +
-                    $"&hg --config \"extensions.shelve = \" unshelve --name {DateTime.Now.ToString("ddMMyyHHmmss")} --tool :other"
+                    FileName = CmdExe,
+                    Arguments = $"/C cd /d {url}" +
+                                 $"&hg --config \"extensions.shelve = \" shelve --name {DateTime.Now.ToString("ddMMyyHHmmss")}" +
+                                 $"&hg pull {fullURL}" +
+                                 $"&hg update -m" +
+                                 $"&hg --config \"extensions.shelve = \" unshelve --name {DateTime.Now.ToString("ddMMyyHHmmss")} --tool :other"
                 };
                 process.StartInfo = startInfo;
                 process.EnableRaisingEvents = true;

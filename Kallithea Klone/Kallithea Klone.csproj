@@ -91,6 +91,7 @@
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
     <Compile Include="Other Classes\CheckableItem.cs" />
+    <Compile Include="Other Classes\URIPair.cs" />
     <Compile Include="States\CloneState.cs" />
     <Compile Include="Other Classes\GithubRelease.cs" />
     <Compile Include="Other Classes\IniFile.cs" />

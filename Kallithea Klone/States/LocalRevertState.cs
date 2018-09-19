@@ -95,8 +95,10 @@ namespace Kallithea_Klone
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
                     WindowStyle = ProcessWindowStyle.Hidden,
-                    FileName = "cmd.exe",
-                    Arguments = $"/C cd {url}&hg revert --all&hg --config \"extensions.purge = \" purge --all"
+                    FileName = CmdExe,
+                    Arguments = $"/C cd /d {url}" +
+                                  $"&hg revert --all" +
+                                  $"&hg --config \"extensions.purge = \" purge --all"
                 };
                 process.StartInfo = startInfo;
                 process.EnableRaisingEvents = true;
