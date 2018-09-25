@@ -89,14 +89,13 @@ namespace Kallithea_Klone
 
         private void Open(RunTypes runType, string ranFrom)
         {
-            MainWindow window = new MainWindow(runType, ranFrom)
-            {
-                Left = Cursor.Position.X,
-                Top = Cursor.Position.Y
-            };
+            MainWindow window = new MainWindow(runType, ranFrom);
 
             int windowHeight = (int)window.Height;
             int windowWidth = (int)window.Width;
+
+            window.Left = Cursor.Position.X - (windowWidth / 2);
+            window.Top = Cursor.Position.Y - (windowHeight / 2);
 
             int screenHeight = Screen.FromPoint(Cursor.Position).Bounds.Height;
             int screenWidth = Screen.FromPoint(Cursor.Position).Bounds.Width;
@@ -104,8 +103,14 @@ namespace Kallithea_Klone
             while (window.Top + windowHeight + 5 > screenHeight)
                 window.Top -= 1;
 
+            while (window.Top - 5 < 0)
+                window.Top += 1;
+
             while (window.Left + windowWidth + 5 > screenWidth)
                 window.Left -= 1;
+
+            while (window.Left - 5 < 0)
+                window.Left += 1;
 
             window.Show();
         }
