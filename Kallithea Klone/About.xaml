@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Kallithea_Klone"
         mc:Ignorable="d"
-        Title="About Kallithea Klone" Height="338" Width="649" Loaded="Window_Loaded" FontSize="14" Icon="Images/Kallithea Klone.ico" Topmost="True">
+        Title="About Kallithea Klone" Height="338" Width="649" Loaded="Window_Loaded" FontSize="14" Icon="./Images/Kallithea Klone.ico" Topmost="True" ResizeMode="NoResize" WindowStyle="SingleBorderWindow">
     <Grid Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}">
         <Label Content="About Kallithea Klone" FontSize="38" FontWeight="Bold" Foreground="#FF577632" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" IsHitTestVisible="False" Height="62" VerticalAlignment="Top"/>
         <TextBlock Margin="10,91,10,0" VerticalAlignment="Top" >

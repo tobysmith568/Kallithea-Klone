@@ -107,7 +107,7 @@ namespace Kallithea_Klone
                     ProcessStartInfo startInfo = new ProcessStartInfo
                     {
                         WindowStyle = ProcessWindowStyle.Hidden,
-                        FileName = "cmd.exe",
+                        FileName = CmdExe,
                         Arguments = $"/C hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('/').Last()}\""
                     };
                     process.StartInfo = startInfo;

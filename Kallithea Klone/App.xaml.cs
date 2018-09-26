@@ -64,10 +64,16 @@ namespace Kallithea_Klone
                         Settings();
                         break;
                     case nameof(RunTypes.Setup):
-                        Setup();
+                        if (e.Args.Length >= 2)
+                            Setup(e.Args[1]);
+                        else
+                            Setup();
                         goto default;
                     case nameof(RunTypes.Uninstall):
-                        Uninstall();
+                        if (e.Args.Length >= 2)
+                            Uninstall(e.Args[1]);
+                        else
+                            Uninstall();
                         goto default;
                     default:
                         Environment.Exit(0);
@@ -83,14 +89,13 @@ namespace Kallithea_Klone
 
         private void Open(RunTypes runType, string ranFrom)
         {
-            MainWindow window = new MainWindow(runType, ranFrom)
-            {
-                Left = Cursor.Position.X,
-                Top = Cursor.Position.Y
-            };
+            MainWindow window = new MainWindow(runType, ranFrom);
 
             int windowHeight = (int)window.Height;
             int windowWidth = (int)window.Width;
+
+            window.Left = Cursor.Position.X - (windowWidth / 2);
+            window.Top = Cursor.Position.Y - (windowHeight / 2);
 
             int screenHeight = Screen.FromPoint(Cursor.Position).Bounds.Height;
             int screenWidth = Screen.FromPoint(Cursor.Position).Bounds.Width;
@@ -98,133 +103,186 @@ namespace Kallithea_Klone
             while (window.Top + windowHeight + 5 > screenHeight)
                 window.Top -= 1;
 
+            while (window.Top - 5 < 0)
+                window.Top += 1;
+
             while (window.Left + windowWidth + 5 > screenWidth)
                 window.Left -= 1;
+
+            while (window.Left - 5 < 0)
+                window.Left += 1;
 
             window.Show();
         }
 
-        private void Setup()
+        private void Setup(string attempt = "0")
         {
-            if (IsAdministrator() == false)
+            if (!IsAdministrator())
             {
-                // Restart program and run as admin
-                var exeName = Process.GetCurrentProcess().MainModule.FileName;
-                ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                if (attempt == "0")
+                    RestartAsAdmin("Setup 1");
+                else
                 {
-                    Verb = "runas",
-                    Arguments = "Setup"
-                };
-                Process.Start(startInfo);
-                Current.Shutdown();
+                    MessageBoxResult result = System.Windows.MessageBox.Show("This installer needs administrator permissions in order to edit your Windows Explorer Menus.\n" +
+                        "This is essential for the primary functionality. Press OK to try again, or Cancel to install without this essential functionality", "Kallithea Klone needs administrator permissions!", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+
+                    switch (result)
+                    {
+                        case MessageBoxResult.OK:
+                            RestartAsAdmin("Setup 1");
+                            break;
+                        default:
+                            break;
+                    }
+                }
                 return;
             }
-            else
+
+            string location = System.Reflection.Assembly.GetExecutingAssembly().Location;
+
+            using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
             {
-                string location = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
-                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", RegistryKeyPermissionCheck.ReadWriteSubTree))
                 {
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
+                    subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                    using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
                     {
-                        subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
-                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
-                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                        {
-                            commandKey.SetValue("", "\"" + location + "\" Clone \"%V\"");
-                        }
-                    }
-
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Other", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                    {
-                        subKey.SetValue("MUIVerb", "Other Kallithea Klone Options", RegistryValueKind.String);
-                        subKey.SetValue("SubCommands", "KallitheaKlone_msg1;KallitheaKlone_msg2;|;KallitheaKlone_LocalRevert;KallitheaKlone_Reclone;KallitheaKlone_Update;|;KallitheaKlone_Settings", RegistryValueKind.String);
+                        commandKey.SetValue("", "\"" + location + "\" Clone \"%V\"");
                     }
                 }
 
-                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\shell", true))
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Other", RegistryKeyPermissionCheck.ReadWriteSubTree))
                 {
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                    {
-                        subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
-                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
-                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                        {
-                            commandKey.SetValue("", "\"" + location + "\" Clone \"%V\"");
-                        }
-                    }
+                    subKey.SetValue("MUIVerb", "Other Kallithea Klone Options", RegistryValueKind.String);
+                    subKey.SetValue("SubCommands", "KallitheaKlone_msg1;KallitheaKlone_msg2;|;KallitheaKlone_LocalRevert;KallitheaKlone_Reclone;KallitheaKlone_Update;|;KallitheaKlone_Settings", RegistryValueKind.String);
+                }
+            }
 
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Other", RegistryKeyPermissionCheck.ReadWriteSubTree))
+            using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\shell", true))
+            {
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    subKey.SetValue("MUIVerb", "Open Kallithea Klone here", RegistryValueKind.String);
+                    subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                    using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
                     {
-                        subKey.SetValue("MUIVerb", "Other Kallithea Klone Options", RegistryValueKind.String);
-                        subKey.SetValue("SubCommands", "KallitheaKlone_msg1;KallitheaKlone_msg2;|;KallitheaKlone_LocalRevert;KallitheaKlone_Reclone;KallitheaKlone_Update;|;KallitheaKlone_Settings", RegistryValueKind.String);
+                        commandKey.SetValue("", "\"" + location + "\" Clone \"%V\"");
                     }
                 }
 
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell", true))
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Other", RegistryKeyPermissionCheck.ReadWriteSubTree))
                 {
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_msg1", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                    {
-                        subKey.SetValue("MUIVerb", "The options below are all EXPERIMENAL!", RegistryValueKind.String);
-                        //using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                        //{
-                        //    commandKey.SetValue("", "\"" + location + "\" LocalRevert \"%V\"");
-                        //}
-                    }
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_msg2", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                    {
-                        subKey.SetValue("MUIVerb", "But please test them where it is safe :)", RegistryValueKind.String);
-                        //using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                        //{
-                        //    commandKey.SetValue("", "\"" + location + "\" LocalRevert \"%V\"");
-                        //}
-                    }
+                    subKey.SetValue("MUIVerb", "Other Kallithea Klone Options", RegistryValueKind.String);
+                    subKey.SetValue("SubCommands", "KallitheaKlone_msg1;KallitheaKlone_msg2;|;KallitheaKlone_LocalRevert;KallitheaKlone_Reclone;KallitheaKlone_Update;|;KallitheaKlone_Settings", RegistryValueKind.String);
+                }
+            }
 
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_LocalRevert", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                    {
-                        subKey.SetValue("MUIVerb", "Revert all uncommited changes", RegistryValueKind.String);
-                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
-                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                        {
-                            commandKey.SetValue("", "\"" + location + "\" LocalRevert \"%V\"");
-                        }
-                    }
+            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell", true))
+            {
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_msg1", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    subKey.SetValue("MUIVerb", "The options below are all EXPERIMENAL!", RegistryValueKind.String);
+                }
 
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Reclone", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                    {
-                        subKey.SetValue("MUIVerb", "Delete and re-clone", RegistryValueKind.String);
-                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
-                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                        {
-                            commandKey.SetValue("", "\"" + location + "\" Reclone \"%V\"");
-                        }
-                    }
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_msg2", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    subKey.SetValue("MUIVerb", "But please test them where it is safe :)", RegistryValueKind.String);
+                }
 
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Update", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_LocalRevert", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    subKey.SetValue("MUIVerb", "Revert all uncommited changes", RegistryValueKind.String);
+                    subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                    using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
                     {
-                        subKey.SetValue("MUIVerb", "Update to latest commit", RegistryValueKind.String);
-                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
-                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                        {
-                            commandKey.SetValue("", "\"" + location + "\" Update \"%V\"");
-                        }
+                        commandKey.SetValue("", "\"" + location + "\" LocalRevert \"%V\"");
                     }
+                }
 
-                    using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Settings", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Reclone", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    subKey.SetValue("MUIVerb", "Delete and re-clone", RegistryValueKind.String);
+                    subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                    using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
                     {
-                        subKey.SetValue("MUIVerb", "Settings", RegistryValueKind.String);
-                        subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
-                        using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
-                        {
-                            commandKey.SetValue("", "\"" + location + "\" Settings \"%V\"");
-                        }
+                        commandKey.SetValue("", "\"" + location + "\" Reclone \"%V\"");
+                    }
+                }
+
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Update", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    subKey.SetValue("MUIVerb", "Update to latest commit", RegistryValueKind.String);
+                    subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                    using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        commandKey.SetValue("", "\"" + location + "\" Update \"%V\"");
+                    }
+                }
+
+                using (RegistryKey subKey = key.CreateSubKey("KallitheaKlone_Settings", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    subKey.SetValue("MUIVerb", "Settings", RegistryValueKind.String);
+                    subKey.SetValue("Icon", "\"" + location + "\"", RegistryValueKind.String);
+                    using (RegistryKey commandKey = subKey.CreateSubKey("command", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                    {
+                        commandKey.SetValue("", "\"" + location + "\" Settings \"%V\"");
                     }
                 }
             }
         }
 
-        private void Uninstall()
+        private void Uninstall(string attempt = "0")
         {
+            try
+            {
+                if (!IsAdministrator())
+                {
+                    if (attempt == "0")
+                        RestartAsAdmin("Uninstall 1");
+                    else
+                    {
+                        MessageBoxResult result = System.Windows.MessageBox.Show("This uninstaller need administrator permissions in order to edit your Windows Explorer Menus.\n" +
+                            "This is essential to remove unused menu items. Press OK to try again or Cancel to leave the items after the uninstall.", "Kallithea Klone needs administrator permissions!", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+
+                        switch (result)
+                        {
+                            case MessageBoxResult.OK:
+                                RestartAsAdmin("Uninstall 1");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    return;
+                }
+
+                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
+                {
+                    key.DeleteSubKeyTree("KallitheaKlone", false);
+                    key.DeleteSubKeyTree("KallitheaKlone_Other", false);
+                }
+
+                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\shell", true))
+                {
+                    key.DeleteSubKeyTree("KallitheaKlone", false);
+                    key.DeleteSubKeyTree("KallitheaKlone_Other", false);
+                }
+
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell", true))
+                {
+                    foreach (string subkey in key.GetSubKeyNames())
+                    {
+                        if (subkey.StartsWith("KallitheaKlone"))
+                            key.DeleteSubKeyTree(subkey, false);
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+
             try
             {
                 Default.Reset();
@@ -234,33 +292,6 @@ namespace Kallithea_Klone
                     File.Delete(file);
                 }
                 Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone");
-            }
-            catch
-            {
-
-            }
-            try
-            {
-                if (IsAdministrator() == false)
-                {
-                    // Restart program and run as admin
-                    var exeName = Process.GetCurrentProcess().MainModule.FileName;
-                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
-                    {
-                        Verb = "runas",
-                        Arguments = "Setup"
-                    };
-                    Process.Start(startInfo);
-                    Current.Shutdown();
-                    return;
-                }
-                else
-                {
-                    using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
-                    {
-                        key.DeleteSubKeyTree("KallitheaKlone", false);
-                    }
-                }
             }
             catch
             {
@@ -277,16 +308,62 @@ namespace Kallithea_Klone
 
         private void Settings()
         {
-            Settings s = new Settings();
-            s.ShowDialog();
+            Settings window = new Settings();
+
+            int windowHeight = (int)window.Height;
+            int windowWidth = (int)window.Width;
+
+            window.Left = Cursor.Position.X - (windowWidth / 2);
+            window.Top = Cursor.Position.Y - (windowHeight / 2);
+
+            int screenHeight = Screen.FromPoint(Cursor.Position).Bounds.Height;
+            int screenWidth = Screen.FromPoint(Cursor.Position).Bounds.Width;
+
+            while (window.Top + windowHeight + 5 > screenHeight)
+                window.Top -= 1;
+
+            while (window.Top - 5 < 0)
+                window.Top += 1;
+
+            while (window.Left + windowWidth + 5 > screenWidth)
+                window.Left -= 1;
+
+            while (window.Left - 5 < 0)
+                window.Left += 1;
+
+            window.Show();
         }
 
-        string UppercaseFirst(string s)
+        private string UppercaseFirst(string s)
         {
             if (string.IsNullOrEmpty(s))
                 return string.Empty;
 
             return char.ToUpper(s[0]) + s.Substring(1);
+        }
+
+        private void RestartAsAdmin(string arguments)
+        {
+            var exeName = Process.GetCurrentProcess().MainModule.FileName;
+
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                {
+                    Verb = "runas",
+                    Arguments = arguments
+                };
+                Process.Start(startInfo);
+            }
+            catch
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                {
+                    Arguments = arguments
+                };
+                Process.Start(startInfo);
+            }
+            Current.Shutdown();
         }
 
         void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)

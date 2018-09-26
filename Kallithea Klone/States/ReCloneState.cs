@@ -15,6 +15,8 @@ using System.Deployment.Application;
 using System.Reflection;
 using System.Diagnostics;
 using System.Net;
+using Kallithea_Klone.States;
+using Kallithea_Klone.Other_Classes;
 
 namespace Kallithea_Klone
 {
@@ -42,14 +44,17 @@ namespace Kallithea_Klone
         {
             if (((Process)sender).ExitCode != 0)
                 errorCodes.Add(((Process)sender).ExitCode.ToString());
-            reClonedCount++;
-
-            if (reClonedCount == reCloningCount)
+            else
             {
-                if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
+                URIPair uriPair = JsonConvert.DeserializeObject<URIPair>(((Process)sender).StartInfo.Arguments.Split('|').Last());
+
+                IniFile hgrc = new IniFile(uriPair.Local + "\\.hg\\hgrc");
+                hgrc.Write("default", uriPair.Remote, "paths");
+
             }
+
+            reClonedCount++;
+            CheckClonedCount();
         }
 
         //  State Pattern
@@ -91,6 +96,14 @@ namespace Kallithea_Klone
             foreach (string url in MainWindow.CheckedURLs)
             {
                 string remotePath = GetDefaultPath(url);
+
+                if (remotePath == null)
+                {
+                    reCloningCount--;
+                    CheckClonedCount();
+                    continue;
+                }
+
                 Uri uri = new Uri(remotePath);
                 string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}";
 
@@ -114,12 +127,18 @@ namespace Kallithea_Klone
                     continue;
                 }
 
+                string urlPair = JsonConvert.SerializeObject(new URIPair(url, fullURL));
+
                 Process process = new Process();
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    FileName = "cmd.exe",
-                    Arguments = $"/C hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('\\').Last()}\""
+                    WindowStyle = ProcessWindowStyle.Normal,
+                    FileName = CmdExe,
+                    Arguments = $"/C cd /d \"{url}\"" +
+                                  $"&hg init" +
+                                  $"&hg pull {fullURL}" +
+                                  $"&hg update" +
+                                  $"&echo \"|{urlPair}"//Allows the process closed event to have the URLs via the process's starting arguments
                 };
                 process.StartInfo = startInfo;
                 process.EnableRaisingEvents = true;
@@ -202,6 +221,16 @@ namespace Kallithea_Klone
             newItem.Unchecked += mainWindow.NewItem_Unchecked;
 
             return newItem;
+        }
+
+        private void CheckClonedCount()
+        {
+            if (reClonedCount == reCloningCount)
+            {
+                if (errorCodes.Count > 0)
+                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                Environment.Exit(0);
+            }
         }
     }
 }
