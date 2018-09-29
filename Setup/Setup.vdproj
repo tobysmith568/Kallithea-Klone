@@ -52,7 +52,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9727C1AF41E7078620D788C19530E48D"
+        "OwnerKey" = "8:_53B91D14BC52EAFD7CA884B0166CBDA9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -64,7 +64,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_53B91D14BC52EAFD7CA884B0166CBDA9"
+        "OwnerKey" = "8:_9727C1AF41E7078620D788C19530E48D"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -217,11 +217,6 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_53B91D14BC52EAFD7CA884B0166CBDA9"
-                    {
-                    "Name" = "8:System.Net.Http.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -248,11 +243,6 @@
             "AssemblyAsmDisplayName" = "8:RestSharp, Version=106.3.1.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_9727C1AF41E7078620D788C19530E48D"
-                    {
-                    "Name" = "8:RestSharp.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:RestSharp.dll"
             "TargetName" = "8:"
@@ -279,11 +269,6 @@
             "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_FE57875AC063BB13E2DB31AB091D0CB6"
-                    {
-                    "Name" = "8:Newtonsoft.Json.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
@@ -359,15 +344,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Kallithea Klone"
-        "ProductCode" = "8:{028BD4DD-E2F8-4F25-8374-041A8DDD3DD4}"
-        "PackageCode" = "8:{A39A6A0D-6CB7-4575-94FA-67D7E15C9976}"
+        "ProductCode" = "8:{9E8B13AB-D39B-4057-95A8-66582E8BC0FC}"
+        "PackageCode" = "8:{94D8A069-FBE2-4E38-AFA6-C6C96B0D2A6B}"
         "UpgradeCode" = "8:{6DB75753-DB50-400C-BD72-E4C2253DADBE}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.8"
+        "ProductVersion" = "8:1.0.9"
         "Manufacturer" = "8:Kallithea Klone"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
