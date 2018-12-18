@@ -292,6 +292,7 @@ namespace Kallithea_Klone
             Topmost = true;
             settingsOpen = true;
             GridCoverAll.Visibility = Visibility.Visible;
+            Topmost = false;
         }
 
         private void ShowAndCollapse(ItemsControl parent)
