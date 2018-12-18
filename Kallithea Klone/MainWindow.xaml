@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Kallithea_Klone"
         mc:Ignorable="d"
         FocusManager.FocusedElement="{Binding ElementName=TbxSearch}"
-        Title="MainWindow" Height="587.433" Width="419.5" WindowStyle="None" Deactivated="Window_Deactivated" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Window_Loaded" Topmost="True">
+        Title="Kallithea Klone" Height="587.433" Width="419.5" WindowStyle="None" Deactivated="Window_Deactivated" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Window_Loaded" Topmost="True">
     <Window.Background>
         <SolidColorBrush Color="Black" Opacity="0.01"/>
     </Window.Background>
