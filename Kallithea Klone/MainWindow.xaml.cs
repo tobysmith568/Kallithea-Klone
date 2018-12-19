@@ -206,6 +206,7 @@ namespace Kallithea_Klone
         private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             state.OnSearchTermChanged();
+            SetEmpty();
         }
 
         private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -214,6 +215,7 @@ namespace Kallithea_Klone
             {
                 state.OnSearch();
             }
+            SetEmpty();
         }
 
         public void NewItem_Unchecked(object sender, RoutedEventArgs e)
@@ -373,6 +375,11 @@ namespace Kallithea_Klone
         {
             lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
             BtnClone.IsEnabled = CheckedURLs.Count > 0;
+        }
+
+        public void SetEmpty()
+        {
+            NoResults.Visibility = MainTree.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
         }
     }
 }
