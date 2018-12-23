@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Kallithea_Klone
 {
-    class GithubRelease
+    public class GithubRelease
     {
         //  JSON Properties
         //  ===============
@@ -20,14 +20,14 @@ namespace Kallithea_Klone
 
         [JsonProperty("assets")]
         public Asset[] Assets { get; set; }
+    }
 
-        public class Asset
-        {
-            //  JSON Properties
-            //  ===============
+    public class Asset
+    {
+        //  JSON Properties
+        //  ===============
 
-            [JsonProperty("browser_download_url")]
-            public string URL { get; set; }
-        }
+        [JsonProperty("browser_download_url")]
+        public string URL { get; set; }
     }
 }
