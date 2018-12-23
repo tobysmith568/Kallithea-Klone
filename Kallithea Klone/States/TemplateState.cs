@@ -1,4 +1,4 @@
-﻿using RestSharp;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,7 +58,7 @@ namespace Kallithea_Klone
 
         public virtual void OnLoseFocus()
         {
-            if (!mainWindow.settingsOpen)
+            if (Application.Current.Windows.Cast<Window>().Count(w => w.Focusable) == 1)
                 Environment.Exit(0);
         }
 

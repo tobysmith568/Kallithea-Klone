@@ -1,4 +1,4 @@
-﻿using RestSharp;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,7 +29,6 @@ namespace Kallithea_Klone
         public static MainWindow singleton = null;
 
         public string runFrom;
-        public bool settingsOpen;
 
         public static List<string> CheckedURLs = new List<string>();
 
@@ -158,12 +157,8 @@ namespace Kallithea_Klone
             };
             MIAbout.Click += (ss, ee) =>
             {
-                settingsOpen = true;
-
                 About about = new About();
                 about.ShowDialog();
-
-                settingsOpen = false;
             };
 
             ContextMenu contextMenu = new ContextMenu();
@@ -292,7 +287,6 @@ namespace Kallithea_Klone
         public void DisableAll()
         {
             Topmost = true;
-            settingsOpen = true;
             GridCoverAll.Visibility = Visibility.Visible;
             Topmost = false;
         }
@@ -362,13 +356,11 @@ namespace Kallithea_Klone
 
         public void OpenSettings()
         {
-            settingsOpen = true;
-            Settings s = new Settings
+            Settings settings = new Settings
             {
                 Owner = this
             };
-            s.ShowDialog();
-            settingsOpen = false;
+            settings.ShowDialog();
         }
 
         public void SelectionUpdated()
