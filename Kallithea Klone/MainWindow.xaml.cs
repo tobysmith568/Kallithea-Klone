@@ -1,4 +1,4 @@
-using RestSharp;
+﻿using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -243,33 +243,7 @@ namespace Kallithea_Klone
                 switch (response.ResponseStatus)
                 {
                     case ResponseStatus.Completed:
-                        if (response.StatusCode != HttpStatusCode.OK)
-                            return;
-
-                        GithubRelease release = JsonConvert.DeserializeObject<GithubRelease>(response.Content);
-                        if (release != null)
-                        {
-                            if (release.Assets.Count(a => a.URL.EndsWith(".msi")) > 0
-                                    && !release.IsDraft
-                                    && Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version))
-                            {
-                                if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) < 0)
-                                {
-                                    MessageBoxResult result = MessageBox.Show("A new version of Kallithea Klone has been found!\n" +
-                                        "Do you want to update to it now?", "Update found!",
-                                        MessageBoxButton.OKCancel, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-
-                                    switch (result)
-                                    {
-                                        case MessageBoxResult.OK:
-                                            Process.Start(new ProcessStartInfo(release.Assets.First(r => r.URL.EndsWith(".msi")).URL));
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                            }
-                        }
+                        PromptUpdate(response);
                         break;
                     case ResponseStatus.TimedOut:
                     case ResponseStatus.Error:
@@ -280,8 +254,38 @@ namespace Kallithea_Klone
             }
             catch
             {
-
+                //No need to do anything
             }
+        }
+
+        public void PromptUpdate(IRestResponse response)
+        {
+            if (response.StatusCode != HttpStatusCode.OK)
+                return;
+
+            GithubRelease release = JsonConvert.DeserializeObject<GithubRelease>(response.Content);
+
+            if (release == null)
+                return;
+
+            if (release.IsDraft)
+                return;
+
+            Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version);
+
+            if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) >= 0)
+                return;
+
+            Asset asset = release.Assets.FirstOrDefault(r => r.URL.EndsWith(".msi"));
+
+            if (asset == null)
+                return;
+            
+            UpdatePrompt prompt = new UpdatePrompt(release.URL, asset.URL)
+            {
+                Owner = this
+            };
+            prompt.ShowDialog();
         }
 
         public void DisableAll()

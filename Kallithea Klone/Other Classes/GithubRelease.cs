@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,9 @@ namespace Kallithea_Klone
     {
         //  JSON Properties
         //  ===============
+
+        [JsonProperty("html_url")]
+        public string URL { get; set; }
 
         [JsonProperty("tag_name")]
         public string Tag { get; set; }

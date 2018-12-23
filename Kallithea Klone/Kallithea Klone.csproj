@@ -108,6 +108,9 @@
     </Compile>
     <Compile Include="States\TemplateState.cs" />
     <Compile Include="Other Classes\User.cs" />
+    <Compile Include="UpdatePrompt.xaml.cs">
+      <DependentUpon>UpdatePrompt.xaml</DependentUpon>
+    </Compile>
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -126,6 +129,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Settings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UpdatePrompt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
