@@ -1,4 +1,5 @@
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -23,6 +24,9 @@ namespace Kallithea_Klone
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        //  Events
+        //  ======
+
         void App_Startup(object sender, StartupEventArgs e)
         {
             if (Default.JustInstalled)
@@ -82,10 +86,34 @@ namespace Kallithea_Klone
             }
             else
             {
-                System.Windows.MessageBox.Show("To use this program right click in the folder where\nyou want to clone a repository", "Oops, that's not how to use me!", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, System.Windows.MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
+                string folder;
+
+                if (CommonFileDialog.IsPlatformSupported)
+                {
+                    folder = SelectWinVistaFolder();
+                }
+                else
+                {
+                    folder = SelectWinXPFolder();
+                }
+                
+                Open(RunTypes.Clone, folder);
             }
         }
+
+        void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
+        {
+
+            System.Windows.MessageBox.Show("An unexpected exception has occurred. Shutting down the application:\n" + args.Exception);
+
+            // Prevent default unhandled exception processing
+            args.Handled = true;
+
+            Environment.Exit(0);
+        }
+
+        //  Methods
+        //  =======
 
         private void Open(RunTypes runType, string ranFrom)
         {
@@ -366,15 +394,57 @@ namespace Kallithea_Klone
             Current.Shutdown();
         }
 
-        void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
+        private string SelectWinXPFolder()
         {
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog
+            {
+                Description = "Select a target folder"
+            })
+            {
+                DialogResult result = folderBrowserDialog.ShowDialog();
 
-            System.Windows.MessageBox.Show("An unexpected exception has occurred. Shutting down the application:\n" + args.Exception);
+                switch (result)
+                {
+                    case DialogResult.OK:
+                    case DialogResult.Yes:
+                        break;
 
-            // Prevent default unhandled exception processing
-            args.Handled = true;
+                    default:
+                        Environment.Exit(1);
+                        break;
+                }
 
-            Environment.Exit(0);
+                return folderBrowserDialog.SelectedPath;
+            }
+        }
+
+        private string SelectWinVistaFolder()
+        {
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog
+            {
+                Title = "Select a target folder",
+                IsFolderPicker = true,
+                DefaultDirectory = @"C:\",
+                AllowNonFileSystemItems = false,
+                EnsurePathExists = true,
+                Multiselect = false,
+                NavigateToShortcut = true
+            })
+            {
+                CommonFileDialogResult result = dialog.ShowDialog();
+
+                switch (result)
+                {
+                    case CommonFileDialogResult.Ok:
+                        break;
+
+                    default:
+                        Environment.Exit(1);
+                        break;
+                }
+
+                return dialog.FileName;
+            }
         }
     }
 }
