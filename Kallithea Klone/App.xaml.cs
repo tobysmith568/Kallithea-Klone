@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -76,7 +76,7 @@ namespace Kallithea_Klone
                             Uninstall();
                         goto default;
                     default:
-                        Environment.Exit(0);
+                        Environment.Exit(1);
                         break;
                 }
             }
