@@ -272,12 +272,10 @@ namespace Kallithea_Klone
                 return;
 
             Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version);
-
-            /*
+                        
             if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) >= 0)
                 return;
-                */
-
+            
             Asset asset = release.Assets.FirstOrDefault(r => r.URL.EndsWith(".msi"));
 
             if (asset == null)
