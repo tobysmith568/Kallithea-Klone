@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="Kallithea_Klone.UpdateFound"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Kallithea_Klone"
+             mc:Ignorable="d" 
+             d:DesignHeight="120" d:DesignWidth="458">
+    <Grid>
+        
+        <TextBlock Margin="10,10,10,51" FontSize="18" TextWrapping="Wrap" Grid.Row="1" VerticalAlignment="Center">
+            An update for Kallithea Klone has been found.<LineBreak />Do you want to update now?
+        </TextBlock>
+        <Button x:Name="BtnNo" Content="No" FontSize="18" HorizontalAlignment="Right" Height="36" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="94" Click="BtnNo_Click" Grid.Row="1"/>
+        <Button x:Name="BtnYes" Content="Yes" FontSize="18" HorizontalAlignment="Right" Height="36" Margin="0,0,114,10" VerticalAlignment="Bottom" Width="94" Click="BtnYes_Click" Padding="1" Grid.Row="1"/>
+        <Button x:Name="BtnGithub" Content="Visit on Github" FontSize="18" HorizontalAlignment="Left" Height="36" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="154" Click="BtnGithub_Click" Grid.Row="1"/>
+
+    </Grid>
+</UserControl>

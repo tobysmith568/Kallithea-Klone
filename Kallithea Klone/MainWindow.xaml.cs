@@ -273,15 +273,17 @@ namespace Kallithea_Klone
 
             Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version);
 
+            /*
             if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) >= 0)
                 return;
+                */
 
             Asset asset = release.Assets.FirstOrDefault(r => r.URL.EndsWith(".msi"));
 
             if (asset == null)
                 return;
             
-            UpdatePrompt prompt = new UpdatePrompt(release.URL, asset.URL)
+            UpdateWindow prompt = new UpdateWindow(release.URL, asset.URL)
             {
                 Owner = this
             };
