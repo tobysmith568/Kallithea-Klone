@@ -84,7 +84,31 @@
             <!-- Header -->
             <Label Content="Settings" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,0,60,0" Height="61" VerticalAlignment="Top" IsHitTestVisible="False"/>
             <Button x:Name="BtnClose" Style="{DynamicResource CloseButton}" Margin="0,10,10,0" Width="{Binding ActualHeight, ElementName=BtnClose, Mode=OneWay}" HorizontalAlignment="Right" Click="BtnClose_Click" Height="45" VerticalAlignment="Top"/>
-
+            
+            <!-- Host -->
+            <Label x:Name="LblHost_URL" Content="Host URL" Margin="10,74,10,0" VerticalAlignment="Top"/>
+            <Grid Margin="10,103,10,0" Height="36" VerticalAlignment="Top">
+                <TextBox x:Name="TbxHost" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" KeyDown="Tbx_KeyDown" TextChanged="Tbx_TextChanged">
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+                <TextBlock IsHitTestVisible="False" Text="http://..." Padding="6,3,0,0" Margin="0,0,0,0" Foreground="#FF607D8B" VerticalAlignment="Center" FontSize="18">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=TbxHost}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+            
             <!-- API Key -->
             <Label x:Name="LblAPIKey" Content="Kallithea API Key" Margin="10,144,10,0" VerticalAlignment="Top"/>
             <Grid Margin="10,173,10,0" Height="36" VerticalAlignment="Top">
@@ -111,30 +135,6 @@
             <TextBlock x:Name="TbAPIKey" Margin="0,209,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}" HorizontalAlignment="Right" FontSize="14" Cursor="Hand" Width="126" TextAlignment="Right">
                 <Hyperlink NavigateUri="/_admin/my_account/api_keys" RequestNavigate="Hyperlink_RequestNavigate">What is my API key?</Hyperlink>
             </TextBlock>
-
-            <!-- Host -->
-            <Label x:Name="LblHost_URL" Content="Host URL" Margin="10,74,10,0" VerticalAlignment="Top"/>
-            <Grid Margin="10,103,10,0" Height="36" VerticalAlignment="Top">
-                <TextBox x:Name="TbxHost" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" KeyDown="Tbx_KeyDown" TextChanged="Tbx_TextChanged">
-                    <TextBox.Resources>
-                        <Style TargetType="{x:Type Border}">
-                            <Setter Property="CornerRadius" Value="5"/>
-                        </Style>
-                    </TextBox.Resources>
-                </TextBox>
-                <TextBlock IsHitTestVisible="False" Text="http://..." Padding="6,3,0,0" Margin="0,0,0,0" Foreground="#FF607D8B" VerticalAlignment="Center" FontSize="18">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=TbxHost}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
 
             <!-- Password -->
             <Label x:Name="LblPassword" Content="Kallithea Password" Margin="10,228,10,0" VerticalAlignment="Top"/>
