@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Settings" Height="420" Width="298" Loaded="Window_Loaded" FontSize="18" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="Settings" Height="460" Width="298" Loaded="Window_Loaded" FontSize="18" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <Style x:Key="CloseButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -58,6 +58,27 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="{x:Type TabItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid>
+                            <Border Name="Border" Margin="0,0,0,0" Background="#FFB1D597" BorderBrush="Black" BorderThickness="1,1,1,0" CornerRadius="5,5,0,0">
+                                <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="12,2,12,2" RecognizesAccessKey="True" />
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Panel.ZIndex" Value="100" />
+                                <Setter TargetName="Border" Property="Background" Value="#FF577632" />
+                                <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0" />
+                                <Setter Property="Foreground" Value="#FFB1D597" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Window.Background>
         <SolidColorBrush Color="Black" Opacity="0.01"/>
@@ -78,71 +99,82 @@
                     </LinearGradientBrush>
                 </Border.Background>
             </Border>
-            <Button x:Name="BtnSave" Content="Save" Margin="0,0,10,10" Click="BtnSave_Click" HorizontalAlignment="Right" Width="95" Height="28" VerticalAlignment="Bottom" IsEnabled="False"/>
-
+            
             <!-- Header -->
             <Label Content="Settings" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,0,60,0" Height="61" VerticalAlignment="Top" IsHitTestVisible="False"/>
             <Button x:Name="BtnClose" Style="{DynamicResource CloseButton}" Margin="0,10,10,0" Width="{Binding ActualHeight, ElementName=BtnClose, Mode=OneWay}" HorizontalAlignment="Right" Click="BtnClose_Click" Height="45" VerticalAlignment="Top"/>
             
-            <!-- Host -->
-            <Label x:Name="LblHost_URL" Content="Host URL" Margin="10,74,10,0" VerticalAlignment="Top"/>
-            <Grid Margin="10,103,10,0" Height="36" VerticalAlignment="Top">
-                <TextBox x:Name="TbxHost" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" KeyDown="Tbx_KeyDown" TextChanged="Tbx_TextChanged">
-                    <TextBox.Resources>
-                        <Style TargetType="{x:Type Border}">
-                            <Setter Property="CornerRadius" Value="5"/>
-                        </Style>
-                    </TextBox.Resources>
-                </TextBox>
-                <TextBlock IsHitTestVisible="False" Text="http://..." Padding="6,3,0,0" Margin="0,0,0,0" Foreground="#FF607D8B" VerticalAlignment="Center" FontSize="18">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=TbxHost}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
-            
-            <!-- API Key -->
-            <Label x:Name="LblAPIKey" Content="Kallithea API Key" Margin="10,144,10,0" VerticalAlignment="Top"/>
-            <Grid Margin="10,173,10,0" Height="36" VerticalAlignment="Top">
-                <TextBox x:Name="TbxAPIKey" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" KeyDown="Tbx_KeyDown" TextChanged="Tbx_TextChanged">
-                    <TextBox.Resources>
-                        <Style TargetType="{x:Type Border}">
-                            <Setter Property="CornerRadius" Value="5"/>
-                        </Style>
-                    </TextBox.Resources>
-                </TextBox>
-                <TextBlock IsHitTestVisible="False" Text="c3c422b842f2f..." Padding="6,3,0,0" Margin="0,0,0,0" Foreground="#FF607D8B" VerticalAlignment="Center" FontSize="18">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=TbxAPIKey}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
-            <TextBlock x:Name="TbAPIKey" Margin="0,209,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}" HorizontalAlignment="Right" FontSize="14" Cursor="Hand" Width="126" TextAlignment="Right">
-                <Hyperlink NavigateUri="/_admin/my_account/api_keys" RequestNavigate="Hyperlink_RequestNavigate">What is my API key?</Hyperlink>
-            </TextBlock>
+            <!-- Tabs -->
+            <TabControl Margin="0,70,0,43" Background="{x:Null}" BorderBrush="Black" BorderThickness="0, 1, 0, 0">
+                <!-- Kallithea Tab -->
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock Text="Kallithea" />
+                    </TabItem.Header>
+                    <Grid>
+                        <!-- Host -->
+                        <Label x:Name="LblHost_URL" Content="Host URL" Margin="10,0,10,0" VerticalAlignment="Top"/>
+                        <Grid Margin="10,29,10,0" Height="36" VerticalAlignment="Top">
+                            <TextBox x:Name="TbxHost" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" KeyDown="Tbx_KeyDown" TextChanged="Tbx_TextChanged">
+                                <TextBox.Resources>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                            <TextBlock IsHitTestVisible="False" Text="http://..." Padding="6,3,0,0" Margin="0,0,0,0" Foreground="#FF607D8B" VerticalAlignment="Center" FontSize="18">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=TbxHost}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
 
-            <!-- Password -->
-            <Label x:Name="LblPassword" Content="Kallithea Password" Margin="10,228,10,0" VerticalAlignment="Top"/>
-            <PasswordBox x:Name="PbOne" Margin="10,257,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
-            <PasswordBox x:Name="PbTwo" Margin="10,322,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
-            <Label x:Name="LblPasswordConfirm" Content="Confirm Password" Margin="10,293,10,0" VerticalAlignment="Top" FontSize="18"/>
-            <Label x:Name="LblNotMatching" Margin="10,370,105,10" FontSize="14" Content="Passwords do not match!" HorizontalContentAlignment="Left" Foreground="Red" Visibility="Hidden"/>
+                        <!-- API Key -->
+                        <Label x:Name="LblAPIKey" Content="Kallithea API Key" Margin="10,66,10,0" VerticalAlignment="Top"/>
+                        <Grid Margin="10,94,10,0" Height="36" VerticalAlignment="Top">
+                            <TextBox x:Name="TbxAPIKey" Margin="0" BorderBrush="Black" Background="#FFB1D597" SelectionBrush="#FF587833" FontSize="18" Text="" VerticalContentAlignment="Center" KeyDown="Tbx_KeyDown" TextChanged="Tbx_TextChanged">
+                                <TextBox.Resources>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                            <TextBlock IsHitTestVisible="False" Text="c3c422b842f2f..." Padding="6,3,0,0" Margin="0,0,0,0" Foreground="#FF607D8B" VerticalAlignment="Center" FontSize="18">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=TbxAPIKey}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                        <TextBlock x:Name="TbAPIKey" Margin="0,130,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}" HorizontalAlignment="Right" FontSize="14" Cursor="Hand" Width="126" TextAlignment="Right">
+                            <Hyperlink NavigateUri="/_admin/my_account/api_keys" RequestNavigate="Hyperlink_RequestNavigate">What is my API key?</Hyperlink>
+                        </TextBlock>
 
+                        <!-- Password -->
+                        <Label x:Name="LblPassword" Content="Kallithea Password" Margin="10,148,10,0" VerticalAlignment="Top"/>
+                        <PasswordBox x:Name="PbOne" Margin="10,176,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
+                        <Label x:Name="LblPasswordConfirm" Content="Confirm Password" Margin="10,212,10,0" VerticalAlignment="Top" FontSize="18"/>
+                        <PasswordBox x:Name="PbTwo" Margin="10,241,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
+                        <Label x:Name="LblNotMatching" Margin="10,272,105,-3" FontSize="14" Content="Passwords do not match!" HorizontalContentAlignment="Left" Foreground="Red" Visibility="Visible"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
             
+            <Button x:Name="BtnSave" Content="Save" Margin="0,0,10,10" Click="BtnSave_Click" HorizontalAlignment="Right" Width="95" Height="28" VerticalAlignment="Bottom" IsEnabled="False"/>
+
             <Grid x:Name="GridCoverAll" Margin="0" Visibility="Hidden">
                 <Grid.Background>
                     <SolidColorBrush Color="Black" Opacity="0.7"/>
