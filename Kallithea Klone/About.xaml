@@ -1,4 +1,4 @@
-﻿<Window x:Name="AboutWindow" x:Class="Kallithea_Klone.About"
+<Window x:Name="AboutWindow" x:Class="Kallithea_Klone.About"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,18 +9,17 @@
     <Grid Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}">
         <Label Content="About Kallithea Klone" FontSize="38" FontWeight="Bold" Foreground="#FF577632" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" IsHitTestVisible="False" Height="62" VerticalAlignment="Top"/>
         <TextBlock Margin="10,91,10,0" VerticalAlignment="Top" >
-            Developed by Toby Smith - <Hyperlink NavigateUri="https://tobysmith.uk" RequestNavigate="Hyperlink_RequestNavigate">https://tobysmith.uk</Hyperlink>.
+            <Run Text="Developed by Toby Smith - "/><Hyperlink NavigateUri="https://tobysmith.uk" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://tobysmith.uk"/></Hyperlink><Run Text="."/>
         </TextBlock>
         <TextBlock x:Name="tbVersion" Margin="10,67,10,0" VerticalAlignment="Top" Text="" />
         <TextBlock Margin="10,139,10,0" VerticalAlignment="Top">
-            This software is in no way associated with <Hyperlink NavigateUri="https://kallithea-scm.org" RequestNavigate="Hyperlink_RequestNavigate">kallithea-scm.org</Hyperlink>.
+            <Run Text="This software is in no way associated with "/><Hyperlink NavigateUri="https://kallithea-scm.org" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="kallithea-scm.org"/></Hyperlink><Run Text="."/>
         </TextBlock>
         <TextBlock Margin="10,163,10,0" VerticalAlignment="Top"><Run Text="This software uses the following software libraries:"/><LineBreak/><Run Text="        "/><Hyperlink NavigateUri="https://www.newtonsoft.com/json" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Newtonsoft.NET"/></Hyperlink><Run Text=" - MIT License"/><LineBreak/><Run Text="        "/><Hyperlink NavigateUri="http://restsharp.org/" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="RestSharp"/></Hyperlink><Run Text=" - Apache License 2.0"/></TextBlock>
         <Button x:Name="BtnClone" Content="Close" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="97" Height="30" Click="BtnClone_Click"/>
-        <TextBlock Margin="10,115,10,0" VerticalAlignment="Top" >Source code can be found on <Hyperlink NavigateUri="https://github.com/tobysmith568/Kallithea-Klone" RequestNavigate="Hyperlink_RequestNavigate">Github</Hyperlink><Run Text="."/></TextBlock>
-        <TextBlock Margin="10,224,10,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Icons used with permission from "/><Hyperlink NavigateUri="https://icons8.com/" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Icons8"/></Hyperlink><Run Text=" -"/><Run Text=" "/><Run Text="Creative Commons Attribution-NoDerivs 3.0 Unported"/></TextBlock>
-        <TextBlock Margin="10,248,10,0" VerticalAlignment="Top"><Run Text="This software "/><Run Text="is protected by the "/><Hyperlink NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html" RequestNavigate="Hyperlink_RequestNavigate">GNU GPLv3 copyleft license</Hyperlink>.</TextBlock>
+        <TextBlock Margin="10,115,10,0" VerticalAlignment="Top" ><Run Text="Source code can be found on "/><Hyperlink NavigateUri="https://github.com/tobysmith568/Kallithea-Klone" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Github"/></Hyperlink><Run Text="."/></TextBlock>
+        <TextBlock Margin="10,224,10,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Icons used with permission from "/><Hyperlink NavigateUri="https://icons8.com/" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Icons8"/></Hyperlink><Run Text=" -"/><Run Text=" "/><Run Text="Creative Commons Attribution-NoDerivs 3.0 Unported."/></TextBlock>
+        <TextBlock Margin="10,248,10,0" VerticalAlignment="Top"><Run Text="This software "/><Run Text="is protected by the "/><Hyperlink NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="GNU GPLv3 copyleft license"/></Hyperlink><Run Text="."/></TextBlock>
         <CheckBox x:Name="CbUpdates" Content="Check for updates on startup?" HorizontalAlignment="Left" Margin="10,272,0,0" VerticalContentAlignment="Center" Width="519" Checked="CbUpdates_Toggled" Unchecked="CbUpdates_Toggled" Height="18" VerticalAlignment="Top"/>
-
     </Grid>
 </Window>
