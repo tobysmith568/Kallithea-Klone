@@ -44,6 +44,8 @@ namespace Kallithea_Klone
 
             PbOne.PasswordChanged += PasswordChanged;
             PbTwo.PasswordChanged += PasswordChanged;
+
+            CbUpdates.IsChecked = MainWindow.Updates;
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -101,6 +103,11 @@ namespace Kallithea_Klone
         private void Tbx_TextChanged(object sender, TextChangedEventArgs e)
         {
             BtnSave.IsEnabled = GetSaveButtonEnabled();
+        }
+
+        private void CbUpdates_Toggled(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Updates = ((CheckBox)sender).IsChecked == true;
         }
 
         //  Methods

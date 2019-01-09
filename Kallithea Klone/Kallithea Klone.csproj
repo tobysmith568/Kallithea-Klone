@@ -117,8 +117,14 @@
     </Compile>
     <Compile Include="States\TemplateState.cs" />
     <Compile Include="Other Classes\User.cs" />
-    <Compile Include="UpdatePrompt.xaml.cs">
-      <DependentUpon>UpdatePrompt.xaml</DependentUpon>
+    <Compile Include="UpdateDownloading.xaml.cs">
+      <DependentUpon>UpdateDownloading.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UpdateFound.xaml.cs">
+      <DependentUpon>UpdateFound.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UpdateWindow.xaml.cs">
+      <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
@@ -141,7 +147,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UpdatePrompt.xaml">
+    <Page Include="UpdateDownloading.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UpdateFound.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UpdateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

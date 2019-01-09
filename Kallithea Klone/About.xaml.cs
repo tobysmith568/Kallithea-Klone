@@ -36,11 +36,6 @@ namespace Kallithea_Klone
         //  Events
         //  ======
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            CbUpdates.IsChecked = MainWindow.Updates;
-        }
-
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
@@ -50,11 +45,6 @@ namespace Kallithea_Klone
         private void BtnClone_Click(object sender, RoutedEventArgs e)
         {
             Close();
-        }
-
-        private void CbUpdates_Toggled(object sender, RoutedEventArgs e)
-        {
-            MainWindow.Updates = ((CheckBox)sender).IsChecked == true;
         }
     }
 }

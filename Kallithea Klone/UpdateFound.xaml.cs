@@ -11,28 +11,27 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Kallithea_Klone
 {
     /// <summary>
-    /// Interaction logic for UpdatePrompt.xaml
+    /// Interaction logic for UpdateFound.xaml
     /// </summary>
-    public partial class UpdatePrompt : Window
+    public partial class UpdateFound : UserControl
     {
         //  Variables
         //  =========
-        
-        private string githubURL;
-        private string downloadURL;
+
+        private UpdateWindow parent;
 
         //  Constructors
         //  ============
 
-        public UpdatePrompt(string githubURL, string downloadURL)
+        public UpdateFound(UpdateWindow parent)
         {
-            this.githubURL = githubURL;
-            this.downloadURL = downloadURL;
+            this.parent = parent;
 
             InitializeComponent();
         }
@@ -42,29 +41,18 @@ namespace Kallithea_Klone
 
         private void BtnGithub_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(githubURL));
+            Process.Start(new ProcessStartInfo(parent.GithubURL));
+            Environment.Exit(0);
         }
 
         private void BtnYes_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(downloadURL));
-            Environment.Exit(0);
+            parent.Download();
         }
 
         private void BtnNo_Click(object sender, RoutedEventArgs e)
         {
-            Close();
-        }
-
-        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                DragMove();
-        }
-
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
+            parent.Close();
         }
     }
 }
