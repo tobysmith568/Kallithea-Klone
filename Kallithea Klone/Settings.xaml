@@ -168,7 +168,7 @@
                         <PasswordBox x:Name="PbOne" Margin="10,176,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
                         <Label x:Name="LblPasswordConfirm" Content="Confirm Password" Margin="10,212,10,0" VerticalAlignment="Top" FontSize="18"/>
                         <PasswordBox x:Name="PbTwo" Margin="10,241,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
-                        <Label x:Name="LblNotMatching" Margin="10,272,105,-3" FontSize="14" Content="Passwords do not match!" HorizontalContentAlignment="Left" Foreground="Red" Visibility="Visible"/>
+                        <Label x:Name="LblNotMatching" Margin="10,272,105,-3" FontSize="14" Content="Passwords do not match!" HorizontalContentAlignment="Left" Foreground="Red" Visibility="Hidden"/>
                     </Grid>
                 </TabItem>
                 <!-- Other Tab -->
