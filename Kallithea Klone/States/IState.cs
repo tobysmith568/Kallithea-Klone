@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kallithea_Klone.States
+﻿namespace Kallithea_Klone.States
 {
     public interface IState
     {

@@ -3,18 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Newtonsoft.Json;
 using System.Web;
-using System.Security.Cryptography;
-using System.Deployment.Application;
-using System.Reflection;
 using System.Diagnostics;
-using System.Net;
 using Kallithea_Klone.Other_Classes;
 
 namespace Kallithea_Klone.States
