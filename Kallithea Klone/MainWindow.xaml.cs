@@ -15,6 +15,8 @@ using System.Deployment.Application;
 using System.Reflection;
 using System.Diagnostics;
 using System.Net;
+using Kallithea_Klone.States;
+using Kallithea_Klone.Other_Classes;
 
 namespace Kallithea_Klone
 {
@@ -161,7 +163,7 @@ namespace Kallithea_Klone
                 about.ShowDialog();
             };
 
-            ContextMenu contextMenu = new ContextMenu();
+            System.Windows.Controls.ContextMenu contextMenu = new System.Windows.Controls.ContextMenu();
             contextMenu.Items.Add(MIVersion);
             contextMenu.Items.Add(new Separator());
             contextMenu.Items.Add(MIAbout);
