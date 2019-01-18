@@ -17,7 +17,7 @@ using System.Diagnostics;
 using System.Net;
 using Kallithea_Klone.States;
 
-namespace Kallithea_Klone
+namespace Kallithea_Klone.States
 {
     class UpdateState : TemplateState
     {

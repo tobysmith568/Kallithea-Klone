@@ -16,8 +16,9 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Net;
 using Kallithea_Klone.States;
+using Kallithea_Klone.Other_Classes;
 
-namespace Kallithea_Klone
+namespace Kallithea_Klone.States
 {
     public abstract class TemplateState : IState
     {

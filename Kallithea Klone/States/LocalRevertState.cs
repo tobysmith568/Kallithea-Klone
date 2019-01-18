@@ -16,7 +16,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Net;
 
-namespace Kallithea_Klone
+namespace Kallithea_Klone.States
 {
     class LocalRevertState : TemplateState
     {

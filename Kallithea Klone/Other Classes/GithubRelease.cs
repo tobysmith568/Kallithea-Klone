@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Kallithea_Klone
+namespace Kallithea_Klone.Other_Classes
 {
     public class GithubRelease
     {

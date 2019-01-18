@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kallithea_Klone
+namespace Kallithea_Klone.Other_Classes
 {
     class User
     {

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kallithea_Klone.States
+namespace Kallithea_Klone.Other_Classes
 {
     /// <summary>
     /// This class is taken from here:
