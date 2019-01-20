@@ -83,7 +83,7 @@ namespace Kallithea_Klone.States
         /// <exception cref="InvalidOperationException">Ignore.</exception>
         public override void OnMainAction()
         {
-            if (!ValidSettings())
+            if (!SettingsNotEmpty())
             {
                 MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
                      "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
@@ -132,7 +132,7 @@ namespace Kallithea_Klone.States
 
         public override async void OnReload()
         {
-            if (!ValidSettings())
+            if (!SettingsNotEmpty())
             {
                 MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
                      "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);

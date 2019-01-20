@@ -33,14 +33,42 @@ namespace Kallithea_Klone.States
 
         private void Process_Exited(object sender, EventArgs e)
         {
-            if (((Process)sender).ExitCode != 0)
-                errorCodes.Add(((Process)sender).ExitCode.ToString());
+            Process sendingProcess = (Process)sender;
+            int exitCode = sendingProcess.ExitCode;
+
+            if (exitCode != 0)
+            {
+                errorCodes.Add(exitCode.ToString());
+            }
             else
             {
-                URIPair uriPair = JsonConvert.DeserializeObject<URIPair>(((Process)sender).StartInfo.Arguments.Split('|').Last());
+                string[] arguments = sendingProcess.StartInfo.Arguments.Split('|');
 
-                IniFile hgrc = new IniFile(uriPair.Local + "\\.hg\\hgrc");
-                hgrc.Write("default", uriPair.Remote, "paths");
+                if (arguments.Length < 2)
+                {
+                    throw new ArgumentOutOfRangeException("Cannot find local result from cloning");
+                }
+
+                string uriPairArg = arguments[arguments.Length - 1];
+
+                URIPair uriPair = JsonConvert.DeserializeObject<URIPair>(uriPairArg);
+
+                try
+                {
+                    IniFile hgrc = new IniFile(Path.Combine(uriPair.Local, ".hg", "hgrc"));
+                    hgrc.Write("default", uriPair.Remote, "paths");
+                }
+                catch (PathTooLongException)
+                {
+                    MessageBox.Show($"Unable to read the hgrc file for the repository at {uriPair.Local} because the file path is too long.\n" +
+                        $"This will cause problems later with other Kallithea Klone actions.");
+                }
+                catch (Exception ex) when (ex is System.Security.SecurityException || ex is UnauthorizedAccessException)
+                {
+                    MessageBox.Show($"Unable to read the hgrc file for the repository at {uriPair.Local}.\n" +
+                        $"This will cause problems later with other Kallithea Klone actions.");
+                }
+
 
             }
 
@@ -53,19 +81,30 @@ namespace Kallithea_Klone.States
 
         public override void OnLoad()
         {
-            LoadRepositories();
+            try
+            {
+                LoadRepositories();
+            }
+            catch
+            {
+                MessageBox.Show("Unable to load repositories. Please close and re-open Kallithea Klone",
+                    "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public override void OnLoaded()
         {
-            mainWindow.BtnClone.Content = "Reclone";
+            mainWindow.BtnMainAction.Content = "Reclone";
             mainWindow.LblTitle.Content = "Kallithea Reclone";
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
         public override void OnMainAction()
         {
-            if (!ValidSettings())
+            if (!SettingsNotEmpty())
             {
                 MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
                      "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
@@ -86,10 +125,14 @@ namespace Kallithea_Klone.States
             reCloningCount = MainWindow.CheckedURLs.Count;
             foreach (string url in MainWindow.CheckedURLs)
             {
-                string remotePath = GetDefaultPath(url);
-
-                if (remotePath == null)
+                string remotePath;
+                try
                 {
+                    remotePath = GetDefaultRemotePath(url);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show($"Unable to re-clone the repository at {url}.");
                     reCloningCount--;
                     CheckClonedCount();
                     continue;
@@ -139,6 +182,7 @@ namespace Kallithea_Klone.States
             }
         }
 
+        /// <exception cref="Exception">Ignore.</exception>
         public override void OnReload()
         {
             throw new Exception("Invalid Button Press!");
@@ -148,7 +192,15 @@ namespace Kallithea_Klone.States
         {
             if (mainWindow.TbxSearch.Text.Length != 0)
             {
-                LoadRepositories(mainWindow.TbxSearch.Text.Split(' '));
+                try
+                {
+                    LoadRepositories(mainWindow.TbxSearch.Text.Split(' '));
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to load repositories. Please close and re-open Kallithea Klone",
+                        "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -156,13 +208,26 @@ namespace Kallithea_Klone.States
         {
             if (mainWindow.TbxSearch.Text.Length == 0)
             {
-                LoadRepositories();
+                try
+                {
+                    LoadRepositories();
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to load repositories. Please close and re-open Kallithea Klone",
+                        "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
         //  Other Methods
         //  =============
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         private void LoadRepositories(string[] searchTerms = null)
         {
             mainWindow.MainTree.Items.Clear();
@@ -174,24 +239,33 @@ namespace Kallithea_Klone.States
                 mainWindow.MainTree.Items.Add(CreateRepo(mainWindow.runFrom));
             }
             else foreach (string folder in Directory.GetDirectories(mainWindow.runFrom))
-            {
-                name = folder.Split('\\').Last().ToLower();
-
-                if (IsRepo(folder) && (searchTerms == null || searchTerms.Where(t => name.Contains(t.ToLower())).Count() > 0))
                 {
-                    mainWindow.MainTree.Items.Add(CreateRepo(folder));
+                    name = folder.Split('\\').Last().ToLower();
+
+                    if (IsRepo(folder) && (searchTerms == null || searchTerms.Where(t => name.Contains(t.ToLower())).Count() > 0))
+                    {
+                        mainWindow.MainTree.Items.Add(CreateRepo(folder));
+                    }
                 }
-            }
 
             mainWindow.SelectionUpdated();
         }
 
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         private bool IsRepo(string path)
         {
             string[] innerFolders = Directory.GetDirectories(path);
             foreach (string folder in innerFolders)
             {
-                if (folder.Split('\\').Last() == ".hg")
+                Uri uri = new Uri(folder);
+
+                if (!uri.IsFile)
+                    continue;
+
+                if (Path.GetFileName(uri.LocalPath) == ".hg")
                 {
                     return true;
                 }
@@ -199,6 +273,7 @@ namespace Kallithea_Klone.States
             return false;
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private CheckBox CreateRepo(string location)
         {
             CheckBox newItem = new CheckBox
@@ -214,6 +289,7 @@ namespace Kallithea_Klone.States
             return newItem;
         }
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void CheckClonedCount()
         {
             if (reClonedCount == reCloningCount)

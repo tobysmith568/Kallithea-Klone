@@ -33,7 +33,7 @@ namespace Kallithea_Klone.States
                 case RunTypes.Setup:
                 case RunTypes.Uninstall:
                 default:
-                    throw new Exception("Unhandled Run Type");
+                    throw new NotImplementedException($"The runType {type.ToString()} has not been implemented.");
             }
         }
     }

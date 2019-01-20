@@ -62,7 +62,7 @@ namespace Kallithea_Klone.States
 
         public override void OnLoaded()
         {
-            mainWindow.BtnClone.Content = "Update";
+            mainWindow.BtnMainAction.Content = "Update";
             mainWindow.LblTitle.Content = "Kallithea Update";
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
@@ -72,7 +72,7 @@ namespace Kallithea_Klone.States
         /// <exception cref="ObjectDisposedException">Ignore.</exception>
         public override void OnMainAction()
         {
-            if (!ValidSettings())
+            if (!SettingsNotEmpty())
             {
                 MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
                      "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
@@ -93,10 +93,21 @@ namespace Kallithea_Klone.States
             updatingCount = MainWindow.CheckedURLs.Count;
             foreach (string url in MainWindow.CheckedURLs)
             {
-                string remotePath = GetDefaultPath(url);
-
-                if (remotePath == null)
+                string remotePath;
+                try
+                {
+                    remotePath = GetDefaultRemotePath(url);
+                }
+                catch (PathTooLongException)
+                {
+                    MessageBox.Show($"Unable to read the hgrc file for the repository at {url} because the file path is too long.");
                     continue;
+                }
+                catch (Exception e) when (e is System.Security.SecurityException || e is UnauthorizedAccessException)
+                {
+                    MessageBox.Show($"Unable to read the hgrc file for the repository at {url}.");
+                    continue;
+                }
 
                 Uri uri = new Uri(remotePath);
                 string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}";

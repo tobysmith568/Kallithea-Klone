@@ -13,7 +13,7 @@ namespace Kallithea_Klone.States
         //  =========
 
         protected const string CmdExe = "cmd.exe";
-        protected MainWindow mainWindow;
+        protected readonly MainWindow mainWindow;
 
         //  Constructors
         //  ============
@@ -60,7 +60,7 @@ namespace Kallithea_Klone.States
         //  Other Methods
         //  =============
 
-        protected bool ValidSettings()
+        protected bool SettingsNotEmpty()
         {
             return MainWindow.Host != ""
                 && MainWindow.APIKey != ""
@@ -68,34 +68,35 @@ namespace Kallithea_Klone.States
                 && MainWindow.Password != "";
         }
 
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="PathTooLongException"></exception>
+        /// <summary>
+        /// Takes a folder location of a repository on disk and returns its default remote location
+        /// </summary>
+        /// <param name="repoLocation">The folder location of the repository on disk</param>
+        /// <returns>The repositories default remote location</returns>
+        /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="System.Security.SecurityException"></exception>
         /// <exception cref="UnauthorizedAccessException"></exception>
-        /// <exception cref="KeyNotFoundException"></exception>
-        protected string GetDefaultPath(string repoLocation)
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        protected string GetDefaultRemotePath(string repoLocation)
         {
-            Uri repoUri = new Uri(repoLocation);
-            string folderName = Path.GetDirectoryName(repoLocation);
+            string hgrcFileLocation = Path.Combine(repoLocation, ".hg", "hgrc");
 
-            if (!repoUri.IsFile)
-                throw new ArgumentException("The given repo location is not a valid file location.");
-
-            string hgrcFile = Path.Combine(repoLocation, ".hg", "hgrc");
-
-            if (!File.Exists(hgrcFile))
+            if (!File.Exists(hgrcFileLocation))
             {
+                string folderName = Path.GetDirectoryName(repoLocation);
                 throw new FileNotFoundException($"The hgrc file for \"{folderName}\" could not be found!");
             }
 
-            IniFile hgrc = new IniFile(hgrcFile);
+            IniFile hgrcFile = new IniFile(hgrcFileLocation);
 
-            if (!hgrc.KeyExists("default", "paths"))
+            if (!hgrcFile.KeyExists("default", "paths"))
             {
+                string folderName = Path.GetDirectoryName(repoLocation);
                 throw new KeyNotFoundException($"The default property could not be found in the .hg/hgrc file under \"[paths]\" for the folder \"{folderName}\"");
             }
 
-            return hgrc.Read("default", "paths");
+            return hgrcFile.Read("default", "paths");
         }
     }
 }

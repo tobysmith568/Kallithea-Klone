@@ -110,6 +110,7 @@ namespace Kallithea_Klone
         //  Constructors
         //  ============
 
+        /// <exception cref="Exception"></exception>
         public MainWindow(RunTypes runType, string runFrom)
         {
             if (singleton == null)
@@ -128,6 +129,7 @@ namespace Kallithea_Klone
         //  Events
         //  ======
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             state.OnLoaded();
@@ -181,6 +183,7 @@ namespace Kallithea_Klone
             state.OnMainAction();
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -271,15 +274,15 @@ namespace Kallithea_Klone
                 return;
 
             Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version);
-                        
+
             if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) >= 0)
                 return;
-            
+
             Asset asset = release.Assets.FirstOrDefault(r => r.URL.EndsWith(".msi"));
 
             if (asset == null)
                 return;
-            
+
             UpdateWindow prompt = new UpdateWindow(release.URL, asset.URL)
             {
                 Owner = this
@@ -309,6 +312,7 @@ namespace Kallithea_Klone
             }
         }
 
+        /// <exception cref="InvalidCastException"></exception>
         private void Filter(ItemsControl parent, string searchTerm)
         {
             foreach (Control child in parent.Items)
@@ -341,7 +345,7 @@ namespace Kallithea_Klone
                     }
                 }
                 else
-                    throw new Exception("Unexpected child type!");
+                    throw new InvalidCastException("The mainTreeView may only contain TreeViewItems and Checkboxes.");
             }
         }
 
@@ -359,17 +363,25 @@ namespace Kallithea_Klone
 
         public void OpenSettings()
         {
-            Settings settings = new Settings
+            try
             {
-                Owner = this
-            };
-            settings.ShowDialog();
+                Settings settings = new Settings
+                {
+                    Owner = this
+                };
+                settings.ShowDialog();
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("Error: Unable to open the settings window!", "Error!",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public void SelectionUpdated()
         {
             lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
-            BtnClone.IsEnabled = CheckedURLs.Count > 0;
+            BtnMainAction.IsEnabled = CheckedURLs.Count > 0;
         }
 
         public void SetEmpty()

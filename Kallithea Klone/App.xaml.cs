@@ -112,6 +112,7 @@ namespace Kallithea_Klone
         //  =======
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="Exception">Ignore.</exception>
         private void Open(RunTypes runType, string ranFrom)
         {
             MainWindow window = new MainWindow(runType, ranFrom);

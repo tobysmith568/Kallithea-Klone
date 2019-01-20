@@ -38,7 +38,7 @@ namespace Kallithea_Klone.States
             if (revertedCount == revertingCount)
             {
                 if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + String.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 Environment.Exit(0);
             }
         }
@@ -48,19 +48,30 @@ namespace Kallithea_Klone.States
 
         public override void OnLoad()
         {
-            LoadRepositories();
+            try
+            {
+                LoadRepositories();
+            }
+            catch
+            {
+                MessageBox.Show("Unable to load repositories. Please close and re-open Kallithea Klone",
+                    "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public override void OnLoaded()
         {
-            mainWindow.BtnClone.Content = "Local Revert";
+            mainWindow.BtnMainAction.Content = "Local Revert";
             mainWindow.LblTitle.Content = "Kallithea Revert";
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
         public override void OnMainAction()
         {
-            if (!ValidSettings())
+            if (!SettingsNotEmpty())
             {
                 MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
                      "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
@@ -99,9 +110,6 @@ namespace Kallithea_Klone.States
             }
         }
 
-        /// <summary>
-        /// OnReload
-        /// </summary>
         /// <exception cref="Exception">Ignore.</exception>
         public override void OnReload()
         {
@@ -112,7 +120,15 @@ namespace Kallithea_Klone.States
         {
             if (mainWindow.TbxSearch.Text.Length != 0)
             {
-                LoadRepositories(mainWindow.TbxSearch.Text.Split(' '));
+                try
+                {
+                    LoadRepositories(mainWindow.TbxSearch.Text.Split(' '));
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to load repositories. Please close and re-open Kallithea Klone",
+                        "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -120,7 +136,15 @@ namespace Kallithea_Klone.States
         {
             if (mainWindow.TbxSearch.Text.Length == 0)
             {
-                LoadRepositories();
+                try
+                {
+                    LoadRepositories();
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to load repositories. Please close and re-open Kallithea Klone",
+                        "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -128,6 +152,10 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         private void LoadRepositories(string[] searchTerms = null)
         {
             mainWindow.MainTree.Items.Clear();
@@ -139,24 +167,33 @@ namespace Kallithea_Klone.States
                 mainWindow.MainTree.Items.Add(CreateRepo(mainWindow.runFrom));
             }
             else foreach (string folder in Directory.GetDirectories(mainWindow.runFrom))
-            {
-                name = folder.Split('\\').Last().ToLower();
-
-                if (IsRepo(folder) && (searchTerms == null || searchTerms.Where(t => name.Contains(t.ToLower())).Count() > 0))
                 {
-                    mainWindow.MainTree.Items.Add(CreateRepo(folder));
+                    name = folder.Split('\\').Last().ToLower();
+
+                    if (IsRepo(folder) && (searchTerms == null || searchTerms.Where(t => name.Contains(t.ToLower())).Count() > 0))
+                    {
+                        mainWindow.MainTree.Items.Add(CreateRepo(folder));
+                    }
                 }
-            }
 
             mainWindow.SelectionUpdated();
         }
 
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         private bool IsRepo(string path)
         {
             string[] innerFolders = Directory.GetDirectories(path);
             foreach (string folder in innerFolders)
             {
-                if (folder.Split('\\').Last() == ".hg")
+                Uri uri = new Uri(folder);
+
+                if (!uri.IsFile)
+                    continue;
+
+                if (Path.GetFileName(uri.LocalPath) == ".hg")
                 {
                     return true;
                 }
@@ -164,6 +201,7 @@ namespace Kallithea_Klone.States
             return false;
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private CheckBox CreateRepo(string location)
         {
             CheckBox newItem = new CheckBox
