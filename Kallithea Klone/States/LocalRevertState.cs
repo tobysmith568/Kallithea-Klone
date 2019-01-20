@@ -28,6 +28,7 @@ namespace Kallithea_Klone.States
         //  Events
         //  ======
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void Process_Exited(object sender, EventArgs e)
         {
             if (((Process)sender).ExitCode != 0)
@@ -98,6 +99,10 @@ namespace Kallithea_Klone.States
             }
         }
 
+        /// <summary>
+        /// OnReload
+        /// </summary>
+        /// <exception cref="Exception">Ignore.</exception>
         public override void OnReload()
         {
             throw new Exception("Invalid Button Press!");
@@ -122,6 +127,7 @@ namespace Kallithea_Klone.States
         //  Other Methods
         //  =============
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private void LoadRepositories(string[] searchTerms = null)
         {
             mainWindow.MainTree.Items.Clear();

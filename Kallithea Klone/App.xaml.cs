@@ -21,6 +21,7 @@ namespace Kallithea_Klone
         //  Events
         //  ======
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         void App_Startup(object sender, StartupEventArgs e)
         {
             if (Default.JustInstalled)
@@ -90,11 +91,12 @@ namespace Kallithea_Klone
                 {
                     folder = SelectWinXPFolder();
                 }
-                
+
                 Open(RunTypes.Clone, folder);
             }
         }
 
+        /// <exception cref="System.Security.SecurityException"></exception>
         void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
         {
 
@@ -109,6 +111,7 @@ namespace Kallithea_Klone
         //  Methods
         //  =======
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private void Open(RunTypes runType, string ranFrom)
         {
             MainWindow window = new MainWindow(runType, ranFrom);
@@ -160,59 +163,50 @@ namespace Kallithea_Klone
                 return;
             }
 
-            ContextMenuImplementations.CreateStandard();
-            ContextMenuImplementations.CreateAdvanced();
+            try
+            {
+                ContextMenuImplementations.CreateStandard();
+                ContextMenuImplementations.CreateAdvanced();
+            }
+            catch
+            {
+                System.Windows.MessageBox.Show("Kallithea Klone was unable to add all of the Windows Explorer context menu items it uses.\n" +
+                    "Please re-run the installer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         private void Uninstall(string attempt = "0")
         {
+            if (!IsAdministrator())
+            {
+                if (attempt == "0")
+                    RestartAsAdmin("Uninstall 1");
+                else
+                {
+                    MessageBoxResult result = System.Windows.MessageBox.Show("This uninstaller need administrator permissions in order to edit your Windows Explorer Menus.\n" +
+                        "This is essential to remove unused menu items. Press OK to try again or Cancel to leave the items after the uninstall.", "Kallithea Klone needs administrator permissions!", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+
+                    switch (result)
+                    {
+                        case MessageBoxResult.OK:
+                            RestartAsAdmin("Uninstall 1");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return;
+            }
+
             try
             {
-                if (!IsAdministrator())
-                {
-                    if (attempt == "0")
-                        RestartAsAdmin("Uninstall 1");
-                    else
-                    {
-                        MessageBoxResult result = System.Windows.MessageBox.Show("This uninstaller need administrator permissions in order to edit your Windows Explorer Menus.\n" +
-                            "This is essential to remove unused menu items. Press OK to try again or Cancel to leave the items after the uninstall.", "Kallithea Klone needs administrator permissions!", MessageBoxButton.OKCancel, MessageBoxImage.Error);
-
-                        switch (result)
-                        {
-                            case MessageBoxResult.OK:
-                                RestartAsAdmin("Uninstall 1");
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    return;
-                }
-
-                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\Background\shell", true))
-                {
-                    key.DeleteSubKeyTree("KallitheaKlone", false);
-                    key.DeleteSubKeyTree("KallitheaKlone_Other", false);
-                }
-
-                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"Directory\shell", true))
-                {
-                    key.DeleteSubKeyTree("KallitheaKlone", false);
-                    key.DeleteSubKeyTree("KallitheaKlone_Other", false);
-                }
-
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell", true))
-                {
-                    foreach (string subkey in key.GetSubKeyNames())
-                    {
-                        if (subkey.StartsWith("KallitheaKlone"))
-                            key.DeleteSubKeyTree(subkey, false);
-                    }
-                }
+                ContextMenuImplementations.RemoveAll();
             }
             catch
             {
-
+                System.Windows.MessageBox.Show("Kallithea Klone was unable to remove all Windows Explorer context menu items.",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             try
@@ -227,17 +221,19 @@ namespace Kallithea_Klone
             }
             catch
             {
-
+                //If settings cannot be recovered from any previous installs then the user will have in re-insert them
             }
         }
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private static bool IsAdministrator()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }   
+        }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private void Settings()
         {
             Settings window = new Settings();
@@ -274,6 +270,10 @@ namespace Kallithea_Klone
             return char.ToUpper(s[0]) + s.Substring(1);
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
         private void RestartAsAdmin(string arguments)
         {
             var exeName = Process.GetCurrentProcess().MainModule.FileName;
@@ -298,6 +298,7 @@ namespace Kallithea_Klone
             Current.Shutdown();
         }
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private string SelectWinXPFolder()
         {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog
@@ -322,6 +323,7 @@ namespace Kallithea_Klone
             }
         }
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private string SelectWinVistaFolder()
         {
             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog

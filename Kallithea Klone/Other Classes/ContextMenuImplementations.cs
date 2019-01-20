@@ -1,4 +1,7 @@
 ﻿using Kallithea_Klone.ContextMenu;
+using Microsoft.Win32;
+using System.Linq;
+using System.Windows;
 
 namespace Kallithea_Klone.Other_Classes
 {
@@ -71,14 +74,47 @@ namespace Kallithea_Klone.Other_Classes
         //  Methods
         //  =======
 
+        /// <exception cref="System.ObjectDisposedException"></exception>
+        /// <exception cref="System.Security.SecurityException"></exception>
+        /// <exception cref="System.UnauthorizedAccessException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
         public static void CreateStandard()
         {
             standard.Create();
         }
 
+        /// <exception cref="System.ObjectDisposedException"></exception>
+        /// <exception cref="System.Security.SecurityException"></exception>
+        /// <exception cref="System.UnauthorizedAccessException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
         public static void CreateAdvanced()
         {
             advancedOptions.Create();
+        }
+
+        /// <exception cref="System.ObjectDisposedException"></exception>
+        /// <exception cref="System.Security.SecurityException"></exception>
+        /// <exception cref="System.UnauthorizedAccessException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
+        public static void RemoveAll()
+        {
+            string[] locations = new string[]
+            {
+                @"Directory\Background\shell",
+                @"Directory\shell",
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell"
+            };
+
+            foreach (string location in locations)
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(location, true))
+                {
+                    foreach (string subkey in key.GetSubKeyNames().Where(n => n.StartsWith("KallitheaKlone")))
+                    {
+                        key.DeleteSubKeyTree(subkey, false);
+                    }
+                }
+            }
         }
     }
 }

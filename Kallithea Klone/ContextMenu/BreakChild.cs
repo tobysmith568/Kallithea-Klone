@@ -7,7 +7,7 @@
 
         public override string Create()
         {
-            return "|";
+            return "|"; 
         }
     }
 }

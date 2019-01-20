@@ -8,7 +8,7 @@ namespace Kallithea_Klone.Other_Classes
     {
         //  JSON Variables
         //  ==============
-
+        
         private string remote;
 
         //  JSON Properties

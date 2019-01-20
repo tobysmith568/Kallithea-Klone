@@ -17,6 +17,10 @@ namespace Kallithea_Klone.ContextMenu
         //  Methods
         //  =======
 
+        /// <exception cref="System.ObjectDisposedException"></exception>
+        /// <exception cref="System.Security.SecurityException"></exception>
+        /// <exception cref="System.UnauthorizedAccessException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
         public string Create()
         {
             string subCommands = "";
@@ -43,6 +47,10 @@ namespace Kallithea_Klone.ContextMenu
             return Name;
         }
 
+        /// <exception cref="System.ObjectDisposedException"></exception>
+        /// <exception cref="System.Security.SecurityException"></exception>
+        /// <exception cref="System.UnauthorizedAccessException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
         private void Create(string registryLocation, string subCommands)
         {
             using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(registryLocation, true))

@@ -15,6 +15,10 @@ namespace Kallithea_Klone.ContextMenu
         //  Overridden Methods
         //  ==================
 
+        /// <exception cref="System.ObjectDisposedException"></exception>
+        /// <exception cref="System.Security.SecurityException"></exception>
+        /// <exception cref="System.UnauthorizedAccessException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
         public override string Create()
         {
             using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell", true))

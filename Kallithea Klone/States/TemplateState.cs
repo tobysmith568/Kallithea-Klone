@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -43,6 +44,8 @@ namespace Kallithea_Klone.States
 
         }
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
+        /// <exception cref="InvalidCastException">Ignore.</exception>
         public virtual void OnLoseFocus()
         {
             if (Application.Current.Windows.Cast<Window>().Count(w => w.Focusable) == 1)
@@ -65,22 +68,31 @@ namespace Kallithea_Klone.States
                 && MainWindow.Password != "";
         }
 
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="System.Security.SecurityException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
         protected string GetDefaultPath(string repoLocation)
         {
-            string hgrcFile = Path.Combine(repoLocation, ".hg\\hgrc");
+            Uri repoUri = new Uri(repoLocation);
+            string folderName = Path.GetDirectoryName(repoLocation);
+
+            if (!repoUri.IsFile)
+                throw new ArgumentException("The given repo location is not a valid file location.");
+
+            string hgrcFile = Path.Combine(repoLocation, ".hg", "hgrc");
 
             if (!File.Exists(hgrcFile))
             {
-                MessageBox.Show($"Error: the hgrc file for \"{repoLocation.Split('\\').Last()}\" could not be found!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                return null;
+                throw new FileNotFoundException($"The hgrc file for \"{folderName}\" could not be found!");
             }
 
             IniFile hgrc = new IniFile(hgrcFile);
 
             if (!hgrc.KeyExists("default", "paths"))
             {
-                MessageBox.Show($"Error: the default property \"{repoLocation.Split('\\').Last()}\" could not be found in it's .hg/hgrc file under \"[paths]\"!", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                return null;
+                throw new KeyNotFoundException($"The default property could not be found in the .hg/hgrc file under \"[paths]\" for the folder \"{folderName}\"");
             }
 
             return hgrc.Read("default", "paths");

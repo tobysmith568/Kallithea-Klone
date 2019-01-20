@@ -18,8 +18,8 @@ namespace Kallithea_Klone.States
         //  Variables
         //  =========
 
-        private static string RepoFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone";
-        private static string RepoFile = RepoFolder + "\\AllRepositories.dat";
+        private static readonly string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Kallithea Klone");
+        private static readonly string allReposFile = Path.Combine(appDataFolder, "AllRepositories.dat");
 
         private List<string> allRepositories;
 
@@ -38,6 +38,7 @@ namespace Kallithea_Klone.States
         //  Events
         //  ======
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void Process_Exited(object sender, EventArgs e)
         {
             if (((Process)sender).ExitCode != 0)
@@ -59,19 +60,27 @@ namespace Kallithea_Klone.States
         {
             try
             {
-                allRepositories = new List<string>(File.ReadAllLines(RepoFile));
+                allRepositories = new List<string>(File.ReadAllLines(allReposFile));
             }
             catch
             {
-                if (!Directory.Exists(RepoFolder))
-                    Directory.CreateDirectory(RepoFolder);
-                File.WriteAllText(RepoFile, "");
+                try
+                {
+                    if (!Directory.Exists(appDataFolder))
+                        Directory.CreateDirectory(appDataFolder);
+                    File.WriteAllText(allReposFile, "");
+                }
+                catch
+                {
+                    //Fails until the program is next opened
+                }
                 allRepositories = new List<string>();
             }
 
             LoadRepositories();
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         public override void OnMainAction()
         {
             if (!ValidSettings())
@@ -83,33 +92,40 @@ namespace Kallithea_Klone.States
                 {
                     case MessageBoxResult.OK:
                         mainWindow.OpenSettings();
-                        break;
+                        return;
                     default:
-                        break;
+                        return;
                 }
             }
-            else
+
+            mainWindow.DisableAll();
+            Uri uri = new Uri(MainWindow.Host);
+
+            cloningCount = MainWindow.CheckedURLs.Count;
+            foreach (string url in MainWindow.CheckedURLs)
             {
-                mainWindow.DisableAll();
-                Uri uri = new Uri(MainWindow.Host);
+                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}{url}";
 
-                cloningCount = MainWindow.CheckedURLs.Count;
-                foreach (string url in MainWindow.CheckedURLs)
+                Process process = new Process()
                 {
-                    string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}{url}";
-
-                    Process process = new Process();
-                    ProcessStartInfo startInfo = new ProcessStartInfo
+                    StartInfo = new ProcessStartInfo
                     {
                         WindowStyle = ProcessWindowStyle.Hidden,
                         FileName = CmdExe,
                         Arguments = $"/C hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('/').Last()}\""
-                    };
-                    process.StartInfo = startInfo;
-                    process.EnableRaisingEvents = true;
-                    process.Exited += Process_Exited;
+                    },
+                    EnableRaisingEvents = true
+                };
+                process.Exited += Process_Exited;
 
+                try
+                {
                     process.Start();
+                }
+                catch (System.ComponentModel.Win32Exception)
+                {
+                    MessageBox.Show($"Unable to start the process of cloning the repository for {url}",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -168,6 +184,7 @@ namespace Kallithea_Klone.States
         //  Other Methods
         //  =============
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         public void LoadRepositories(List<string> customRepositories = null, bool allCheckboxes = false)
         {
             List<string> repositories = customRepositories ?? allRepositories;
@@ -243,6 +260,7 @@ namespace Kallithea_Klone.States
             location.InnerLocations = location.InnerLocations.OrderBy(l => l.InnerLocations.Count == 0 ? 1 : 0).ThenBy(l => l.Name).ToList();
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private void CreateTreeViewItem(Location location, TreeViewItem parent = null)
         {
             if (location.InnerLocations.Count == 0)
@@ -309,9 +327,9 @@ namespace Kallithea_Klone.States
 
                         if (repos.Length != 0)
                         {
-                            if (!Directory.Exists(RepoFolder))
-                                Directory.CreateDirectory(RepoFolder);
-                            File.WriteAllLines(RepoFile, repos.Select(r => r.URL).ToArray());
+                            if (!Directory.Exists(appDataFolder))
+                                Directory.CreateDirectory(appDataFolder);
+                            File.WriteAllLines(allReposFile, repos.Select(r => r.URL).ToArray());
                         }
 
                         allRepositories = repos.Select(r => r.URL).ToList();
