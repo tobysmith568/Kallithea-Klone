@@ -56,6 +56,10 @@ namespace Kallithea_Klone
                 SaveAndClose();
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="System.IO.FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             if (ValidHost())
@@ -86,6 +90,7 @@ namespace Kallithea_Klone
             BtnSave.IsEnabled = GetSaveButtonEnabled();
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)

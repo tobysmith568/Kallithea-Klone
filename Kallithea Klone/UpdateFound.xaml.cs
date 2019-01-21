@@ -28,6 +28,11 @@ namespace Kallithea_Klone
         //  Events
         //  ======
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="System.IO.FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void BtnGithub_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo(parent.GithubURL));

@@ -23,11 +23,12 @@ namespace Kallithea_Klone
         //  Constructors
         //  ============
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         public UpdateDownloading(UpdateWindow parent)
         {
             this.parent = parent;
-            downloadFolder = System.IO.Path.GetTempPath() + "Kallithea Klone";
-            downloadLocation = downloadFolder + "\\Update.msi";
+            downloadFolder = Path.Combine(Path.GetTempPath(), "Kallithea Klone");
+            downloadLocation = Path.Combine(downloadFolder, "Update.msi");
 
             InitializeComponent();
         }
@@ -45,6 +46,10 @@ namespace Kallithea_Klone
             pbDownloadingProgress.Value = e.ProgressPercentage;
         }
 
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void Client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             if (!e.Cancelled && e.Error == null)
@@ -68,6 +73,10 @@ namespace Kallithea_Klone
             }
         }
 
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void BtnInstall_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(downloadLocation);
@@ -77,6 +86,12 @@ namespace Kallithea_Klone
         //  Methods
         //  =======
 
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        /// <exception cref="WebException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Download()
         {
             Directory.CreateDirectory(downloadFolder);

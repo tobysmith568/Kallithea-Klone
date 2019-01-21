@@ -5,7 +5,7 @@ using System.Windows.Input;
 namespace Kallithea_Klone
 {
     /// <summary>
-    /// Interaction logic for UpdatePrompt.xaml
+    /// Interaction logic for UpdateWindow.xaml
     /// </summary>
     public partial class UpdateWindow : Window
     {
@@ -21,6 +21,7 @@ namespace Kallithea_Klone
         //  Constructors
         //  ============
 
+        /// <exception cref="System.InvalidOperationException">Ignore.</exception>
         public UpdateWindow(string githubURL, string downloadURL)
         {
             GithubURL = githubURL;
@@ -43,6 +44,7 @@ namespace Kallithea_Klone
         //  Events
         //  ======
 
+        /// <exception cref="System.InvalidOperationException">Ignore.</exception>
         private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -57,6 +59,7 @@ namespace Kallithea_Klone
         //  Methods
         //  =======
 
+        /// <exception cref="System.InvalidOperationException">Ignore.</exception>
         public new void ShowDialog()
         {
             System.Media.SystemSounds.Asterisk.Play();
