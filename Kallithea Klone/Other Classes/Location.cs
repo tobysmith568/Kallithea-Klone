@@ -2,7 +2,7 @@
 
 namespace Kallithea_Klone.Other_Classes
 {
-    class Location
+    public class Location
     {
         //  Variables
         //  =========

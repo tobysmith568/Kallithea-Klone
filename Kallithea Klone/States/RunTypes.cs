@@ -15,7 +15,7 @@ namespace Kallithea_Klone.States
         Uninstall,
     }
 
-    static class RunTypeMethods
+    public static class RunTypeMethods
     {
         public static IState GetState(this RunTypes type)
         {

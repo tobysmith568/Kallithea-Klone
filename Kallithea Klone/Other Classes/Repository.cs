@@ -2,7 +2,7 @@
 
 namespace Kallithea_Klone.Other_Classes
 {
-    class Repository
+    public class Repository
     {
         //  JSON Properties
         //  ===============

@@ -2,7 +2,7 @@
 
 namespace Kallithea_Klone.Other_Classes
 {
-    class KallitheaResponse<T>
+    public class KallitheaResponse<T>
     {
         //  JSON Properties
         //  ===============
