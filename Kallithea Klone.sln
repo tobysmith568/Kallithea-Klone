@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kallithea Klone", "Kallithe
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{B89A2749-7692-4025-82C4-8C44B0F98C4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kallithea KloneTests", "Kallithea KloneTests1\Kallithea KloneTests.csproj", "{15899B96-EF8D-4087-A696-A69FA37623BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{8B61B581-EE18-4227-9D58-A525A24C7E47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B89A2749-7692-4025-82C4-8C44B0F98C4E}.Debug|Any CPU.ActiveCfg = Debug
 		{B89A2749-7692-4025-82C4-8C44B0F98C4E}.Release|Any CPU.ActiveCfg = Release
+		{15899B96-EF8D-4087-A696-A69FA37623BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15899B96-EF8D-4087-A696-A69FA37623BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15899B96-EF8D-4087-A696-A69FA37623BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15899B96-EF8D-4087-A696-A69FA37623BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

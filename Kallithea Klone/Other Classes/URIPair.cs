@@ -31,7 +31,7 @@ namespace Kallithea_Klone.Other_Classes
         //  Constructors
         //  ============
 
-        public  URIPair(string local, string remote)
+        public URIPair(string local, string remote)
         {
             Local = local;
             Remote = remote;
