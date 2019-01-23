@@ -24,7 +24,7 @@ namespace Kallithea_Klone.Other_Classes
             set
             {
                 Uri uri = new Uri(value);
-                remote = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}@{uri.Host}{uri.PathAndQuery}";
+                remote = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}@{uri.Host}{uri.PathAndQuery}";
             }
         }
 

@@ -29,15 +29,15 @@ namespace Kallithea_Klone
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            TbxAPIKey.Text = MainWindow.APIKey;
-            TbxHost.Text = MainWindow.Host;
-            PbOne.Password = MainWindow.Password;
-            PbTwo.Password = MainWindow.Password;
+            TbxAPIKey.Text = AccountSettings.APIKey;
+            TbxHost.Text = AccountSettings.Host;
+            PbOne.Password = AccountSettings.Password;
+            PbTwo.Password = AccountSettings.Password;
 
             PbOne.PasswordChanged += PasswordChanged;
             PbTwo.PasswordChanged += PasswordChanged;
 
-            CbUpdates.IsChecked = MainWindow.Updates;
+            CbUpdates.IsChecked = AccountSettings.Updates;
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -104,7 +104,7 @@ namespace Kallithea_Klone
 
         private void CbUpdates_Toggled(object sender, RoutedEventArgs e)
         {
-            MainWindow.Updates = ((CheckBox)sender).IsChecked == true;
+            AccountSettings.Updates = ((CheckBox)sender).IsChecked == true;
         }
 
         //  Methods
@@ -166,10 +166,10 @@ namespace Kallithea_Klone
                             GridCoverAll.Visibility = Visibility.Hidden;
                             break;
                         }
-                        MainWindow.APIKey = TbxAPIKey.Text;
-                        MainWindow.Host = TbxHost.Text;
-                        MainWindow.Username = user.Result.Username;
-                        MainWindow.Password = PbOne.Password;
+                        AccountSettings.APIKey = TbxAPIKey.Text;
+                        AccountSettings.Host = TbxHost.Text;
+                        AccountSettings.Username = user.Result.Username;
+                        AccountSettings.Password = PbOne.Password;
                         Close();
                         break;
                     case ResponseStatus.TimedOut:

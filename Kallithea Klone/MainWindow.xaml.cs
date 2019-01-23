@@ -33,80 +33,6 @@ namespace Kallithea_Klone
 
         private IState state;
 
-        public static string APIKey
-        {
-            get
-            {
-                return Properties.Settings.Default.APIKey;
-            }
-            set
-            {
-                Properties.Settings.Default.APIKey = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static string Username
-        {
-            get
-            {
-                return Properties.Settings.Default.Username;
-            }
-            set
-            {
-                Properties.Settings.Default.Username = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static string Host
-        {
-            get
-            {
-                return Properties.Settings.Default.Host;
-            }
-            set
-            {
-                Properties.Settings.Default.Host = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static string Password
-        {
-            get
-            {
-                if (Properties.Settings.Default.Password == "")
-                    return Properties.Settings.Default.Password;
-
-                return Encoding.Unicode.GetString(ProtectedData.Unprotect(
-                    Convert.FromBase64String(Properties.Settings.Default.Password),
-                    null,
-                    DataProtectionScope.LocalMachine));
-            }
-            set
-            {
-                Properties.Settings.Default.Password = Convert.ToBase64String(ProtectedData.Protect(
-                    Encoding.Unicode.GetBytes(value),
-                    null,
-                    DataProtectionScope.LocalMachine));
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static bool Updates
-        {
-            get
-            {
-                return Properties.Settings.Default.CheckForUpdates;
-            }
-            set
-            {
-                Properties.Settings.Default.CheckForUpdates = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
         //  Constructors
         //  ============
 
@@ -169,7 +95,7 @@ namespace Kallithea_Klone
 
             BdrHeader.ContextMenu = contextMenu;
 
-            if (Updates)
+            if (AccountSettings.Updates)
                 await CheckForUpdate();
         }
 

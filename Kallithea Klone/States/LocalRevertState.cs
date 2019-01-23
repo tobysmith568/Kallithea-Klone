@@ -88,7 +88,7 @@ namespace Kallithea_Klone.States
             }
 
             mainWindow.DisableAll();
-            Uri uri = new Uri(MainWindow.Host);
+            Uri uri = new Uri(AccountSettings.Host);
 
             revertingCount = MainWindow.CheckedURLs.Count;
             foreach (string url in MainWindow.CheckedURLs)

@@ -62,10 +62,10 @@ namespace Kallithea_Klone.States
 
         protected bool SettingsNotEmpty()
         {
-            return MainWindow.Host != ""
-                && MainWindow.APIKey != ""
-                && MainWindow.Username != ""
-                && MainWindow.Password != "";
+            return AccountSettings.Host != ""
+                && AccountSettings.APIKey != ""
+                && AccountSettings.Username != ""
+                && AccountSettings.Password != "";
         }
 
         /// <summary>

@@ -99,12 +99,12 @@ namespace Kallithea_Klone.States
             }
 
             mainWindow.DisableAll();
-            Uri uri = new Uri(MainWindow.Host);
+            Uri uri = new Uri(AccountSettings.Host);
 
             cloningCount = MainWindow.CheckedURLs.Count;
             foreach (string url in MainWindow.CheckedURLs)
             {
-                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(MainWindow.Username)}:{HttpUtility.UrlEncode(MainWindow.Password)}@{uri.Host}{uri.PathAndQuery}{url}";
+                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}{url}";
 
                 Process process = new Process()
                 {
@@ -306,11 +306,11 @@ namespace Kallithea_Klone.States
 
         public async Task DownloadRepositories()
         {
-            RestClient client = new RestClient($"{MainWindow.Host}/_admin/api");
+            RestClient client = new RestClient($"{AccountSettings.Host}/_admin/api");
             RestRequest request = new RestRequest(Method.POST);
             request.AddHeader("Cache-Control", "no-cache");
             request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + MainWindow.APIKey + "\",\"method\":\"get_repos\",\"args\":{}}", ParameterType.RequestBody);
+            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + AccountSettings.APIKey + "\",\"method\":\"get_repos\",\"args\":{}}", ParameterType.RequestBody);
 
             try
             {

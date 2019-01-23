@@ -99,12 +99,14 @@
     <Compile Include="About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AccountSettings.cs" />
     <Compile Include="ContextMenu\Child.cs" />
     <Compile Include="ContextMenu\IContextItem.cs" />
     <Compile Include="ContextMenu\MenuLocation.cs" />
     <Compile Include="ContextMenu\MenuChild.cs" />
     <Compile Include="ContextMenu\BreakChild.cs" />
     <Compile Include="ContextMenu\IMenuItem.cs" />
+    <Compile Include="IAccountSettings.cs" />
     <Compile Include="Other Classes\CheckableItem.cs" />
     <Compile Include="Other Classes\ContextMenuImplementations.cs" />
     <Compile Include="Other Classes\URIPair.cs" />
