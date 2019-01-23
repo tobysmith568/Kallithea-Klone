@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -60,6 +60,11 @@ namespace Kallithea_Klone
             set => singleton._Updates = value;
         }
 
+        public static bool JustInstalled
+        {
+            get => singleton._JustInstalled;
+            set => singleton._JustInstalled = value;
+        }
         //  Properties
         //  ==========
 
@@ -133,6 +138,19 @@ namespace Kallithea_Klone
             set
             {
                 Properties.Settings.Default.CheckForUpdates = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        public bool _JustInstalled
+        {
+            get
+            {
+                return Properties.Settings.Default.JustInstalled;
+            }
+            set
+            {
+                Properties.Settings.Default.JustInstalled = value;
                 Properties.Settings.Default.Save();
             }
         }

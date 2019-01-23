@@ -1,4 +1,4 @@
-﻿using Kallithea_Klone.Other_Classes;
+using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.States;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -24,10 +24,10 @@ namespace Kallithea_Klone
         /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         void App_Startup(object sender, StartupEventArgs e)
         {
-            if (Default.JustInstalled)
+            if (AccountSettings.JustInstalled)
             {
                 Default.Upgrade();
-                Default.JustInstalled = false;
+                AccountSettings.JustInstalled = false;
                 Default.Save();
             }
 

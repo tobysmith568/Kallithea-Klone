@@ -1,4 +1,4 @@
-﻿namespace Kallithea_Klone
+namespace Kallithea_Klone
 {
     public interface IAccountSettings
     {
@@ -10,5 +10,6 @@
         string _Host { get; set; }
         string _Password { get; set; }
         bool _Updates { get; set; }
+        bool _JustInstalled { get; set; }
     }
 }
