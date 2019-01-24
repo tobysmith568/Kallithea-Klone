@@ -1,4 +1,4 @@
-using Kallithea_Klone.Other_Classes;
+﻿using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.States;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -9,7 +9,6 @@ using System.Security.Principal;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using static Kallithea_Klone.Properties.Settings;
 
 namespace Kallithea_Klone
 {
@@ -26,9 +25,8 @@ namespace Kallithea_Klone
         {
             if (AccountSettings.JustInstalled)
             {
-                Default.Upgrade();
+                AccountSettings.Upgrade();
                 AccountSettings.JustInstalled = false;
-                Default.Save();
             }
 
             if (e.Args.Length > 0)
@@ -212,19 +210,21 @@ namespace Kallithea_Klone
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+            AccountSettings.Reset();
+            AccountSettings.Save();
+
             try
             {
-                Default.Reset();
-                Default.Save();
-                foreach (string file in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone"))
+                string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Kallithea Klone");
+                foreach (string file in Directory.GetFiles(appDataFolder))
                 {
                     File.Delete(file);
                 }
-                Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Kallithea Klone");
+                Directory.Delete(appDataFolder);
             }
             catch
             {
-                //If settings cannot be recovered from any previous installs then the user will have in re-insert them
+                //If app data cannot be removed then it will have to stay
             }
         }
 

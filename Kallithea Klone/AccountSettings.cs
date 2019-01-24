@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -174,3 +174,41 @@ namespace Kallithea_Klone
                 Properties.Settings.Default.Save();
             }
         }
+
+        //  Static Methods
+        //  ==============
+
+        public static void Upgrade()
+        {
+            singleton._Upgrade();
+        }
+
+        public static void Reset()
+        {
+            singleton._Reset();
+        }
+
+        public static void Save()
+        {
+            singleton._Save();
+        }
+
+        //  Methods
+        //  =======
+
+        public void _Upgrade()
+        {
+            Properties.Settings.Default.Upgrade();
+        }
+
+        public void _Reset()
+        {
+            Properties.Settings.Default.Reset();
+        }
+
+        public void _Save()
+        {
+            Properties.Settings.Default.Save();
+        }
+    }
+}

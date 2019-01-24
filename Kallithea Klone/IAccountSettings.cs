@@ -1,4 +1,4 @@
-namespace Kallithea_Klone
+﻿namespace Kallithea_Klone
 {
     public interface IAccountSettings
     {
@@ -12,5 +12,12 @@ namespace Kallithea_Klone
         bool _Updates { get; set; }
         bool _JustInstalled { get; set; }
         bool _AdvancedOptions { get; set; }
+
+        //  Methods
+        //  =======
+
+        void _Upgrade();
+        void _Reset();
+        void _Save();
     }
 }
