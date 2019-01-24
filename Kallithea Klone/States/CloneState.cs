@@ -83,21 +83,6 @@ namespace Kallithea_Klone.States
         /// <exception cref="InvalidOperationException">Ignore.</exception>
         public override void OnMainAction()
         {
-            if (!SettingsNotEmpty())
-            {
-                MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
-                     "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-
-                switch (result)
-                {
-                    case MessageBoxResult.OK:
-                        mainWindow.OpenSettings();
-                        return;
-                    default:
-                        return;
-                }
-            }
-
             mainWindow.DisableAll();
             Uri uri = new Uri(AccountSettings.Host);
 
@@ -132,21 +117,7 @@ namespace Kallithea_Klone.States
 
         public override async void OnReload()
         {
-            if (!SettingsNotEmpty())
-            {
-                MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
-                     "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-
-                switch (result)
-                {
-                    case MessageBoxResult.OK:
-                        mainWindow.OpenSettings();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else
+            if (AccountSettings.VerifySettings())
             {
                 mainWindow.PbProgress.Visibility = Visibility.Visible;
                 mainWindow.PbProgress.IsIndeterminate = true;

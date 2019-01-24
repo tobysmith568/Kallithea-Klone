@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Kallithea_Klone
 {
@@ -193,6 +194,11 @@ namespace Kallithea_Klone
             singleton._Save();
         }
 
+        public static bool VerifySettings()
+        {
+            return singleton._VerifySettings();
+        }
+
         //  Methods
         //  =======
 
@@ -209,6 +215,32 @@ namespace Kallithea_Klone
         public void _Save()
         {
             Properties.Settings.Default.Save();
+        }
+
+        public bool _VerifySettings()
+        {
+            if (SettingsNotConfigured())
+            {
+                MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
+                     "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+
+                switch (result)
+                {
+                    case MessageBoxResult.OK:
+                        return MainWindow.OpenSettings();
+                    default:
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        private bool SettingsNotConfigured()
+        {
+            return AccountSettings.Host == ""
+                || AccountSettings.APIKey == ""
+                || AccountSettings.Username == ""
+                || AccountSettings.Password == "";
         }
     }
 }

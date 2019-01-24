@@ -175,6 +175,7 @@ namespace Kallithea_Klone
                         AccountSettings.Host = TbxHost.Text;
                         AccountSettings.Username = user.Result.Username;
                         AccountSettings.Password = PbOne.Password;
+                        DialogResult = true;
                         Close();
                         break;
                     case ResponseStatus.TimedOut:

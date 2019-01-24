@@ -106,7 +106,10 @@ namespace Kallithea_Klone
 
         private void BtnClone_Click(object sender, RoutedEventArgs e)
         {
-            state.OnMainAction();
+            if (AccountSettings.VerifySettings())
+            {
+                state.OnMainAction();
+            }
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
@@ -287,21 +290,22 @@ namespace Kallithea_Klone
             return true;
         }
 
-        public void OpenSettings()
+        public static bool OpenSettings()
         {
             try
             {
                 Settings settings = new Settings
                 {
-                    Owner = this
+                    Owner = singleton
                 };
-                settings.ShowDialog();
+                return settings.ShowDialog() == true;
             }
             catch (InvalidOperationException)
             {
                 MessageBox.Show("Error: Unable to open the settings window!", "Error!",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            return false;
         }
 
         public void SelectionUpdated()

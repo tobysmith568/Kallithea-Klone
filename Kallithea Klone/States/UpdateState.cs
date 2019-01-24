@@ -72,22 +72,6 @@ namespace Kallithea_Klone.States
         /// <exception cref="ObjectDisposedException">Ignore.</exception>
         public override void OnMainAction()
         {
-            if (!SettingsNotEmpty())
-            {
-                MessageBoxResult result = MessageBox.Show("It looks like you have not properly set up your settings.\n" +
-                     "Would you like to open them now?", "Empty settings!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-
-                switch (result)
-                {
-                    case MessageBoxResult.OK:
-                        mainWindow.OpenSettings();
-                        break;
-                    default:
-                        break;
-                }
-                return;
-            }
-
             mainWindow.DisableAll();
 
             updatingCount = MainWindow.CheckedURLs.Count;

@@ -54,19 +54,11 @@ namespace Kallithea_Klone.States
 
         public virtual void OnSettings()
         {
-            mainWindow.OpenSettings();
+            MainWindow.OpenSettings();
         }
 
         //  Other Methods
         //  =============
-
-        protected bool SettingsNotEmpty()
-        {
-            return AccountSettings.Host != ""
-                && AccountSettings.APIKey != ""
-                && AccountSettings.Username != ""
-                && AccountSettings.Password != "";
-        }
 
         /// <summary>
         /// Takes a folder location of a repository on disk and returns its default remote location

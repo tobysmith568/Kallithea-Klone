@@ -19,5 +19,6 @@
         void _Upgrade();
         void _Reset();
         void _Save();
+        bool _VerifySettings();
     }
 }
