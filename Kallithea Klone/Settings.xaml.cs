@@ -107,6 +107,11 @@ namespace Kallithea_Klone
             AccountSettings.Updates = ((CheckBox)sender).IsChecked == true;
         }
 
+        private void CbAdvanced_Toggled(object sender, RoutedEventArgs e)
+        {
+            AccountSettings.AdvancedOptions = ((CheckBox)sender).IsChecked == true;
+        }
+
         //  Methods
         //  =======
 

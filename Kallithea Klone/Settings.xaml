@@ -177,7 +177,10 @@
                         <TextBlock Text="Other" />
                     </TabItem.Header>
                     <Grid Margin="0">
-                        <CheckBox Name="CbUpdates" Checked="CbUpdates_Toggled" Unchecked="CbUpdates_Toggled"  Margin="10,259,10,0" Height="30" Content="Check for updates on startup" VerticalAlignment="Top" VerticalContentAlignment="Center" />
+                        <CheckBox Name="CbAdvanced" Checked="CbAdvanced_Toggled" Unchecked="CbAdvanced_Toggled"  Margin="10,20,10,0" Height="80" VerticalAlignment="Top" VerticalContentAlignment="Center">
+                            <TextBlock Text="Enable Advanced features in the Windows Explorer context menu" TextWrapping="Wrap"/>
+                        </CheckBox>
+                        <CheckBox Name="CbUpdates" Checked="CbUpdates_Toggled" Unchecked="CbUpdates_Toggled"  Margin="10,260,10,0" Height="30" Content="Check for updates on startup" VerticalAlignment="Top" VerticalContentAlignment="Center" />
                     </Grid>
                 </TabItem>
             </TabControl>

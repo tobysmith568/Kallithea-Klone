@@ -167,7 +167,9 @@ namespace Kallithea_Klone
             try
             {
                 ContextMenuImplementations.CreateStandard();
-                ContextMenuImplementations.CreateAdvanced();
+
+                if (AccountSettings.AdvancedOptions)
+                    ContextMenuImplementations.CreateAdvanced();
             }
             catch
             {

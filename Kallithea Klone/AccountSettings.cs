@@ -65,6 +65,13 @@ namespace Kallithea_Klone
             get => singleton._JustInstalled;
             set => singleton._JustInstalled = value;
         }
+
+        public static bool AdvancedOptions
+        {
+            get => singleton._AdvancedOptions;
+            set => singleton._AdvancedOptions = value;
+        }
+
         //  Properties
         //  ==========
 
@@ -154,5 +161,16 @@ namespace Kallithea_Klone
                 Properties.Settings.Default.Save();
             }
         }
-    }
-}
+
+        public bool _AdvancedOptions
+        {
+            get
+            {
+                return Properties.Settings.Default.AdvancedOptions;
+            }
+            set
+            {
+                Properties.Settings.Default.AdvancedOptions = value;
+                Properties.Settings.Default.Save();
+            }
+        }

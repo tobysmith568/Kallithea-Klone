@@ -11,5 +11,6 @@ namespace Kallithea_Klone
         string _Password { get; set; }
         bool _Updates { get; set; }
         bool _JustInstalled { get; set; }
+        bool _AdvancedOptions { get; set; }
     }
 }
