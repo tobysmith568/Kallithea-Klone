@@ -1,4 +1,4 @@
-﻿using Kallithea_Klone.Other_Classes;
+using Kallithea_Klone.Other_Classes;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -29,13 +29,10 @@ namespace Kallithea_Klone
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            TbxAPIKey.Text = AccountSettings.APIKey;
             TbxHost.Text = AccountSettings.Host;
+            TbxAPIKey.Text = AccountSettings.APIKey;
             PbOne.Password = AccountSettings.Password;
             PbTwo.Password = AccountSettings.Password;
-
-            PbOne.PasswordChanged += PasswordChanged;
-            PbTwo.PasswordChanged += PasswordChanged;
 
             CbUpdates.IsChecked = AccountSettings.Updates;
         }
