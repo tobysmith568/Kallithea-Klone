@@ -1,4 +1,4 @@
-﻿using Kallithea_Klone.Other_Classes;
+using Kallithea_Klone.Other_Classes;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -65,23 +65,9 @@ namespace Kallithea_Klone
             if (ValidHost())
                 Process.Start(new ProcessStartInfo(TbxHost.Text + "/_admin/my_account/api_keys"));
             else
-                MessageBox.Show("In order to find your API key you must correctly enter your host domain above.", "Incorrect Host!", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("In order to find your API key you must correctly enter your host domain above.", "Invalid Host!", MessageBoxButton.OK, MessageBoxImage.Error);
 
             e.Handled = true;
-        }
-
-        private void TbAPIKey_MouseEnter(object sender, MouseEventArgs e)
-        {
-            TextBlock textBlock = (TextBlock)sender;
-
-            textBlock.TextDecorations.Clear();
-        }
-
-        private void TbAPIKey_MouseLeave(object sender, MouseEventArgs e)
-        {
-            TextBlock textBlock = (TextBlock)sender;
-
-            textBlock.TextDecorations.Add(new TextDecoration(TextDecorationLocation.Underline, null, 0, TextDecorationUnit.Pixel, TextDecorationUnit.Pixel));
         }
 
         private void PasswordChanged(object sender, RoutedEventArgs e)
