@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -108,7 +108,7 @@
     <Compile Include="ContextMenu\BreakChild.cs" />
     <Compile Include="ContextMenu\IMenuItem.cs" />
     <Compile Include="Account Settings\IAccountSettings.cs" />
-    <Compile Include="Other Classes\CheckableItem.cs" />
+    <Compile Include="Custom UI Types\CheckableItem.cs" />
     <Compile Include="Other Classes\ContextMenuImplementations.cs" />
     <Compile Include="Other Classes\URIPair.cs" />
     <Compile Include="ContextMenu\MenuParent.cs" />
@@ -119,15 +119,15 @@
     <Compile Include="States\UpdateState.cs" />
     <Compile Include="States\ReCloneState.cs" />
     <Compile Include="States\LocalRevertState.cs" />
-    <Compile Include="Other Classes\Repository.cs" />
-    <Compile Include="Other Classes\KallitheaResponse.cs" />
+    <Compile Include="Kallithea\Repository.cs" />
+    <Compile Include="Kallithea\KallitheaResponse.cs" />
     <Compile Include="States\RunTypes.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="States\TemplateState.cs" />
-    <Compile Include="Other Classes\User.cs" />
+    <Compile Include="Kallithea\User.cs" />
     <Compile Include="UpdateDownloading.xaml.cs">
       <DependentUpon>UpdateDownloading.xaml</DependentUpon>
     </Compile>

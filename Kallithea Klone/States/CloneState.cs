@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using System.Web;
 using System.Diagnostics;
 using Kallithea_Klone.Other_Classes;
+using Kallithea_Klone.Kallithea;
+using Kallithea_Klone.Account_Settings;
 
 namespace Kallithea_Klone.States
 {

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Kallithea_Klone
+namespace Kallithea_Klone.Custom_UI_Types
 {
     public class CheckableItem : TreeViewItem
     {
@@ -20,7 +20,7 @@ namespace Kallithea_Klone
                 {
                     if (((CheckableItem) child) != null)
                     {
-                        ((CheckableItem)child).IsChecked = value;
+                        ((CheckableItem) child).IsChecked = value;
                     }
                 }
             }
