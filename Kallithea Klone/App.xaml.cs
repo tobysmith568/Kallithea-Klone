@@ -1,4 +1,4 @@
-﻿using Kallithea_Klone.Other_Classes;
+using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.States;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -65,13 +65,15 @@ namespace Kallithea_Klone
                             Setup(e.Args[1]);
                         else
                             Setup();
-                        goto default;
+                        Environment.Exit(0);
+                        break;
                     case nameof(RunTypes.Uninstall):
                         if (e.Args.Length >= 2)
                             Uninstall(e.Args[1]);
                         else
                             Uninstall();
-                        goto default;
+                        Environment.Exit(0);
+                        break;
                     default:
                         Environment.Exit(1);
                         break;
