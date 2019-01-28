@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace Kallithea_Klone
+namespace Kallithea_Klone.Account_Settings
 {
     public class AccountSettings : IAccountSettings
     {
@@ -67,7 +64,7 @@ namespace Kallithea_Klone
             set => singleton._JustInstalled = value;
         }
 
-        public static bool AdvancedOptions
+        public static AdvancedOptions AdvancedOptions
         {
             get => singleton._AdvancedOptions;
             set => singleton._AdvancedOptions = value;
@@ -163,15 +160,15 @@ namespace Kallithea_Klone
             }
         }
 
-        public bool _AdvancedOptions
+        public AdvancedOptions _AdvancedOptions
         {
             get
             {
-                return Properties.Settings.Default.AdvancedOptions;
+                return new AdvancedOptions(Properties.Settings.Default.AdvancedOptions);
             }
             set
             {
-                Properties.Settings.Default.AdvancedOptions = value;
+                Properties.Settings.Default.AdvancedOptions = value.PackedValue;
                 Properties.Settings.Default.Save();
             }
         }
@@ -237,10 +234,10 @@ namespace Kallithea_Klone
 
         private bool SettingsNotConfigured()
         {
-            return AccountSettings.Host == ""
-                || AccountSettings.APIKey == ""
-                || AccountSettings.Username == ""
-                || AccountSettings.Password == "";
+            return Host == ""
+                || APIKey == ""
+                || Username == ""
+                || Password == "";
         }
     }
 }

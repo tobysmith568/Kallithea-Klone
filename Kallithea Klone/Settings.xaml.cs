@@ -1,3 +1,5 @@
+﻿using Kallithea_Klone.Account_Settings;
+using Kallithea_Klone.Kallithea;
 using Kallithea_Klone.Other_Classes;
 using Newtonsoft.Json;
 using RestSharp;
@@ -16,6 +18,13 @@ namespace Kallithea_Klone
     /// </summary>
     public partial class Settings : Window
     {
+        //  Variables
+        //  =========
+
+        private int originalAdvancedSettingValue;
+        string username = "";
+        bool isFullySetUp = false;
+
         //  Constructors
         //  ============
 
@@ -29,6 +38,8 @@ namespace Kallithea_Klone
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            GdAdminWarning.Visibility = Visibility.Hidden;
+
             TbxAPIKey.Text = AccountSettings.APIKey;
             TbxHost.Text = AccountSettings.Host;
             PbOne.Password = AccountSettings.Password;
@@ -37,7 +48,17 @@ namespace Kallithea_Klone
             PbOne.PasswordChanged += PasswordChanged;
             PbTwo.PasswordChanged += PasswordChanged;
 
-            CbUpdates.IsChecked = AccountSettings.Updates;
+            AdvancedOptions advancedOptions = AccountSettings.AdvancedOptions;
+            originalAdvancedSettingValue = advancedOptions.PackedValue;
+            CbAdvancedOptions.IsChecked = advancedOptions.Enabled;
+            CbRevert.IsChecked = advancedOptions.Revert;
+            CbReclone.IsChecked = advancedOptions.Reclone;
+            CbUpdate.IsChecked = advancedOptions.Update;
+            CbSettings.IsChecked = advancedOptions.Settings;
+
+            CbCheckForUpdates.IsChecked = AccountSettings.Updates;
+
+            isFullySetUp = true;
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -45,14 +66,15 @@ namespace Kallithea_Klone
             Close();
         }
 
-        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            SaveAndClose();
+            if (await IsValidAccountInformation())
+                SaveAndClose();
         }
 
-        private void Tbx_KeyDown(object sender, KeyEventArgs e)
+        private async void Tbx_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return && await IsValidAccountInformation())
                 SaveAndClose();
         }
 
@@ -72,6 +94,9 @@ namespace Kallithea_Klone
 
         private void PasswordChanged(object sender, RoutedEventArgs e)
         {
+            if (!isFullySetUp)
+                return;
+
             LblNotMatching.Visibility = PbOne.Password == PbTwo.Password ? Visibility.Hidden : Visibility.Visible;
             BtnSave.IsEnabled = GetSaveButtonEnabled();
         }
@@ -88,14 +113,12 @@ namespace Kallithea_Klone
             BtnSave.IsEnabled = GetSaveButtonEnabled();
         }
 
-        private void CbUpdates_Toggled(object sender, RoutedEventArgs e)
+        private void AdvancedOptionChanged(object sender, RoutedEventArgs e)
         {
-            AccountSettings.Updates = ((CheckBox)sender).IsChecked == true;
-        }
+            if (!isFullySetUp)
+                return;
 
-        private void CbAdvanced_Toggled(object sender, RoutedEventArgs e)
-        {
-            AccountSettings.AdvancedOptions = ((CheckBox)sender).IsChecked == true;
+            GdAdminWarning.Visibility = AdvancedOptionsHaveChanged() ? Visibility.Visible : Visibility.Hidden;
         }
 
         //  Methods
@@ -121,12 +144,12 @@ namespace Kallithea_Klone
             return true;
         }
 
-        private async void SaveAndClose()
+        private async Task<bool> IsValidAccountInformation()
         {
             if (!ValidHost())
             {
                 MessageBox.Show("Your Host doesn't appear to be a fully formed URL.", "Incorrect Host!", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                return false;
             }
 
             BtnSave.IsEnabled = false;
@@ -155,15 +178,10 @@ namespace Kallithea_Klone
                             MessageBox.Show("Error: " + user.Error, "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                             BtnSave.IsEnabled = true;
                             GridCoverAll.Visibility = Visibility.Hidden;
-                            break;
+                            return false;
                         }
-                        AccountSettings.APIKey = TbxAPIKey.Text;
-                        AccountSettings.Host = TbxHost.Text;
-                        AccountSettings.Username = user.Result.Username;
-                        AccountSettings.Password = PbOne.Password;
-                        DialogResult = true;
-                        Close();
-                        break;
+                        username = user.Result.Username;
+                        return true;
                     case ResponseStatus.TimedOut:
                         MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
                         BtnSave.IsEnabled = true;
@@ -184,12 +202,71 @@ namespace Kallithea_Klone
                 BtnSave.IsEnabled = true;
                 GridCoverAll.Visibility = Visibility.Hidden;
             }
+
+            return false;
+        }
+
+        private void SaveAndClose()
+        {
+            AccountSettings.APIKey = TbxAPIKey.Text;
+            AccountSettings.Host = TbxHost.Text;
+            AccountSettings.Username = username;
+            AccountSettings.Password = PbOne.Password;
+            AccountSettings.Updates = CbCheckForUpdates.IsChecked == true;
+            AccountSettings.AdvancedOptions = new AdvancedOptions(
+                enabled: CbAdvancedOptions.IsChecked == true,
+                revert: CbRevert.IsChecked == true,
+                reclone: CbReclone.IsChecked == true,
+                update: CbUpdate.IsChecked == true,
+                settings: CbSettings.IsChecked == true);
+
+            if (AdvancedOptionsHaveChanged())
+            {
+                Process process;
+                try
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName)
+                    {
+                        Verb = "runas",
+                        Arguments = "Setup"
+                    };
+                    process = Process.Start(startInfo);
+                    process.WaitForExit();
+
+                    if (process.ExitCode != 0)
+                    {
+                        throw new Exception();
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to edit the Windows Explorer context menu options.\n" +
+                        "If this continues please uninstall and re-install", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            
+            if (System.Windows.Interop.ComponentDispatcher.IsThreadModal)
+                DialogResult = true;
+
+            Close();
         }
 
         private bool ValidHost()
         {
             return Uri.TryCreate(TbxHost.Text, UriKind.Absolute, out Uri uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        }
+
+        private bool AdvancedOptionsHaveChanged()
+        {
+            AdvancedOptions advancedOptions = new AdvancedOptions(
+                enabled: CbAdvancedOptions.IsChecked == true,
+                revert: CbRevert.IsChecked == true,
+                reclone: CbReclone.IsChecked == true,
+                update: CbUpdate.IsChecked == true,
+                settings: CbSettings.IsChecked == true);
+
+            return advancedOptions.PackedValue != originalAdvancedSettingValue;
         }
     }
 }

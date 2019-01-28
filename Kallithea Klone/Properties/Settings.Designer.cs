@@ -97,10 +97,10 @@ namespace Kallithea_Klone.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AdvancedOptions {
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public int AdvancedOptions {
             get {
-                return ((bool)(this["AdvancedOptions"]));
+                return ((int)(this["AdvancedOptions"]));
             }
             set {
                 this["AdvancedOptions"] = value;

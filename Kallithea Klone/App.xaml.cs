@@ -1,6 +1,6 @@
+﻿using Kallithea_Klone.Account_Settings;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.States;
-using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Diagnostics;
@@ -166,17 +166,15 @@ namespace Kallithea_Klone
 
             try
             {
+                ContextMenuImplementations.RemoveAll();
                 ContextMenuImplementations.CreateStandard();
-
-                if (AccountSettings.AdvancedOptions)
-                    ContextMenuImplementations.CreateAdvanced();
+                ContextMenuImplementations.CreateAdvanced();
             }
             catch
             {
                 System.Windows.MessageBox.Show("Kallithea Klone was unable to add all of the Windows Explorer context menu items it uses.\n" +
                     "Please re-run the installer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
 
         private void Uninstall(string attempt = "0")
@@ -281,7 +279,7 @@ namespace Kallithea_Klone
         /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
         private void RestartAsAdmin(string arguments)
         {
-            var exeName = Process.GetCurrentProcess().MainModule.FileName;
+            string exeName = Process.GetCurrentProcess().MainModule.FileName;
 
             try
             {
