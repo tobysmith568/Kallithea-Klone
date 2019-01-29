@@ -25,34 +25,12 @@ namespace Kallithea_Klone.States
 
         private List<string> allRepositories;
 
-        private int cloningCount;
-        private int clonedCount = 0;
-        private List<string> errorCodes = new List<string>();
-
         //  Constructors
         //  ============
 
         public CloneState() : base()
         {
 
-        }
-
-        //  Events
-        //  ======
-
-        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
-        private void Process_Exited(object sender, EventArgs e)
-        {
-            if (((Process)sender).ExitCode != 0)
-                errorCodes.Add(((Process)sender).ExitCode.ToString());
-            clonedCount++;
-
-            if (clonedCount == cloningCount)
-            {
-                if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
-            }
         }
 
         //  State Pattern
@@ -83,38 +61,51 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public override void OnMainAction()
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
+        public override async Task OnMainActionAsync()
         {
-            mainWindow.DisableAll();
             Uri uri = new Uri(AccountSettings.Host);
 
-            cloningCount = MainWindow.CheckedURLs.Count;
             foreach (string url in MainWindow.CheckedURLs)
             {
                 string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}{url}";
-
-                Process process = new Process()
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        FileName = CmdExe,
-                        Arguments = $"/C hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('/').Last()}\""
-                    },
-                    EnableRaisingEvents = true
-                };
-                process.Exited += Process_Exited;
+                Process process = CreateNewProcess($"hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('/').Last()}\"");
 
                 try
                 {
-                    process.Start();
+                    await Task.Run(() =>
+                    {
+                        process.Start();
+                        process.WaitForExit();
+                    });
                 }
-                catch (System.ComponentModel.Win32Exception)
+                catch
                 {
-                    MessageBox.Show($"Unable to start the process of cloning the repository for {url}",
-                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Unable to started the process needed to clone {Path.GetFileName(url)}", "Error!",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                try
+                {
+                    string errorMessages = process.StandardError.ReadToEnd();
+
+                    if (errorMessages.Length > 0)
+                    {
+                        string location = Path.GetFileName(url);
+                        MessageBox.Show($"{location} finished with the exit code: {process.ExitCode}\n\n" +
+                            $"And the error messages: {errorMessages}",
+                            $"Exit code {process.ExitCode} while cloning {location}!",
+                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show($"Unable to read the process used to clone {Path.GetFileName(url)}. This means Kallithea" +
+                        $"Klone is unable to tell if it was successful or not.", "Error!",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+            Environment.Exit(0);
         }
 
         public override async void OnReload()
