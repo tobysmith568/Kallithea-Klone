@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Web;
 using System.Diagnostics;
 using Kallithea_Klone.Account_Settings;
+using System.Threading.Tasks;
+using Kallithea_Klone.Other_Classes;
 
 namespace Kallithea_Klone.States
 {
@@ -15,9 +17,7 @@ namespace Kallithea_Klone.States
         //  Variables
         //  =========
 
-        private int updatingCount;
-        private int updatedCount = 0;
-        private List<string> errorCodes = new List<string>();
+        private const string dateTimeFormat = "ddMMyyHHmmss";
 
         //  Constructors
         //  ============
@@ -25,24 +25,6 @@ namespace Kallithea_Klone.States
         public UpdateState() : base()
         {
 
-        }
-
-        //  Events
-        //  ======
-
-        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
-        private void Process_Exited(object sender, EventArgs e)
-        {
-            if (((Process)sender).ExitCode != 0)
-                errorCodes.Add(((Process)sender).ExitCode.ToString());
-            updatedCount++;
-
-            if (updatedCount == updatingCount)
-            {
-                if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
-            }
         }
 
         //  State Pattern
@@ -68,14 +50,8 @@ namespace Kallithea_Klone.States
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
 
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
-        /// <exception cref="ObjectDisposedException">Ignore.</exception>
-        public override void OnMainAction()
+        public override async Task OnMainActionAsync()
         {
-            mainWindow.DisableAll();
-
-            updatingCount = MainWindow.CheckedURLs.Count;
             foreach (string url in MainWindow.CheckedURLs)
             {
                 string remotePath;
@@ -83,43 +59,63 @@ namespace Kallithea_Klone.States
                 {
                     remotePath = GetDefaultRemotePath(url);
                 }
-                catch (PathTooLongException)
+                catch
                 {
-                    MessageBox.Show($"Unable to read the hgrc file for the repository at {url} because the file path is too long.");
-                    continue;
-                }
-                catch (Exception e) when (e is System.Security.SecurityException || e is UnauthorizedAccessException)
-                {
-                    MessageBox.Show($"Unable to read the hgrc file for the repository at {url}.");
+                    MessageBox.Show($"Unable to update the repository at {url} because Kallithea Klone couldn't find its default" +
+                        $" remote location in its hmrc file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     continue;
                 }
 
                 Uri uri = new Uri(remotePath);
+
                 string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
-
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo
+                string shelfName = DateTime.Now.ToString(dateTimeFormat);
+                CMDProcess cmdProcess = new CMDProcess(new string[]
                 {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    FileName = CmdExe,
-                    Arguments = $"/C cd /d {url}" +
-                                 $"&hg --config \"extensions.shelve = \" shelve --name {DateTime.Now.ToString("ddMMyyHHmmss")}" +
-                                 $"&hg pull {fullURL}" +
-                                 $"&hg update -m" +
-                                 $"&hg --config \"extensions.shelve = \" unshelve --name {DateTime.Now.ToString("ddMMyyHHmmss")} --tool :other"
-                };
-                process.StartInfo = startInfo;
-                process.EnableRaisingEvents = true;
-                process.Exited += Process_Exited;
+                    $"cd /d {url}" +
+                    $"hg --config \"extensions.shelve = \" shelve --name {shelfName}" +
+                    $"hg pull {fullURL}" +
+                    $"hg update -m" +
+                    $"hg --config \"extensions.shelve = \" unshelve --name {shelfName} --tool :other"
+                });
 
-                process.Start();
+                try
+                {
+                    await cmdProcess.Run();
+                }
+                catch
+                {
+                    MessageBox.Show($"Unable to start the process needed to update {Path.GetFileName(url)}", "Error!",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                try
+                {
+                    string errorMessages = await cmdProcess.GetErrorOutAsync();
+
+                    if (errorMessages.Length > 0)
+                    {
+                        string location = Path.GetFileName(url);
+                        MessageBox.Show($"{location} finished with the exit code: {cmdProcess.ExitCode}\n\n" +
+                            $"And the error messages: {errorMessages}",
+                            $"Exit code {cmdProcess.ExitCode} while updating {location}!",
+                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                        continue;
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show($"Unable to read the process used to update {Path.GetFileName(url)}. This means Kallithea" +
+                        $"Klone is unable to tell if it was successful or not.", "Error!",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
-        /// <exception cref="Exception">Ignore.</exception>
+        /// <exception cref="NotImplementedException">Ignore.</exception>
         public override void OnReload()
         {
-            throw new Exception("Invalid Button Press!");
+            throw new NotImplementedException("Invalid Button Press!");
         }
 
         public override void OnSearch()

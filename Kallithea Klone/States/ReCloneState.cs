@@ -9,72 +9,18 @@ using System.Web;
 using System.Diagnostics;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Account_Settings;
+using System.Threading.Tasks;
 
 namespace Kallithea_Klone.States
 {
     class ReCloneState : TemplateState
     {
-        //  Variables
-        //  =========
-
-        private int reCloningCount;
-        private int reClonedCount = 0;
-        private List<string> errorCodes = new List<string>();
-
         //  Constructors
         //  ============
 
         public ReCloneState() : base()
         {
 
-        }
-
-        //  Events
-        //  ======
-
-        private void Process_Exited(object sender, EventArgs e)
-        {
-            Process sendingProcess = (Process)sender;
-            int exitCode = sendingProcess.ExitCode;
-
-            if (exitCode != 0)
-            {
-                errorCodes.Add(exitCode.ToString());
-            }
-            else
-            {
-                string[] arguments = sendingProcess.StartInfo.Arguments.Split('|');
-
-                if (arguments.Length < 2)
-                {
-                    throw new ArgumentOutOfRangeException("Cannot find local result from cloning");
-                }
-
-                string uriPairArg = arguments[arguments.Length - 1];
-
-                URIPair uriPair = JsonConvert.DeserializeObject<URIPair>(uriPairArg);
-
-                try
-                {
-                    IniFile hgrc = new IniFile(Path.Combine(uriPair.Local, ".hg", "hgrc"));
-                    hgrc.Write("default", uriPair.Remote, "paths");
-                }
-                catch (PathTooLongException)
-                {
-                    MessageBox.Show($"Unable to read the hgrc file for the repository at {uriPair.Local} because the file path is too long.\n" +
-                        $"This will cause problems later with other Kallithea Klone actions.");
-                }
-                catch (Exception ex) when (ex is System.Security.SecurityException || ex is UnauthorizedAccessException)
-                {
-                    MessageBox.Show($"Unable to read the hgrc file for the repository at {uriPair.Local}.\n" +
-                        $"This will cause problems later with other Kallithea Klone actions.");
-                }
-
-
-            }
-
-            reClonedCount++;
-            CheckClonedCount();
         }
 
         //  State Pattern
@@ -100,14 +46,8 @@ namespace Kallithea_Klone.States
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
 
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
-        /// <exception cref="ObjectDisposedException">Ignore.</exception>
-        public override void OnMainAction()
+        public override async Task OnMainActionAsync()
         {
-            mainWindow.DisableAll();
-
-            reCloningCount = MainWindow.CheckedURLs.Count;
             foreach (string url in MainWindow.CheckedURLs)
             {
                 string remotePath;
@@ -115,62 +55,75 @@ namespace Kallithea_Klone.States
                 {
                     remotePath = GetDefaultRemotePath(url);
                 }
-                catch (Exception)
+                catch
                 {
-                    MessageBox.Show($"Unable to re-clone the repository at {url}.");
-                    reCloningCount--;
-                    CheckClonedCount();
+                    MessageBox.Show($"Unable to re-clone the repository at {url} because Kallithea Klone couldn't find its default" +
+                        $" remote location in its hmrc file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     continue;
                 }
 
                 Uri uri = new Uri(remotePath);
+
                 string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
+                string passwordSafeURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}@{uri.Host}{uri.PathAndQuery}";
 
                 try
                 {
-                    foreach (string folder in Directory.GetDirectories(url))
-                    {
-                        string last = folder.Split('\\').Last();
-                        if (last == ".hg" || last.First() != '.')
-                            Directory.Delete(folder, true);
-                    }
+                    ClearOutRepository(url);
+                }
+                catch
+                {
+                    MessageBox.Show($"Error: Failed to properly delete \"{Path.GetFileName(url)}\"\nThis repository is now probably half deleted.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                    continue;
+                }
 
-                    foreach (string file in Directory.GetFiles(url))
+                CMDProcess cmdProcess = new CMDProcess(new string[]
+                {
+                    $"cd /d \"{url}\"",
+                    $"hg init",
+                    $"hg pull {fullURL}",
+                    $"hg update"
+                });
+
+                try
+                {
+                    await cmdProcess.Run();
+                }
+                catch
+                {
+                    MessageBox.Show($"Unable to start the process needed to re-clone {Path.GetFileName(url)}", "Error!",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                try
+                {
+                    string errorMessages = await cmdProcess.GetErrorOutAsync();
+
+                    if (errorMessages.Length > 0)
                     {
-                        File.Delete(file);
+                        string location = Path.GetFileName(url);
+                        MessageBox.Show($"{location} finished with the exit code: {cmdProcess.ExitCode}\n\n" +
+                            $"And the error messages: {errorMessages}",
+                            $"Exit code {cmdProcess.ExitCode} while re-cloning {location}!",
+                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                        continue;
                     }
                 }
                 catch
                 {
-                    MessageBox.Show($"Error: Failed to properly delete \"{url.Split('\\').Last()}\"\nThis repository is now probably half deleted.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                    continue;
+                    MessageBox.Show($"Unable to read the process used to re-clone {Path.GetFileName(url)}. This means Kallithea" +
+                        $"Klone is unable to tell if it was successful or not.", "Error!",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
-                string urlPair = JsonConvert.SerializeObject(new URIPair(url, fullURL));
-
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    WindowStyle = ProcessWindowStyle.Normal,
-                    FileName = CmdExe,
-                    Arguments = $"/C cd /d \"{url}\"" +
-                                  $"&hg init" +
-                                  $"&hg pull {fullURL}" +
-                                  $"&hg update" +
-                                  $"&echo \"|{urlPair}"//Allows the process closed event to have the URLs via the process's starting arguments
-                };
-                process.StartInfo = startInfo;
-                process.EnableRaisingEvents = true;
-                process.Exited += Process_Exited;
-
-                process.Start();
+                SetDefaultLocation(url, passwordSafeURL);
             }
         }
 
-        /// <exception cref="Exception">Ignore.</exception>
+        /// <exception cref="NotImplementedException">Ignore.</exception>
         public override void OnReload()
         {
-            throw new Exception("Invalid Button Press!");
+            throw new NotImplementedException("Invalid Button Press!");
         }
 
         public override void OnSearch()
@@ -274,14 +227,42 @@ namespace Kallithea_Klone.States
             return newItem;
         }
 
-        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
-        private void CheckClonedCount()
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        private static void ClearOutRepository(string url)
         {
-            if (reClonedCount == reCloningCount)
+            foreach (string folder in Directory.GetDirectories(url))
             {
-                if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + string.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
+                string last = folder.Split('\\').Last();
+                if (last == ".hg" || last.First() != '.')
+                    Directory.Delete(folder, true);
+            }
+
+            foreach (string file in Directory.GetFiles(url))
+            {
+                File.Delete(file);
+            }
+        }
+
+        private static void SetDefaultLocation(string url, string passwordSafeURL)
+        {
+            try
+            {
+                IniFile hgrc = new IniFile(Path.Combine(url, ".hg", "hgrc"));
+                hgrc.Write("default", passwordSafeURL, "paths");
+            }
+            catch (PathTooLongException)
+            {
+                MessageBox.Show($"Unable to read the hgrc file for the repository at {url} because the file path is too long.\n" +
+                    $"This will cause problems later with other Kallithea Klone actions.");
+            }
+            catch (Exception ex) when (ex is System.Security.SecurityException || ex is UnauthorizedAccessException)
+            {
+                MessageBox.Show($"Unable to read the hgrc file for the repository at {url}.\n" +
+                    $"This will cause problems later with other Kallithea Klone actions.");
             }
         }
     }

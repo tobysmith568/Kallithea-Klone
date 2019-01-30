@@ -1,4 +1,6 @@
-﻿namespace Kallithea_Klone.States
+﻿using System.Threading.Tasks;
+
+namespace Kallithea_Klone.States
 {
     public interface IState
     {
@@ -12,6 +14,6 @@
         void OnSearchTermChanged();
         void OnSearch();
 
-        void OnMainAction();
+        Task OnMainActionAsync();
     }
 }

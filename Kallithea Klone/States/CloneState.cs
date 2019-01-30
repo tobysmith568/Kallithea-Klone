@@ -59,9 +59,7 @@ namespace Kallithea_Klone.States
 
             LoadRepositories();
         }
-
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
+        
         public override async Task OnMainActionAsync()
         {
             Uri uri = new Uri(AccountSettings.Host);
@@ -69,32 +67,29 @@ namespace Kallithea_Klone.States
             foreach (string url in MainWindow.CheckedURLs)
             {
                 string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}{url}";
-                Process process = CreateNewProcess($"hg clone {fullURL} \"{mainWindow.runFrom}\\{url.Split('/').Last()}\"");
+                CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{mainWindow.runFrom}\\{Path.GetFileName(url)}\"");
 
                 try
                 {
-                    await Task.Run(() =>
-                    {
-                        process.Start();
-                        process.WaitForExit();
-                    });
+                    await cmdProcess.Run();
                 }
                 catch
                 {
-                    MessageBox.Show($"Unable to started the process needed to clone {Path.GetFileName(url)}", "Error!",
+                    MessageBox.Show($"Unable to start the process needed to clone {Path.GetFileName(url)}", "Error!",
                         MessageBoxButton.OK, MessageBoxImage.Error);
+                    continue;
                 }
 
                 try
                 {
-                    string errorMessages = process.StandardError.ReadToEnd();
+                    string errorMessages = await cmdProcess.GetErrorOutAsync();
 
                     if (errorMessages.Length > 0)
                     {
                         string location = Path.GetFileName(url);
-                        MessageBox.Show($"{location} finished with the exit code: {process.ExitCode}\n\n" +
+                        MessageBox.Show($"{location} finished with the exit code: {cmdProcess.ExitCode}\n\n" +
                             $"And the error messages: {errorMessages}",
-                            $"Exit code {process.ExitCode} while cloning {location}!",
+                            $"Exit code {cmdProcess.ExitCode} while cloning {location}!",
                             MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                     }
                 }
@@ -105,7 +100,6 @@ namespace Kallithea_Klone.States
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            Environment.Exit(0);
         }
 
         public override async void OnReload()

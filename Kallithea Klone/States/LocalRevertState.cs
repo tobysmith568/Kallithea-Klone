@@ -6,42 +6,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Diagnostics;
 using Kallithea_Klone.Account_Settings;
+using System.Threading.Tasks;
+using Kallithea_Klone.Other_Classes;
 
 namespace Kallithea_Klone.States
 {
     class LocalRevertState : TemplateState
     {
-        //  Variables
-        //  =========
-
-        private int revertingCount;
-        private int revertedCount = 0;
-        private List<string> errorCodes = new List<string>();
-
         //  Constructors
         //  ============
 
         public LocalRevertState() : base()
         {
 
-        }
-
-        //  Events
-        //  ======
-
-        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
-        private void Process_Exited(object sender, EventArgs e)
-        {
-            if (((Process)sender).ExitCode != 0)
-                errorCodes.Add(((Process)sender).ExitCode.ToString());
-            revertedCount++;
-
-            if (revertedCount == revertingCount)
-            {
-                if (errorCodes.Count > 0)
-                    MessageBox.Show("Finshed, but with the following mercurial exit codes:\n" + String.Join("\n", errorCodes), "Errors", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                Environment.Exit(0);
-            }
         }
 
         //  State Pattern
@@ -67,38 +44,53 @@ namespace Kallithea_Klone.States
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
 
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
-        /// <exception cref="ObjectDisposedException">Ignore.</exception>
-        public override void OnMainAction()
+        public override async Task OnMainActionAsync()
         {
-            mainWindow.DisableAll();
-            Uri uri = new Uri(AccountSettings.Host);
-
-            revertingCount = MainWindow.CheckedURLs.Count;
             foreach (string url in MainWindow.CheckedURLs)
             {
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo
+                CMDProcess cmdProcess = new CMDProcess(new string[]
                 {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    FileName = CmdExe,
-                    Arguments = $"/C cd /d {url}" +
-                                  $"&hg revert --all" +
-                                  $"&hg --config \"extensions.purge = \" purge --all"
-                };
-                process.StartInfo = startInfo;
-                process.EnableRaisingEvents = true;
-                process.Exited += Process_Exited;
+                    $"cd /d {url}",
+                    $"hg revert --all",
+                    $"hg --config \"extensions.purge = \" purge --all"
+                });
 
-                process.Start();
+                try
+                {
+                    await cmdProcess.Run();
+                }
+                catch
+                {
+                    MessageBox.Show($"Unable to start the process needed to revert {Path.GetFileName(url)}", "Error!",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                try
+                {
+                    string errorMessages = await cmdProcess.GetErrorOutAsync();
+
+                    if (errorMessages.Length > 0)
+                    {
+                        string location = Path.GetFileName(url);
+                        MessageBox.Show($"{location} finished with the exit code: {cmdProcess.ExitCode}\n\n" +
+                            $"And the error messages: {errorMessages}",
+                            $"Exit code {cmdProcess.ExitCode} while reverting {location}!",
+                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show($"Unable to read the process used to revert {Path.GetFileName(url)}. This means Kallithea" +
+                        $"Klone is unable to tell if it was successful or not.", "Error!",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
-        /// <exception cref="Exception">Ignore.</exception>
+        /// <exception cref="NotImplementedException">Ignore.</exception>
         public override void OnReload()
         {
-            throw new Exception("Invalid Button Press!");
+            throw new NotImplementedException("Invalid Button Press!");
         }
 
         public override void OnSearch()

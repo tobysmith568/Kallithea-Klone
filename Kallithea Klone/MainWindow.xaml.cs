@@ -105,11 +105,14 @@ namespace Kallithea_Klone
             state.OnLoseFocus();
         }
 
-        private void BtnClone_Click(object sender, RoutedEventArgs e)
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
+        private async void BtnClone_Click(object sender, RoutedEventArgs e)
         {
             if (AccountSettings.VerifySettings())
             {
-                state.OnMainAction();
+                DisableAll();
+                await state.OnMainActionAsync();
+                Environment.Exit(0);
             }
         }
 

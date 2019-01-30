@@ -109,6 +109,7 @@
     <Compile Include="ContextMenu\IMenuItem.cs" />
     <Compile Include="Account Settings\IAccountSettings.cs" />
     <Compile Include="Custom UI Types\CheckableItem.cs" />
+    <Compile Include="Other Classes\CMDProcess.cs" />
     <Compile Include="Other Classes\ContextMenuImplementations.cs" />
     <Compile Include="Other Classes\URIPair.cs" />
     <Compile Include="ContextMenu\MenuParent.cs" />

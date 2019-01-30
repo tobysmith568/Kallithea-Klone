@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using Kallithea_Klone.Other_Classes;
 
@@ -28,7 +30,7 @@ namespace Kallithea_Klone.States
 
         public abstract void OnLoad();
 
-        public abstract void OnMainAction();
+        public abstract Task OnMainActionAsync();
 
         public abstract void OnReload();
 
