@@ -64,11 +64,11 @@ namespace Kallithea_Klone.States
             LoadRepositories();
         }
 
-        public override async Task OnMainActionAsync()
+        public override async Task OnMainActionAsync(List<string> urls)
         {
             Uri host = new Uri(AccountSettings.Host);
 
-            foreach (string url in MainWindow.CheckedURLs)
+            foreach (string url in urls)
             {
                 try
                 {
@@ -76,7 +76,8 @@ namespace Kallithea_Klone.States
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}",
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 }
             }
         }
@@ -97,14 +98,6 @@ namespace Kallithea_Klone.States
             }
         }
 
-        public override void OnSearchTermChanged()
-        {
-            if (mainWindow.TbxSearch.Text.Length == 0)
-            {
-                LoadRepositories();
-            }
-        }
-
         public override void OnSearch()
         {
             if (mainWindow.TbxSearch.Text.Length != 0)
@@ -115,6 +108,14 @@ namespace Kallithea_Klone.States
                     repositories = repositories.Where(r => r.ToLower().Contains(term));
                 }
                 LoadRepositories(repositories.ToList(), true);
+            }
+        }
+
+        public override void OnSearchTermChanged()
+        {
+            if (mainWindow.TbxSearch.Text.Length == 0)
+            {
+                LoadRepositories();
             }
         }
 

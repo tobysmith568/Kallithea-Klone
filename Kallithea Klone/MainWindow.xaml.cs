@@ -111,7 +111,7 @@ namespace Kallithea_Klone
             if (AccountSettings.VerifySettings())
             {
                 DisableAll();
-                await state.OnMainActionAsync();
+                await state.OnMainActionAsync(CheckedURLs);
                 Environment.Exit(0);
             }
         }

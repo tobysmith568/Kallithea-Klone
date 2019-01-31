@@ -7,6 +7,7 @@ using System.Web;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Account_Settings;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Kallithea_Klone.States
 {
@@ -48,9 +49,9 @@ namespace Kallithea_Klone.States
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
 
-        public override async Task OnMainActionAsync()
+        public override async Task OnMainActionAsync(List<string> urls)
         {
-            foreach (string url in MainWindow.CheckedURLs)
+            foreach (string url in urls)
             {
                 try
                 {

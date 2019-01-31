@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Kallithea_Klone.States
 {
@@ -22,6 +23,6 @@ namespace Kallithea_Klone.States
         void OnSearchTermChanged();
         void OnSearch();
         
-        Task OnMainActionAsync();
+        Task OnMainActionAsync(List<string> urls);
     }
 }

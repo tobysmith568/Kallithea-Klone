@@ -34,7 +34,7 @@ namespace Kallithea_Klone.States
 
         public abstract void OnLoad();
         
-        public abstract Task OnMainActionAsync();
+        public abstract Task OnMainActionAsync(List<string> urls);
 
         public abstract void OnReload();
 
