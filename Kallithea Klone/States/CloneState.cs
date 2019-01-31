@@ -64,6 +64,11 @@ namespace Kallithea_Klone.States
             LoadRepositories();
         }
 
+        public override void OnLoaded()
+        {
+
+        }
+
         public override async Task OnMainActionAsync(List<string> urls)
         {
             Uri host = new Uri(AccountSettings.Host);

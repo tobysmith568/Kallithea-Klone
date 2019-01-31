@@ -33,6 +33,8 @@ namespace Kallithea_Klone.States
         //  ======================
 
         public abstract void OnLoad();
+
+        public abstract void OnLoaded();
         
         public abstract Task OnMainActionAsync(List<string> urls);
 
@@ -45,10 +47,6 @@ namespace Kallithea_Klone.States
         //  Implemented State Methods
         //  =========================
 
-        public virtual void OnLoaded()
-        {
-
-        }
 
         /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         /// <exception cref="InvalidCastException">Ignore.</exception>
