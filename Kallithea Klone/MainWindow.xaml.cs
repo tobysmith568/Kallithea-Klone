@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Newtonsoft.Json;
-using System.Security.Cryptography;
 using System.Deployment.Application;
 using System.Reflection;
 using System.Net;
@@ -56,45 +55,11 @@ namespace Kallithea_Klone
         //  Events
         //  ======
 
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             state.OnLoaded();
 
-            string GetVersion()
-            {
-                try
-                {
-                    return "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                }
-                catch (InvalidDeploymentException)
-                {
-                    return "Not installed";
-                }
-            }
-
-            MenuItem MIVersion = new MenuItem
-            {
-                Header = GetVersion(),
-                IsEnabled = false,
-            };
-
-            MenuItem MIAbout = new MenuItem
-            {
-                Header = "About"
-            };
-            MIAbout.Click += (ss, ee) =>
-            {
-                About about = new About();
-                about.ShowDialog();
-            };
-
-            System.Windows.Controls.ContextMenu contextMenu = new System.Windows.Controls.ContextMenu();
-            contextMenu.Items.Add(MIVersion);
-            contextMenu.Items.Add(new Separator());
-            contextMenu.Items.Add(MIAbout);
-
-            BdrHeader.ContextMenu = contextMenu;
+            CreateHeaderContextMenu();
 
             if (AccountSettings.Updates)
                 await CheckForUpdate();
@@ -162,6 +127,45 @@ namespace Kallithea_Klone
 
         //  Methods
         //  =======
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        private void CreateHeaderContextMenu()
+        {
+            string GetVersion()
+            {
+                try
+                {
+                    return "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                }
+                catch (InvalidDeploymentException)
+                {
+                    return "Not installed";
+                }
+            }
+
+            MenuItem MIVersion = new MenuItem
+            {
+                Header = GetVersion(),
+                IsEnabled = false,
+            };
+
+            MenuItem MIAbout = new MenuItem
+            {
+                Header = "About"
+            };
+            MIAbout.Click += (ss, ee) =>
+            {
+                About about = new About();
+                about.ShowDialog();
+            };
+
+            System.Windows.Controls.ContextMenu contextMenu = new System.Windows.Controls.ContextMenu();
+            contextMenu.Items.Add(MIVersion);
+            contextMenu.Items.Add(new Separator());
+            contextMenu.Items.Add(MIAbout);
+
+            BdrHeader.ContextMenu = contextMenu;
+        }
 
         private async Task CheckForUpdate()
         {
