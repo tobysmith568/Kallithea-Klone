@@ -117,6 +117,7 @@
     <Compile Include="Other Classes\GithubRelease.cs" />
     <Compile Include="Other Classes\IniFile.cs" />
     <Compile Include="States\IState.cs" />
+    <Compile Include="MainActionException.cs" />
     <Compile Include="States\UpdateState.cs" />
     <Compile Include="States\ReCloneState.cs" />
     <Compile Include="States\LocalRevertState.cs" />

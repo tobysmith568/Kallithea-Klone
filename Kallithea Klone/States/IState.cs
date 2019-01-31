@@ -4,6 +4,14 @@ namespace Kallithea_Klone.States
 {
     public interface IState
     {
+        //  Properties
+        //  ==========
+
+        string Verb { get; }
+
+        //  Methods
+        //  =======
+
         void OnLoad();
         void OnLoaded();
         void OnLoseFocus();
@@ -13,7 +21,7 @@ namespace Kallithea_Klone.States
 
         void OnSearchTermChanged();
         void OnSearch();
-
+        
         Task OnMainActionAsync();
     }
 }

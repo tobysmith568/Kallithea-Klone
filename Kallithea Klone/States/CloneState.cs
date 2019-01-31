@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Newtonsoft.Json;
 using System.Web;
-using System.Diagnostics;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Kallithea;
 using Kallithea_Klone.Account_Settings;
@@ -24,6 +23,11 @@ namespace Kallithea_Klone.States
         private static readonly string allReposFile = Path.Combine(appDataFolder, "AllRepositories.dat");
 
         private List<string> allRepositories;
+
+        //  Properties
+        //  ==========
+
+        public override string Verb => "cloning";
 
         //  Constructors
         //  ============
@@ -59,45 +63,20 @@ namespace Kallithea_Klone.States
 
             LoadRepositories();
         }
-        
+
         public override async Task OnMainActionAsync()
         {
-            Uri uri = new Uri(AccountSettings.Host);
+            Uri host = new Uri(AccountSettings.Host);
 
             foreach (string url in MainWindow.CheckedURLs)
             {
-                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}{url}";
-                CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{mainWindow.runFrom}\\{Path.GetFileName(url)}\"");
-
                 try
                 {
-                    await cmdProcess.Run();
+                    await CloneAsync(host, url);
                 }
-                catch
+                catch (MainActionException e)
                 {
-                    MessageBox.Show($"Unable to start the process needed to clone {Path.GetFileName(url)}", "Error!",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                    continue;
-                }
-
-                try
-                {
-                    string errorMessages = await cmdProcess.GetErrorOutAsync();
-
-                    if (errorMessages.Length > 0)
-                    {
-                        string location = Path.GetFileName(url);
-                        MessageBox.Show($"{location} finished with the exit code: {cmdProcess.ExitCode}\n\n" +
-                            $"And the error messages: {errorMessages}",
-                            $"Exit code {cmdProcess.ExitCode} while cloning {location}!",
-                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                    }
-                }
-                catch
-                {
-                    MessageBox.Show($"Unable to read the process used to clone {Path.GetFileName(url)}. This means Kallithea" +
-                        $"Klone is unable to tell if it was successful or not.", "Error!",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -141,6 +120,24 @@ namespace Kallithea_Klone.States
 
         //  Other Methods
         //  =============
+
+        /// <exception cref="Kallithea_Klone.MainActionException"></exception>
+        public async Task CloneAsync(Uri host, string url)
+        {
+            string fullURL = $"{host.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{host.Host}{host.PathAndQuery}{url}";
+            CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{mainWindow.runFrom}\\{Path.GetFileName(url)}\"");
+
+            try
+            {
+                await cmdProcess.Run();
+            }
+            catch (Exception e)
+            {
+                throw new MainActionException("Unable to start the necessary command window process", e);
+            }
+
+            await ReportErrorsAsync(cmdProcess);
+        }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
         public void LoadRepositories(List<string> customRepositories = null, bool allCheckboxes = false)

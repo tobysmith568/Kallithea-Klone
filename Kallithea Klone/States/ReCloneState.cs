@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Newtonsoft.Json;
 using System.Web;
-using System.Diagnostics;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Account_Settings;
 using System.Threading.Tasks;
@@ -15,6 +12,11 @@ namespace Kallithea_Klone.States
 {
     class ReCloneState : TemplateState
     {
+        //  Properties
+        //  ==========
+
+        public override string Verb => "re-cloning";
+
         //  Constructors
         //  ============
 
@@ -50,73 +52,14 @@ namespace Kallithea_Klone.States
         {
             foreach (string url in MainWindow.CheckedURLs)
             {
-                string remotePath;
                 try
                 {
-                    remotePath = GetDefaultRemotePath(url);
+                    await ReClone(url);
                 }
-                catch
+                catch (MainActionException e)
                 {
-                    MessageBox.Show($"Unable to re-clone the repository at {url} because Kallithea Klone couldn't find its default" +
-                        $" remote location in its hmrc file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    continue;
+                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
-                Uri uri = new Uri(remotePath);
-
-                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
-                string passwordSafeURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}@{uri.Host}{uri.PathAndQuery}";
-
-                try
-                {
-                    ClearOutRepository(url);
-                }
-                catch
-                {
-                    MessageBox.Show($"Error: Failed to properly delete \"{Path.GetFileName(url)}\"\nThis repository is now probably half deleted.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                    continue;
-                }
-
-                CMDProcess cmdProcess = new CMDProcess(new string[]
-                {
-                    $"cd /d \"{url}\"",
-                    $"hg init",
-                    $"hg pull {fullURL}",
-                    $"hg update"
-                });
-
-                try
-                {
-                    await cmdProcess.Run();
-                }
-                catch
-                {
-                    MessageBox.Show($"Unable to start the process needed to re-clone {Path.GetFileName(url)}", "Error!",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                try
-                {
-                    string errorMessages = await cmdProcess.GetErrorOutAsync();
-
-                    if (errorMessages.Length > 0)
-                    {
-                        string location = Path.GetFileName(url);
-                        MessageBox.Show($"{location} finished with the exit code: {cmdProcess.ExitCode}\n\n" +
-                            $"And the error messages: {errorMessages}",
-                            $"Exit code {cmdProcess.ExitCode} while re-cloning {location}!",
-                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                        continue;
-                    }
-                }
-                catch
-                {
-                    MessageBox.Show($"Unable to read the process used to re-clone {Path.GetFileName(url)}. This means Kallithea" +
-                        $"Klone is unable to tell if it was successful or not.", "Error!",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                SetDefaultLocation(url, passwordSafeURL);
             }
         }
 
@@ -160,6 +103,46 @@ namespace Kallithea_Klone.States
 
         //  Other Methods
         //  =============
+
+        /// <exception cref="Kallithea_Klone.MainActionException"></exception>
+        private async Task ReClone(string url)
+        {
+            string remotePath = GetDefaultRemotePath(url);
+            Uri uri = new Uri(remotePath);
+
+            string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
+            string passwordSafeURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}@{uri.Host}{uri.PathAndQuery}";
+
+            try
+            {
+                ClearOutRepository(url);
+            }
+            catch (Exception e)
+            {
+                throw new MainActionException($"Unable to properly delete the original repository, it is now probably half deleted.", e);
+            }
+
+            CMDProcess cmdProcess = new CMDProcess(new string[]
+            {
+                    $"cd /d \"{url}\"",
+                    $"hg init",
+                    $"hg pull {fullURL}",
+                    $"hg update"
+            });
+
+            try
+            {
+                await cmdProcess.Run();
+            }
+            catch (Exception e)
+            {
+                throw new MainActionException("Unable to start the necessary command window process", e);
+            }
+
+            await ReportErrorsAsync(cmdProcess);
+
+            SetDefaultLocation(url, passwordSafeURL);
+        }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
         /// <exception cref="UnauthorizedAccessException"></exception>

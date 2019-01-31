@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Diagnostics;
-using Kallithea_Klone.Account_Settings;
 using System.Threading.Tasks;
 using Kallithea_Klone.Other_Classes;
 
@@ -13,6 +10,11 @@ namespace Kallithea_Klone.States
 {
     class LocalRevertState : TemplateState
     {
+        //  Properties
+        //  ==========
+
+        public override string Verb => "reverting";
+
         //  Constructors
         //  ============
 
@@ -43,46 +45,18 @@ namespace Kallithea_Klone.States
             mainWindow.LblTitle.Content = "Kallithea Revert";
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
-
+        
         public override async Task OnMainActionAsync()
         {
             foreach (string url in MainWindow.CheckedURLs)
             {
-                CMDProcess cmdProcess = new CMDProcess(new string[]
-                {
-                    $"cd /d {url}",
-                    $"hg revert --all",
-                    $"hg --config \"extensions.purge = \" purge --all"
-                });
-
                 try
                 {
-                    await cmdProcess.Run();
+                    await Revert(url);
                 }
-                catch
+                catch (MainActionException e)
                 {
-                    MessageBox.Show($"Unable to start the process needed to revert {Path.GetFileName(url)}", "Error!",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                try
-                {
-                    string errorMessages = await cmdProcess.GetErrorOutAsync();
-
-                    if (errorMessages.Length > 0)
-                    {
-                        string location = Path.GetFileName(url);
-                        MessageBox.Show($"{location} finished with the exit code: {cmdProcess.ExitCode}\n\n" +
-                            $"And the error messages: {errorMessages}",
-                            $"Exit code {cmdProcess.ExitCode} while reverting {location}!",
-                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                    }
-                }
-                catch
-                {
-                    MessageBox.Show($"Unable to read the process used to revert {Path.GetFileName(url)}. This means Kallithea" +
-                        $"Klone is unable to tell if it was successful or not.", "Error!",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -127,6 +101,28 @@ namespace Kallithea_Klone.States
 
         //  Other Methods
         //  =============
+
+        /// <exception cref="Kallithea_Klone.MainActionException"></exception>
+        private async Task Revert(string url)
+        {
+            CMDProcess cmdProcess = new CMDProcess(new string[]
+            {
+                    $"cd /d {url}",
+                    $"hg revert --all",
+                    $"hg --config \"extensions.purge = \" purge --all"
+            });
+
+            try
+            {
+                await cmdProcess.Run();
+            }
+            catch (Exception e)
+            {
+                throw new MainActionException("Unable to start the necessary command window process", e);
+            }
+
+            await ReportErrorsAsync(cmdProcess);
+        }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
         /// <exception cref="UnauthorizedAccessException"></exception>

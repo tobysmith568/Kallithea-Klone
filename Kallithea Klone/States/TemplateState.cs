@@ -13,9 +13,13 @@ namespace Kallithea_Klone.States
     {
         //  Variables
         //  =========
-
-        protected const string CmdExe = "cmd.exe";
+        
         protected readonly MainWindow mainWindow;
+
+        //  Properties
+        //  ==========
+
+        public abstract string Verb { get; }
 
         //  Constructors
         //  ============
@@ -29,7 +33,7 @@ namespace Kallithea_Klone.States
         //  ======================
 
         public abstract void OnLoad();
-
+        
         public abstract Task OnMainActionAsync();
 
         public abstract void OnReload();
@@ -67,30 +71,62 @@ namespace Kallithea_Klone.States
         /// </summary>
         /// <param name="repoLocation">The folder location of the repository on disk</param>
         /// <returns>The repositories default remote location</returns>
-        /// <exception cref="KeyNotFoundException"></exception>
-        /// <exception cref="System.Security.SecurityException"></exception>
-        /// <exception cref="UnauthorizedAccessException"></exception>
-        /// <exception cref="PathTooLongException"></exception>
-        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="Kallithea_Klone.MainActionException"></exception>
         protected string GetDefaultRemotePath(string repoLocation)
         {
-            string hgrcFileLocation = Path.Combine(repoLocation, ".hg", "hgrc");
-
-            if (!File.Exists(hgrcFileLocation))
+            try
             {
-                string folderName = Path.GetDirectoryName(repoLocation);
-                throw new FileNotFoundException($"The hgrc file for \"{folderName}\" could not be found!");
+                string hgrcFileLocation = Path.Combine(repoLocation, ".hg", "hgrc");
+
+                if (!File.Exists(hgrcFileLocation))
+                {
+                    string folderName = Path.GetDirectoryName(repoLocation);
+                    throw new FileNotFoundException($"The hgrc file for \"{folderName}\" could not be found!");
+                }
+
+                IniFile hgrcFile = new IniFile(hgrcFileLocation);
+
+                if (!hgrcFile.KeyExists("default", "paths"))
+                {
+                    string folderName = Path.GetDirectoryName(repoLocation);
+                    throw new KeyNotFoundException($"The default property could not be found in the .hg/hgrc file under \"[paths]\" for the folder \"{folderName}\"");
+                }
+
+                return hgrcFile.Read("default", "paths");
             }
-
-            IniFile hgrcFile = new IniFile(hgrcFileLocation);
-
-            if (!hgrcFile.KeyExists("default", "paths"))
+            catch (Exception e) when (e is FileNotFoundException || e is KeyNotFoundException)
             {
-                string folderName = Path.GetDirectoryName(repoLocation);
-                throw new KeyNotFoundException($"The default property could not be found in the .hg/hgrc file under \"[paths]\" for the folder \"{folderName}\"");
+                throw new MainActionException(e.Message, e);
             }
+            catch (Exception e)
+            {
+                throw new MainActionException("Unable to find the default remote location in the hmrc file", e);
+            }
+        }
 
-            return hgrcFile.Read("default", "paths");
+        /// <summary>
+        /// Reports any error messages given by a CMDProcess while it ran
+        /// </summary>
+        /// <param name="cmdProcess">The CMDProcess to have its errors reported</param>
+        /// <param name="verb">A verb describing what the curent state does</param>
+        /// <exception cref="Kallithea_Klone.MainActionException"></exception>
+        protected async Task ReportErrorsAsync(CMDProcess cmdProcess)
+        {
+            try
+            {
+                string errorMessages = await cmdProcess.GetErrorOutAsync();
+
+                if (errorMessages.Length > 0)
+                {
+                    throw new MainActionException($"Finished with the exit code: {cmdProcess.ExitCode}\n\n" +
+                        $"And the error messages: {errorMessages}");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new MainActionException($"Unable to read the process used for {Verb}. This means Kallithea" +
+                    " Klone is unable to tell if it was successful or not.", e);
+            }
         }
     }
 }

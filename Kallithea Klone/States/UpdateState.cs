@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Web;
-using System.Diagnostics;
 using Kallithea_Klone.Account_Settings;
 using System.Threading.Tasks;
 using Kallithea_Klone.Other_Classes;
@@ -18,6 +16,11 @@ namespace Kallithea_Klone.States
         //  =========
 
         private const string dateTimeFormat = "ddMMyyHHmmss";
+
+        //  Properties
+        //  ==========
+
+        public override string Verb => "updating";
 
         //  Constructors
         //  ============
@@ -49,65 +52,18 @@ namespace Kallithea_Klone.States
             mainWindow.LblTitle.Content = "Kallithea Update";
             mainWindow.BtnReload.Visibility = Visibility.Hidden;
         }
-
+        
         public override async Task OnMainActionAsync()
         {
             foreach (string url in MainWindow.CheckedURLs)
             {
-                string remotePath;
                 try
                 {
-                    remotePath = GetDefaultRemotePath(url);
+                    await Update(url);
                 }
-                catch
+                catch (MainActionException e)
                 {
-                    MessageBox.Show($"Unable to update the repository at {url} because Kallithea Klone couldn't find its default" +
-                        $" remote location in its hmrc file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    continue;
-                }
-
-                Uri uri = new Uri(remotePath);
-
-                string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
-                string shelfName = DateTime.Now.ToString(dateTimeFormat);
-                CMDProcess cmdProcess = new CMDProcess(new string[]
-                {
-                    $"cd /d {url}" +
-                    $"hg --config \"extensions.shelve = \" shelve --name {shelfName}" +
-                    $"hg pull {fullURL}" +
-                    $"hg update -m" +
-                    $"hg --config \"extensions.shelve = \" unshelve --name {shelfName} --tool :other"
-                });
-
-                try
-                {
-                    await cmdProcess.Run();
-                }
-                catch
-                {
-                    MessageBox.Show($"Unable to start the process needed to update {Path.GetFileName(url)}", "Error!",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                try
-                {
-                    string errorMessages = await cmdProcess.GetErrorOutAsync();
-
-                    if (errorMessages.Length > 0)
-                    {
-                        string location = Path.GetFileName(url);
-                        MessageBox.Show($"{location} finished with the exit code: {cmdProcess.ExitCode}\n\n" +
-                            $"And the error messages: {errorMessages}",
-                            $"Exit code {cmdProcess.ExitCode} while updating {location}!",
-                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                        continue;
-                    }
-                }
-                catch
-                {
-                    MessageBox.Show($"Unable to read the process used to update {Path.GetFileName(url)}. This means Kallithea" +
-                        $"Klone is unable to tell if it was successful or not.", "Error!",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -152,6 +108,35 @@ namespace Kallithea_Klone.States
 
         //  Other Methods
         //  =============
+
+        /// <exception cref="Kallithea_Klone.MainActionException"></exception>
+        private async Task Update(string url)
+        {
+            string remotePath = GetDefaultRemotePath(url);
+            Uri uri = new Uri(remotePath);
+
+            string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
+            string shelfName = DateTime.Now.ToString(dateTimeFormat);
+            CMDProcess cmdProcess = new CMDProcess(new string[]
+            {
+                    $"cd /d {url}" +
+                    $"hg --config \"extensions.shelve = \" shelve --name {shelfName}" +
+                    $"hg pull {fullURL}" +
+                    $"hg update -m" +
+                    $"hg --config \"extensions.shelve = \" unshelve --name {shelfName} --tool :other"
+            });
+
+            try
+            {
+                await cmdProcess.Run();
+            }
+            catch (Exception e)
+            {
+                throw new MainActionException("Unable to start the necessary command window process", e);
+            }
+
+            await ReportErrorsAsync(cmdProcess);
+        }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
         /// <exception cref="UnauthorizedAccessException"></exception>
