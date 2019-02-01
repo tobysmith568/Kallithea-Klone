@@ -1,48 +1,37 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using Kallithea_Klone.Other_Classes;
 
 namespace Kallithea_Klone.States
 {
     public abstract class TemplateState : IState
     {
-        //  Variables
-        //  =========
-        
-        protected readonly MainWindow mainWindow;
-
         //  Properties
         //  ==========
 
         public abstract string Verb { get; }
 
-        //  Constructors
-        //  ============
-
-        public TemplateState()
-        {
-            mainWindow = MainWindow.singleton;
-        }
-
         //  Abstract State Methods
         //  ======================
 
-        public abstract void OnLoad();
+        public abstract ICollection<Control> OnLoadRepositories();
 
         public abstract void OnLoaded();
         
-        public abstract Task OnMainActionAsync(List<string> urls);
+        public abstract Task OnMainActionAsync(string localLocation, List<string> urls);
 
         public abstract void OnReload();
 
-        public abstract void OnSearch();
+        public abstract ICollection<Control> OnSearch(string searchTerm);
 
-        public abstract void OnSearchTermChanged();
+        public abstract ICollection<Control> OnSearchCleared(string searchTerm);
 
         //  Implemented State Methods
         //  =========================

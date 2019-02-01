@@ -34,7 +34,7 @@ namespace Kallithea_Klone.States
         //  State Pattern
         //  =============
 
-        public override void OnLoad()
+        public override ICollection<Control> OnLoadRepositories()
         {
             try
             {
@@ -45,6 +45,8 @@ namespace Kallithea_Klone.States
                 MessageBox.Show("Unable to load repositories. Please close and re-open Kallithea Klone",
                     "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            throw new NotImplementedException();//return new List<Control>();
         }
 
         public override void OnLoaded()
@@ -75,7 +77,7 @@ namespace Kallithea_Klone.States
             throw new NotImplementedException("Invalid Button Press!");
         }
 
-        public override void OnSearch()
+        public override ICollection<Control> OnSearch(string searchTerm)
         {
             if (mainWindow.TbxSearch.Text.Length != 0)
             {
@@ -89,9 +91,11 @@ namespace Kallithea_Klone.States
                         "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+
+            throw new NotImplementedException();
         }
 
-        public override void OnSearchTermChanged()
+        public override ICollection<Control> OnSearchCleared(string searchTerm)
         {
             if (mainWindow.TbxSearch.Text.Length == 0)
             {
@@ -105,6 +109,8 @@ namespace Kallithea_Klone.States
                         "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+
+            throw new NotImplementedException();
         }
 
         //  Other Methods

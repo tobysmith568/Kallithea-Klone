@@ -11,6 +11,7 @@ using System.Web;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Kallithea;
 using Kallithea_Klone.Account_Settings;
+using System.Collections;
 
 namespace Kallithea_Klone.States
 {
@@ -32,7 +33,7 @@ namespace Kallithea_Klone.States
         //  Constructors
         //  ============
 
-        public CloneState() : base()
+        public CloneState()
         {
 
         }
@@ -40,28 +41,29 @@ namespace Kallithea_Klone.States
         //  State Pattern
         //  =============
 
-        public override void OnLoad()
+        public override ICollection<Control> OnLoadRepositories()
         {
             try
             {
-                allRepositories = new List<string>(File.ReadAllLines(allReposFile));
+                if (!Directory.Exists(appDataFolder))
+                    Directory.CreateDirectory(appDataFolder);
+
+                if (!File.Exists(allReposFile))
+                {
+                    File.WriteAllText(allReposFile, "");
+                    allRepositories = new List<string>();
+                }
+                else
+                {
+                    allRepositories = new List<string>(File.ReadAllLines(allReposFile));
+                }
             }
             catch
             {
-                try
-                {
-                    if (!Directory.Exists(appDataFolder))
-                        Directory.CreateDirectory(appDataFolder);
-                    File.WriteAllText(allReposFile, "");
-                }
-                catch
-                {
-                    //Fails until the program is next opened
-                }
                 allRepositories = new List<string>();
             }
 
-            LoadRepositories();
+            return LoadRepositoryTree(allRepositories);
         }
 
         public override void OnLoaded()
@@ -69,7 +71,7 @@ namespace Kallithea_Klone.States
 
         }
 
-        public override async Task OnMainActionAsync(List<string> urls)
+        public override async Task OnMainActionAsync(string localLocation, List<string> urls)
         {
             Uri host = new Uri(AccountSettings.Host);
 
@@ -77,7 +79,7 @@ namespace Kallithea_Klone.States
             {
                 try
                 {
-                    await CloneAsync(host, url);
+                    await CloneAsync(localLocation, host, url);
                 }
                 catch (MainActionException e)
                 {
@@ -89,49 +91,32 @@ namespace Kallithea_Klone.States
 
         public override async void OnReload()
         {
-            if (AccountSettings.VerifySettings())
-            {
-                mainWindow.PbProgress.Visibility = Visibility.Visible;
-                mainWindow.PbProgress.IsIndeterminate = true;
-                mainWindow.BtnReload.IsEnabled = false;
-
-                await DownloadRepositories();
-
-                mainWindow.PbProgress.Visibility = Visibility.Hidden;
-                mainWindow.PbProgress.IsIndeterminate = false;
-                mainWindow.BtnReload.IsEnabled = true;
-            }
+            await DownloadRepositories();
         }
 
-        public override void OnSearch()
+        public override ICollection<Control> OnSearch(string searchTerm)
         {
-            if (mainWindow.TbxSearch.Text.Length != 0)
+            IEnumerable<string> repositories = allRepositories;
+            foreach (string term in searchTerm.ToLower().Split(' '))
             {
-                IEnumerable<string> repositories = allRepositories;
-                foreach (string term in mainWindow.TbxSearch.Text.ToLower().Split(' '))
-                {
-                    repositories = repositories.Where(r => r.ToLower().Contains(term));
-                }
-                LoadRepositories(repositories.ToList(), true);
+                repositories = repositories.Where(r => r.ToLower().Contains(term));
             }
+            return LoadRepositoryList(repositories.ToList());
         }
 
-        public override void OnSearchTermChanged()
+        public override ICollection<Control> OnSearchCleared(string searchTerm)
         {
-            if (mainWindow.TbxSearch.Text.Length == 0)
-            {
-                LoadRepositories();
-            }
+            return LoadRepositoryTree(allRepositories);
         }
 
         //  Other Methods
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        public async Task CloneAsync(Uri host, string url)
+        public async Task CloneAsync(string localLocation, Uri host, string url)
         {
             string fullURL = $"{host.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{host.Host}{host.PathAndQuery}{url}";
-            CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{mainWindow.runFrom}\\{Path.GetFileName(url)}\"");
+            CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{localLocation}\\{Path.GetFileName(url)}\"");
 
             try
             {
@@ -145,61 +130,59 @@ namespace Kallithea_Klone.States
             await ReportErrorsAsync(cmdProcess);
         }
 
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public void LoadRepositories(List<string> customRepositories = null, bool allCheckboxes = false)
+        public ICollection<Control> LoadRepositoryTree(List<string> repositories)
         {
-            List<string> repositories = customRepositories ?? allRepositories;
-
-            mainWindow.MainTree.Items.Clear();
-
-            if (allCheckboxes)
-            {
-                foreach (string location in repositories)
-                {
-                    CheckBox newItem = new CheckBox
-                    {
-                        Content = location.Split('/').Last(),
-                        Tag = location,
-                        VerticalContentAlignment = VerticalAlignment.Center,
-                        IsChecked = MainWindow.CheckedURLs.Contains(location)
-                    };
-                    newItem.Checked += mainWindow.NewItem_Checked;
-                    newItem.Unchecked += mainWindow.NewItem_Unchecked;
-
-                    mainWindow.MainTree.Items.Add(newItem);
-                }
-
-                return;
-            }
-
-            //Create tree of menu items
             Location baseLocation = new Location("Base Location");
-
-            string[] parts;
+            
             foreach (string location in repositories)
             {
-                parts = location.Split('/');
                 Location current = baseLocation;
-                for (int i = 0; i < parts.Length; i++)
+
+                foreach (string part in location.Split('/'))
                 {
-                    current = GetOrCreate(current, parts[i]);
+                    current = GetOrCreateChild(current, part);
                 }
             }
 
-            //Sort all children
             SortChildren(baseLocation);
 
-            //Create a treeview node for each location node
+            ICollection<Control> results = new List<Control>();
             foreach (Location location in baseLocation.InnerLocations)
             {
-                CreateTreeViewItem(location);
+                results.Add(CreateTreeViewItem(location));
             }
+
+            return results;
         }
 
-        private static Location GetOrCreate(Location current, string location)
+        public ICollection<Control> LoadRepositoryList(List<string> repositories)
+        {
+            ICollection<Control> results = new List<Control>();
+
+            foreach (string location in repositories)
+            {
+                CheckBox newItem = new CheckBox
+                {
+                    Content = Path.GetFileName(location),
+                    Tag = location,
+                    VerticalContentAlignment = VerticalAlignment.Center,
+                    IsChecked = MainWindow.CheckedURLs.Contains(location)
+                };
+                newItem.Checked += MainWindow.singleton.NewItem_Checked;
+                newItem.Unchecked += MainWindow.singleton.NewItem_Unchecked;
+
+                results.Add(newItem);
+            }
+
+            return results;
+        }
+
+        private static Location GetOrCreateChild(Location current, string location)
         {
             if (current.InnerLocations.Count(l => l.Name == location) > 0)
+            {
                 return current.InnerLocations.FirstOrDefault(l => l.Name == location);
+            }
             else
             {
                 Location inner = new Location
@@ -222,7 +205,7 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private void CreateTreeViewItem(Location location, TreeViewItem parent = null)
+        private Control CreateTreeViewItem(Location location, TreeViewItem parent = null)
         {
             if (location.InnerLocations.Count == 0)
             {
@@ -234,13 +217,10 @@ namespace Kallithea_Klone.States
                     Tag = newTag,
                     IsChecked = MainWindow.CheckedURLs.Contains(newTag)
                 };
-                newItem.Checked += mainWindow.NewItem_Checked;
-                newItem.Unchecked += mainWindow.NewItem_Unchecked;
+                newItem.Checked += MainWindow.singleton.NewItem_Checked;
+                newItem.Unchecked += MainWindow.singleton.NewItem_Unchecked;
 
-                if (parent == null)
-                    mainWindow.MainTree.Items.Add(newItem);
-                else
-                    parent.Items.Add(newItem);
+                return newItem;
             }
             else
             {
@@ -252,16 +232,16 @@ namespace Kallithea_Klone.States
                 if (parent == null)
                 {
                     newItem.Tag = location.Name;
-                    mainWindow.MainTree.Items.Add(newItem);
                 }
                 else
                 {
                     newItem.Tag = parent.Tag + "/" + location.Name;
-                    parent.Items.Add(newItem);
                 }
 
                 foreach (Location subLocation in location.InnerLocations)
-                    CreateTreeViewItem(subLocation, newItem);
+                    newItem.Items.Add(CreateTreeViewItem(subLocation, newItem));
+
+                return newItem;
             }
         }
 
@@ -275,7 +255,6 @@ namespace Kallithea_Klone.States
 
             try
             {
-                //Get the data async
                 IRestResponse response = await Task.Run(() =>
                 {
                     return client.Execute(request);
@@ -294,7 +273,7 @@ namespace Kallithea_Klone.States
                         }
 
                         allRepositories = repos.Select(r => r.URL).ToList();
-                        LoadRepositories();
+                        LoadRepositoryTree(allRepositories);
                         break;
                     case ResponseStatus.TimedOut:
                         MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,7 +48,7 @@ namespace Kallithea_Klone
             this.runFrom = runFrom;
             InitializeComponent();
 
-            state.OnLoad();
+            MainTree.ItemsSource = state.OnLoadRepositories();
         }
 
         //  Events
@@ -76,7 +75,7 @@ namespace Kallithea_Klone
             if (AccountSettings.VerifySettings())
             {
                 DisableAll();
-                await state.OnMainActionAsync(CheckedURLs);
+                await state.OnMainActionAsync(runFrom, CheckedURLs);
                 Environment.Exit(0);
             }
         }
@@ -90,7 +89,18 @@ namespace Kallithea_Klone
 
         private void BtnReload_Click(object sender, RoutedEventArgs e)
         {
-            state.OnReload();
+            if (AccountSettings.VerifySettings())
+            {
+                PbProgress.Visibility = Visibility.Visible;
+                PbProgress.IsIndeterminate = true;
+                BtnReload.IsEnabled = false;
+
+                state.OnReload();
+
+                PbProgress.Visibility = Visibility.Hidden;
+                PbProgress.IsIndeterminate = false;
+                BtnReload.IsEnabled = true;
+            }
         }
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
@@ -100,17 +110,20 @@ namespace Kallithea_Klone
 
         private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            state.OnSearchTermChanged();
-            SetEmpty();
+            if (TbxSearch.Text.Length == 0)
+            {
+                MainTree.ItemsSource = state.OnSearchCleared(TbxSearch.Text);
+                SetEmpty();
+            }
         }
 
         private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return && TbxSearch.Text.Length >= 3)
             {
-                state.OnSearch();
+                MainTree.ItemsSource = state.OnSearch(TbxSearch.Text);
+                SetEmpty();
             }
-            SetEmpty();
         }
 
         public void NewItem_Unchecked(object sender, RoutedEventArgs e)
