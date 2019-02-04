@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Kallithea_Klone.Other_Classes
+namespace Kallithea_Klone.Github_API
 {
     public class GithubRelease
     {

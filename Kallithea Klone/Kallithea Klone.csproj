@@ -108,14 +108,12 @@
     <Compile Include="ContextMenu\BreakChild.cs" />
     <Compile Include="ContextMenu\IMenuItem.cs" />
     <Compile Include="Account Settings\IAccountSettings.cs" />
-    <Compile Include="Custom UI Types\CheckableItem.cs" />
     <Compile Include="Other Classes\CMDProcess.cs" />
     <Compile Include="Other Classes\ContextMenuImplementations.cs" />
     <Compile Include="Other Classes\MainWindowStartProperties.cs" />
-    <Compile Include="Other Classes\URIPair.cs" />
     <Compile Include="ContextMenu\MenuParent.cs" />
     <Compile Include="States\CloneState.cs" />
-    <Compile Include="Other Classes\GithubRelease.cs" />
+    <Compile Include="Github API\GithubRelease.cs" />
     <Compile Include="Other Classes\IniFile.cs" />
     <Compile Include="States\IState.cs" />
     <Compile Include="MainActionException.cs" />
@@ -123,15 +121,15 @@
     <Compile Include="States\UpdateState.cs" />
     <Compile Include="States\ReCloneState.cs" />
     <Compile Include="States\LocalRevertState.cs" />
-    <Compile Include="Kallithea\Repository.cs" />
-    <Compile Include="Kallithea\KallitheaResponse.cs" />
+    <Compile Include="Kallithea API\Repository.cs" />
+    <Compile Include="Kallithea API\KallitheaResponse.cs" />
     <Compile Include="States\RunTypes.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="States\TemplateState.cs" />
-    <Compile Include="Kallithea\User.cs" />
+    <Compile Include="Kallithea API\User.cs" />
     <Compile Include="UpdateDownloading.xaml.cs">
       <DependentUpon>UpdateDownloading.xaml</DependentUpon>
     </Compile>
