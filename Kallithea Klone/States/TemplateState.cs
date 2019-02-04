@@ -118,7 +118,7 @@ namespace Kallithea_Klone.States
                         $"And the error messages: {errorMessages}");
                 }
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is MainActionException))
             {
                 throw new MainActionException($"Unable to read the process used for {Verb}. This means Kallithea" +
                     " Klone is unable to tell if it was successful or not.", e);
