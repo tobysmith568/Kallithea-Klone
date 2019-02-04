@@ -20,7 +20,7 @@ namespace Kallithea_Klone.States
         /// <exception cref="InvalidOperationException"></exception>
         ICollection<Control> OnLoadRepositories();
         MainWindowStartProperties OnLoaded();
-        void OnLoseFocus();
+        void OnLoseFocus(bool completingMainAction);
 
         void OnSettings();
         void OnReload();

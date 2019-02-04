@@ -48,9 +48,9 @@ namespace Kallithea_Klone.States
 
         /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         /// <exception cref="InvalidCastException">Ignore.</exception>
-        public virtual void OnLoseFocus()
+        public virtual void OnLoseFocus(bool completingMainAction)
         {
-            if (Application.Current.Windows.Cast<Window>().Count(w => w.Focusable) == 1)
+            if (!completingMainAction && Application.Current.Windows.Cast<Window>().Count(w => w.Focusable) == 1)
                 Environment.Exit(0);
         }
 

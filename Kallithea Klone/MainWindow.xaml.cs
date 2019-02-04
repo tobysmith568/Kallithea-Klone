@@ -63,7 +63,7 @@ namespace Kallithea_Klone
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            state.OnLoseFocus();
+            state.OnLoseFocus(GridCoverAll.Visibility == Visibility.Visible);
         }
 
         /// <exception cref="System.Security.SecurityException">Ignore.</exception>
