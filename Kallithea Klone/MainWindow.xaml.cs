@@ -54,9 +54,13 @@ namespace Kallithea_Klone
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             MainWindowStartProperties properties = state.OnLoaded();
-            LblTitle.Content = properties.Title;
-            BtnMainAction.Content = properties.MainActionContent;
-            BtnReload.Visibility = properties.ReloadVisibility;
+
+            if (properties != null)
+            {
+                LblTitle.Content = properties.Title;
+                BtnMainAction.Content = properties.MainActionContent;
+                BtnReload.Visibility = properties.ReloadVisibility;
+            }
 
             CreateHeaderContextMenu();
 
