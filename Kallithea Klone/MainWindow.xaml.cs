@@ -78,7 +78,7 @@ namespace Kallithea_Klone
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
+        private void DragWindow(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
