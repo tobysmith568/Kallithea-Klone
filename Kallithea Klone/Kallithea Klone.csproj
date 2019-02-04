@@ -111,6 +111,7 @@
     <Compile Include="Custom UI Types\CheckableItem.cs" />
     <Compile Include="Other Classes\CMDProcess.cs" />
     <Compile Include="Other Classes\ContextMenuImplementations.cs" />
+    <Compile Include="Other Classes\MainWindowStartProperties.cs" />
     <Compile Include="Other Classes\URIPair.cs" />
     <Compile Include="ContextMenu\MenuParent.cs" />
     <Compile Include="States\CloneState.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Other Classes\IniFile.cs" />
     <Compile Include="States\IState.cs" />
     <Compile Include="MainActionException.cs" />
+    <Compile Include="States\LocalEditorState.cs" />
     <Compile Include="States\UpdateState.cs" />
     <Compile Include="States\ReCloneState.cs" />
     <Compile Include="States\LocalRevertState.cs" />

@@ -10,25 +10,25 @@ namespace Kallithea_Klone.States
         Update,
 
         Settings,
-
+        
         Setup,
         Uninstall,
     }
 
     public static class RunTypeMethods
     {
-        public static IState GetState(this RunTypes type)
+        public static IState GetState(this RunTypes type, string runLocation)
         {
             switch (type)
             {
                 case RunTypes.Clone:
-                    return new CloneState();
+                    return new CloneState(runLocation);
                 case RunTypes.LocalRevert:
-                    return new LocalRevertState();
+                    return new LocalRevertState(runLocation);
                 case RunTypes.Reclone:
-                    return new ReCloneState();
+                    return new ReCloneState(runLocation);
                 case RunTypes.Update:
-                    return new UpdateState();
+                    return new UpdateState(runLocation);
                 case RunTypes.Settings:
                 case RunTypes.Setup:
                 case RunTypes.Uninstall:

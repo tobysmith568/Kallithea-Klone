@@ -17,15 +17,25 @@ namespace Kallithea_Klone.States
         //  ==========
 
         public abstract string Verb { get; }
+        public string RunLocation { get; private set; }
+
+        //  Constructors
+        //  ============
+
+        public TemplateState(string runLocation)
+        {
+            RunLocation = runLocation;
+        }
 
         //  Abstract State Methods
         //  ======================
 
+        /// <exception cref="InvalidOperationException"></exception>
         public abstract ICollection<Control> OnLoadRepositories();
 
-        public abstract void OnLoaded();
+        public abstract MainWindowStartProperties OnLoaded();
         
-        public abstract Task OnMainActionAsync(string localLocation, List<string> urls);
+        public abstract Task OnMainActionAsync(List<string> urls);
 
         public abstract void OnReload();
 
@@ -35,7 +45,6 @@ namespace Kallithea_Klone.States
 
         //  Implemented State Methods
         //  =========================
-
 
         /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         /// <exception cref="InvalidCastException">Ignore.</exception>
@@ -114,6 +123,115 @@ namespace Kallithea_Klone.States
                 throw new MainActionException($"Unable to read the process used for {Verb}. This means Kallithea" +
                     " Klone is unable to tell if it was successful or not.", e);
             }
+        }
+        
+        public ICollection<Control> LoadRepositoryTree(ICollection<string> repositories)
+        {
+            Location baseLocation = new Location("Base Location");
+
+            foreach (string location in repositories)
+            {
+                Location current = baseLocation;
+
+                foreach (string part in location.Split('/'))
+                {
+                    current = GetOrCreateChild(current, part);
+                }
+            }
+
+            SortChildren(baseLocation);
+
+            ICollection<Control> results = new List<Control>();
+            foreach (Location location in baseLocation.InnerLocations)
+            {
+                results.Add(CreateTreeControl(location));
+            }
+
+            return results;
+        }
+
+        public ICollection<Control> LoadRepositoryList(List<string> repositories)
+        {
+            ICollection<Control> results = new List<Control>();
+
+            foreach (string location in repositories)
+            {
+                results.Add(CreateCheckBox(Path.GetFileName(location), location));
+            }
+
+            return results;
+        }
+
+        private void SortChildren(Location location)
+        {
+            foreach (Location subLocation in location.InnerLocations)
+            {
+                SortChildren(subLocation);
+            }
+
+            location.InnerLocations = location.InnerLocations.OrderBy(l => l.InnerLocations.Count == 0 ? 1 : 0).ThenBy(l => l.Name).ToList();
+        }
+
+        private Location GetOrCreateChild(Location current, string location)
+        {
+            if (current.InnerLocations.Count(l => l.Name == location) > 0)
+            {
+                return current.InnerLocations.FirstOrDefault(l => l.Name == location);
+            }
+            else
+            {
+                Location inner = new Location
+                {
+                    Name = location
+                };
+                current.InnerLocations.Add(inner);
+                return inner;
+            }
+        }
+        
+        private Control CreateTreeControl(Location location, TreeViewItem parent = null)
+        {
+            if (location.InnerLocations.Count == 0)
+            {
+                string newTag = (parent == null) ? location.Name : parent.Tag + "/" + location.Name;
+                return CreateCheckBox(location.Name, newTag);
+            }
+            else
+            {
+                return CreateTreeViewItem(location, parent);
+            }
+        }
+        
+        private CheckBox CreateCheckBox(string content, string tag)
+        {
+            CheckBox newCheckbox = new CheckBox
+            {
+                Content = content,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                Tag = tag,
+                IsChecked = MainWindow.CheckedURLs.Contains(tag)
+            };
+            newCheckbox.Checked += MainWindow.singleton.NewItem_Checked;
+            newCheckbox.Unchecked += MainWindow.singleton.NewItem_Unchecked;
+
+            return newCheckbox;
+        }
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        private Control CreateTreeViewItem(Location location, TreeViewItem parent)
+        {
+            TreeViewItem newTreeItem = new TreeViewItem
+            {
+                Header = location.Name,
+                Tag = parent == null ? location.Name : parent.Tag + "/" + location.Name
+            };
+
+            foreach (Location subLocation in location.InnerLocations)
+            {
+                newTreeItem.Items.Add(CreateTreeControl(subLocation, newTreeItem));
+            }
+
+            return newTreeItem;
         }
     }
 }

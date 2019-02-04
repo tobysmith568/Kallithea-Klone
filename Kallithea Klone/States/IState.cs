@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Kallithea_Klone.Other_Classes;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -11,12 +12,14 @@ namespace Kallithea_Klone.States
         //  ==========
 
         string Verb { get; }
+        string RunLocation { get; }
 
         //  Methods
         //  =======
 
+        /// <exception cref="InvalidOperationException"></exception>
         ICollection<Control> OnLoadRepositories();
-        void OnLoaded();
+        MainWindowStartProperties OnLoaded();
         void OnLoseFocus();
 
         void OnSettings();
@@ -25,6 +28,6 @@ namespace Kallithea_Klone.States
         ICollection<Control> OnSearchCleared(string searchTerm);
         ICollection<Control> OnSearch(string searchTerm);
         
-        Task OnMainActionAsync(string localLocation, List<string> urls);
+        Task OnMainActionAsync(List<string> urls);
     }
 }

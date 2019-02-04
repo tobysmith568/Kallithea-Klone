@@ -23,7 +23,7 @@ namespace Kallithea_Klone.States
         private static readonly string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Kallithea Klone");
         private static readonly string allReposFile = Path.Combine(appDataFolder, "AllRepositories.dat");
 
-        private List<string> allRepositories;
+        private ICollection<string> allRepositories;
 
         //  Properties
         //  ==========
@@ -33,12 +33,11 @@ namespace Kallithea_Klone.States
         //  Constructors
         //  ============
 
-        public CloneState()
+        public CloneState(string runLocation) : base(runLocation)
         {
-
         }
 
-        //  State Pattern
+        //  State Methods
         //  =============
 
         public override ICollection<Control> OnLoadRepositories()
@@ -66,12 +65,12 @@ namespace Kallithea_Klone.States
             return LoadRepositoryTree(allRepositories);
         }
 
-        public override void OnLoaded()
+        public override MainWindowStartProperties OnLoaded()
         {
-
+            return null;
         }
 
-        public override async Task OnMainActionAsync(string localLocation, List<string> urls)
+        public override async Task OnMainActionAsync(List<string> urls)
         {
             Uri host = new Uri(AccountSettings.Host);
 
@@ -79,7 +78,7 @@ namespace Kallithea_Klone.States
             {
                 try
                 {
-                    await CloneAsync(localLocation, host, url);
+                    await CloneAsync(host, url);
                 }
                 catch (MainActionException e)
                 {
@@ -113,10 +112,10 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        public async Task CloneAsync(string localLocation, Uri host, string url)
+        public async Task CloneAsync(Uri host, string url)
         {
             string fullURL = $"{host.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{host.Host}{host.PathAndQuery}{url}";
-            CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{localLocation}\\{Path.GetFileName(url)}\"");
+            CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{RunLocation}\\{Path.GetFileName(url)}\"");
 
             try
             {
@@ -128,121 +127,6 @@ namespace Kallithea_Klone.States
             }
 
             await ReportErrorsAsync(cmdProcess);
-        }
-
-        public ICollection<Control> LoadRepositoryTree(List<string> repositories)
-        {
-            Location baseLocation = new Location("Base Location");
-            
-            foreach (string location in repositories)
-            {
-                Location current = baseLocation;
-
-                foreach (string part in location.Split('/'))
-                {
-                    current = GetOrCreateChild(current, part);
-                }
-            }
-
-            SortChildren(baseLocation);
-
-            ICollection<Control> results = new List<Control>();
-            foreach (Location location in baseLocation.InnerLocations)
-            {
-                results.Add(CreateTreeViewItem(location));
-            }
-
-            return results;
-        }
-
-        public ICollection<Control> LoadRepositoryList(List<string> repositories)
-        {
-            ICollection<Control> results = new List<Control>();
-
-            foreach (string location in repositories)
-            {
-                CheckBox newItem = new CheckBox
-                {
-                    Content = Path.GetFileName(location),
-                    Tag = location,
-                    VerticalContentAlignment = VerticalAlignment.Center,
-                    IsChecked = MainWindow.CheckedURLs.Contains(location)
-                };
-                newItem.Checked += MainWindow.singleton.NewItem_Checked;
-                newItem.Unchecked += MainWindow.singleton.NewItem_Unchecked;
-
-                results.Add(newItem);
-            }
-
-            return results;
-        }
-
-        private static Location GetOrCreateChild(Location current, string location)
-        {
-            if (current.InnerLocations.Count(l => l.Name == location) > 0)
-            {
-                return current.InnerLocations.FirstOrDefault(l => l.Name == location);
-            }
-            else
-            {
-                Location inner = new Location
-                {
-                    Name = location
-                };
-                current.InnerLocations.Add(inner);
-                return inner;
-            }
-        }
-
-        private void SortChildren(Location location)
-        {
-            foreach (Location subLocation in location.InnerLocations)
-            {
-                SortChildren(subLocation);
-            }
-
-            location.InnerLocations = location.InnerLocations.OrderBy(l => l.InnerLocations.Count == 0 ? 1 : 0).ThenBy(l => l.Name).ToList();
-        }
-
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private Control CreateTreeViewItem(Location location, TreeViewItem parent = null)
-        {
-            if (location.InnerLocations.Count == 0)
-            {
-                string newTag = (parent == null) ? location.Name : parent.Tag + "/" + location.Name;
-                CheckBox newItem = new CheckBox
-                {
-                    Content = location.Name,
-                    VerticalContentAlignment = VerticalAlignment.Center,
-                    Tag = newTag,
-                    IsChecked = MainWindow.CheckedURLs.Contains(newTag)
-                };
-                newItem.Checked += MainWindow.singleton.NewItem_Checked;
-                newItem.Unchecked += MainWindow.singleton.NewItem_Unchecked;
-
-                return newItem;
-            }
-            else
-            {
-                TreeViewItem newItem = new TreeViewItem
-                {
-                    Header = location.Name
-                };
-
-                if (parent == null)
-                {
-                    newItem.Tag = location.Name;
-                }
-                else
-                {
-                    newItem.Tag = parent.Tag + "/" + location.Name;
-                }
-
-                foreach (Location subLocation in location.InnerLocations)
-                    newItem.Items.Add(CreateTreeViewItem(subLocation, newItem));
-
-                return newItem;
-            }
         }
 
         public async Task DownloadRepositories()

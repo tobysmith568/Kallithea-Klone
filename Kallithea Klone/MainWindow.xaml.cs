@@ -26,8 +26,6 @@ namespace Kallithea_Klone
 
         public static MainWindow singleton = null;
 
-        public string runFrom;
-
         public static List<string> CheckedURLs = new List<string>();
 
         private IState state;
@@ -43,9 +41,8 @@ namespace Kallithea_Klone
             else
                 throw new Exception("Cannot create a second mainWindow!");
 
-            state = runType.GetState();
+            state = runType.GetState(runFrom);
 
-            this.runFrom = runFrom;
             InitializeComponent();
 
             MainTree.ItemsSource = state.OnLoadRepositories();
@@ -75,7 +72,7 @@ namespace Kallithea_Klone
             if (AccountSettings.VerifySettings())
             {
                 DisableAll();
-                await state.OnMainActionAsync(runFrom, CheckedURLs);
+                await state.OnMainActionAsync(CheckedURLs);
                 Environment.Exit(0);
             }
         }
