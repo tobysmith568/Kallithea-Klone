@@ -13,8 +13,8 @@ namespace Kallithea_Klone.Other_Classes
         //  ==========
 
         public string Title { get; set; }
-        public string MainActionVerb { get; set; }
-        public Visibility ReloadVisible { get; set; }
+        public string MainActionContent { get; set; }
+        public Visibility ReloadVisibility { get; set; }
 
         //  Constructors
         //  ============
@@ -27,8 +27,8 @@ namespace Kallithea_Klone.Other_Classes
         public MainWindowStartProperties(string title, string mainActionverb, Visibility reloadVisible)
         {
             Title = title;
-            MainActionVerb = mainActionverb;
-            ReloadVisible = reloadVisible;
+            MainActionContent = mainActionverb;
+            ReloadVisibility = reloadVisible;
         }
     }
 }

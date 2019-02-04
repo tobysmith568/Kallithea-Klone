@@ -32,8 +32,8 @@ namespace Kallithea_Klone.States
             return new MainWindowStartProperties
             {
                 Title = "Kallithea Revert",
-                MainActionVerb = "Local Revert",
-                ReloadVisible = Visibility.Hidden
+                MainActionContent = "Local Revert",
+                ReloadVisibility = Visibility.Hidden
             };
         }
         

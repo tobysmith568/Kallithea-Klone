@@ -39,8 +39,8 @@ namespace Kallithea_Klone.States
             return new MainWindowStartProperties
             {
                 Title = "Kallithea Update",
-                MainActionVerb = "Update",
-                ReloadVisible = Visibility.Hidden
+                MainActionContent = "Update",
+                ReloadVisibility = Visibility.Hidden
             };
         }
         
