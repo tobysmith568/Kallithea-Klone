@@ -102,7 +102,7 @@ namespace Kallithea_Klone
 
                 MainTree.ItemsSource = await state.OnReloadAsync();
 
-                PbProgress.Visibility = Visibility.Hidden;
+                PbProgress.Visibility = Visibility.Collapsed;
                 PbProgress.IsIndeterminate = false;
                 BtnReload.IsEnabled = true;
             }
