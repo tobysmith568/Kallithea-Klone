@@ -100,7 +100,7 @@ namespace Kallithea_Klone
                 PbProgress.IsIndeterminate = true;
                 BtnReload.IsEnabled = false;
 
-                await state.OnReloadAsync();
+                MainTree.ItemsSource = await state.OnReloadAsync();
 
                 PbProgress.Visibility = Visibility.Hidden;
                 PbProgress.IsIndeterminate = false;

@@ -43,7 +43,7 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="NotImplementedException">Ignore.</exception>
-        public override Task OnReloadAsync()
+        public override Task<ICollection<Control>> OnReloadAsync()
         {
             throw new NotImplementedException("Invalid Button Press!");
         }

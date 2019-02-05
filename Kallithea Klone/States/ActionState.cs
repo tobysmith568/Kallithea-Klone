@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,7 +37,7 @@ namespace Kallithea_Klone.States
         
         public abstract Task OnMainActionAsync(List<string> urls);
 
-        public abstract Task OnReloadAsync();
+        public abstract Task<ICollection<Control>> OnReloadAsync();
 
         public abstract ICollection<Control> OnSearch(string searchTerm);
 

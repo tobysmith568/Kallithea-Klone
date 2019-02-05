@@ -47,7 +47,7 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public Task OnReloadAsync()
+        public Task<ICollection<Control>> OnReloadAsync()
         {
             throw new InvalidOperationException();
         }

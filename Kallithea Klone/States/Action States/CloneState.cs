@@ -87,9 +87,9 @@ namespace Kallithea_Klone.States
             }
         }
 
-        public override async Task OnReloadAsync()
+        public override async Task<ICollection<Control>> OnReloadAsync()
         {
-            await DownloadRepositories();
+            return await DownloadRepositories();
         }
 
         public override ICollection<Control> OnSearch(string searchTerm)
@@ -128,7 +128,7 @@ namespace Kallithea_Klone.States
             await ReportErrorsAsync(cmdProcess);
         }
 
-        public async Task DownloadRepositories()
+        public async Task<ICollection<Control>> DownloadRepositories()
         {
             RestClient client = new RestClient($"{AccountSettings.Host}/_admin/api");
             RestRequest request = new RestRequest(Method.POST);
@@ -156,21 +156,21 @@ namespace Kallithea_Klone.States
                         }
 
                         allRepositories = repos.Select(r => r.URL).ToList();
-                        LoadRepositoryTree(allRepositories);
-                        break;
+                        return LoadRepositoryTree(allRepositories);
                     case ResponseStatus.TimedOut:
                         MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
-                        break;
+                        return null;
                     case ResponseStatus.Error:
                     case ResponseStatus.Aborted:
                     default:
                         MessageBox.Show("Error: " + response.ErrorMessage, "Uncaught Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                        break;
+                        return null;
                 }
             }
             catch (Exception ee)
             {
                 MessageBox.Show("Error: " + ee.Message, "Uncaught Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return null;
             }
         }
     }

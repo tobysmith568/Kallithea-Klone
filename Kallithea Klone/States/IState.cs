@@ -1,5 +1,4 @@
 ﻿using Kallithea_Klone.Other_Classes;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -24,7 +23,7 @@ namespace Kallithea_Klone.States
         void OnLoseFocus(bool completingMainAction);
 
         void OnSettings();
-        Task OnReloadAsync();
+        Task<ICollection<Control>> OnReloadAsync();
 
         ICollection<Control> OnSearchCleared(string searchTerm);
         ICollection<Control> OnSearch(string searchTerm);
