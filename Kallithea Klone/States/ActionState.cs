@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -99,7 +99,7 @@ namespace Kallithea_Klone.States
             {
                 throw new MainActionException(e.Message, e);
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is MainActionException))
             {
                 throw new MainActionException("Unable to find the default remote location in the hmrc file", e);
             }
