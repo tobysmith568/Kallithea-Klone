@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using Kallithea_Klone.Other_Classes;
+using WinForms = System.Windows.Forms;
 
 namespace Kallithea_Klone.States
 {
@@ -14,18 +9,18 @@ namespace Kallithea_Klone.States
         //  State Methods
         //  =============
 
-        public override void InitialActions()
+        public override void InitialActions(string[] args)
         {
             Settings window = new Settings();
 
             int windowHeight = (int)window.Height;
             int windowWidth = (int)window.Width;
 
-            window.Left = System.Windows.Forms.Cursor.Position.X - (windowWidth / 2);
-            window.Top = System.Windows.Forms.Cursor.Position.Y - (windowHeight / 2);
+            window.Left = WinForms.Cursor.Position.X - (windowWidth / 2);
+            window.Top = WinForms.Cursor.Position.Y - (windowHeight / 2);
 
-            int screenHeight = System.Windows.Forms.Screen.FromPoint(System.Windows.Forms.Cursor.Position).Bounds.Height;
-            int screenWidth = System.Windows.Forms.Screen.FromPoint(System.Windows.Forms.Cursor.Position).Bounds.Width;
+            int screenHeight = WinForms.Screen.FromPoint(WinForms.Cursor.Position).Bounds.Height;
+            int screenWidth = WinForms.Screen.FromPoint(WinForms.Cursor.Position).Bounds.Width;
 
             while (window.Top + windowHeight + 5 > screenHeight)
                 window.Top -= 1;
@@ -38,6 +33,7 @@ namespace Kallithea_Klone.States
 
             while (window.Left - 5 < 0)
                 window.Left += 1;
+
             try
             {
                 window.Show();

@@ -1,8 +1,7 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
+using WinForms = System.Windows.Forms;
 
 namespace Kallithea_Klone.States
 {
@@ -55,7 +54,7 @@ namespace Kallithea_Klone.States
                     }
 
                     IState state = type.GetState(runLocation);
-                    state.InitialActions();
+                    state.InitialActions(args);
 
                     OpenMainWindow(state);
                     return;
@@ -63,14 +62,14 @@ namespace Kallithea_Klone.States
                 case RunTypes.Settings:
                 case RunTypes.Setup:
                 case RunTypes.Uninstall:
-                    type.GetState("").InitialActions();
+                    type.GetState().InitialActions(args);
                     return;
                 default:
                     throw new NotImplementedException($"The runType {type.ToString()} has not been implemented.");
             }
         }
 
-        private static IState GetState(this RunTypes type, string runLocation)
+        private static IState GetState(this RunTypes type, string runLocation = null)
         {
             switch (type)
             {
@@ -85,7 +84,9 @@ namespace Kallithea_Klone.States
                 case RunTypes.Settings:
                     return new SettingsState();
                 case RunTypes.Setup:
+                    return new SetupState();
                 case RunTypes.Uninstall:
+                    return new UninstallState();
                 default:
                     throw new NotImplementedException($"The runType {type.ToString()} has not been implemented.");
             }
@@ -97,17 +98,17 @@ namespace Kallithea_Klone.States
         /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private static string SelectWinXPFolder()
         {
-            using (FolderBrowserDialog   folderBrowserDialog = new FolderBrowserDialog
+            using (WinForms.FolderBrowserDialog folderBrowserDialog = new WinForms.FolderBrowserDialog
             {
                 Description = "Select a target folder"
             })
             {
-                DialogResult result = folderBrowserDialog.ShowDialog();
+                WinForms.DialogResult result = folderBrowserDialog.ShowDialog();
 
                 switch (result)
                 {
-                    case DialogResult.OK:
-                    case DialogResult.Yes:
+                    case WinForms.DialogResult.OK:
+                    case WinForms.DialogResult.Yes:
                         break;
 
                     default:
@@ -158,11 +159,11 @@ namespace Kallithea_Klone.States
             int windowHeight = (int)window.Height;
             int windowWidth = (int)window.Width;
 
-            window.Left = Cursor.Position.X - (windowWidth / 2);
-            window.Top = Cursor.Position.Y - (windowHeight / 2);
+            window.Left = WinForms.Cursor.Position.X - (windowWidth / 2);
+            window.Top = WinForms.Cursor.Position.Y - (windowHeight / 2);
 
-            int screenHeight = Screen.FromPoint(Cursor.Position).Bounds.Height;
-            int screenWidth = Screen.FromPoint(Cursor.Position).Bounds.Width;
+            int screenHeight = WinForms.Screen.FromPoint(WinForms.Cursor.Position).Bounds.Height;
+            int screenWidth = WinForms.Screen.FromPoint(WinForms.Cursor.Position).Bounds.Width;
 
             while (window.Top + windowHeight + 5 > screenHeight)
                 window.Top -= 1;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Kallithea_Klone.Other_Classes;
@@ -13,7 +13,7 @@ namespace Kallithea_Klone.States
         //  Abstract State Methods
         //  ======================
 
-        public abstract void InitialActions();
+        public abstract void InitialActions(string[] args);
 
         //  State Methods
         //  =============
@@ -68,6 +68,46 @@ namespace Kallithea_Klone.States
         public void OnSettings()
         {
             throw new InvalidOperationException();
+        }
+
+        //  Other Methods
+        //  =============
+
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
+        protected static bool IsAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="System.IO.FileNotFoundException">Ignore.</exception>
+        protected void RestartAsAdmin(string arguments)
+        {
+            string exeName = Process.GetCurrentProcess().MainModule.FileName;
+
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                {
+                    Verb = "runas",
+                    Arguments = arguments
+                };
+                Process.Start(startInfo);
+            }
+            catch
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                {
+                    Arguments = arguments
+                };
+                Process.Start(startInfo);
+            }
+            App.Current.Shutdown();
         }
     }
 }

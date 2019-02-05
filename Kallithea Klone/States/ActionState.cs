@@ -46,7 +46,7 @@ namespace Kallithea_Klone.States
         //  Implemented State Methods
         //  =========================
 
-        public void InitialActions()
+        public void InitialActions(string[] args)
         {
             //Nothing by default
         }

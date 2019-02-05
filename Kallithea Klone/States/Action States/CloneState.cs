@@ -11,7 +11,6 @@ using System.Web;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Kallithea;
 using Kallithea_Klone.Account_Settings;
-using System.Collections;
 
 namespace Kallithea_Klone.States
 {

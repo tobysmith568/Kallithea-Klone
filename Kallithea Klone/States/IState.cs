@@ -17,7 +17,7 @@ namespace Kallithea_Klone.States
         //  Methods
         //  =======
 
-        void InitialActions();
+        void InitialActions(string[] args);
         /// <exception cref="InvalidOperationException"></exception>
         ICollection<Control> OnLoadRepositories();
         MainWindowStartProperties OnLoaded();
