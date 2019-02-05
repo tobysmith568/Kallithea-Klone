@@ -17,13 +17,14 @@ namespace Kallithea_Klone.States
         //  Methods
         //  =======
 
+        void InitialActions();
         /// <exception cref="InvalidOperationException"></exception>
         ICollection<Control> OnLoadRepositories();
         MainWindowStartProperties OnLoaded();
         void OnLoseFocus(bool completingMainAction);
 
         void OnSettings();
-        void OnReload();
+        Task OnReloadAsync();
 
         ICollection<Control> OnSearchCleared(string searchTerm);
         ICollection<Control> OnSearch(string searchTerm);

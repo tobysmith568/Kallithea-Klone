@@ -118,6 +118,8 @@
     <Compile Include="States\IState.cs" />
     <Compile Include="MainActionException.cs" />
     <Compile Include="States\LocalEditorState.cs" />
+    <Compile Include="States\LogicOnlyState.cs" />
+    <Compile Include="States\SettingsState.cs" />
     <Compile Include="States\UpdateState.cs" />
     <Compile Include="States\ReCloneState.cs" />
     <Compile Include="States\LocalRevertState.cs" />
@@ -128,7 +130,7 @@
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="States\TemplateState.cs" />
+    <Compile Include="States\ActionState.cs" />
     <Compile Include="Kallithea API\User.cs" />
     <Compile Include="UpdateDownloading.xaml.cs">
       <DependentUpon>UpdateDownloading.xaml</DependentUpon>

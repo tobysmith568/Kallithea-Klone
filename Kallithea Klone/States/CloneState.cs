@@ -15,7 +15,7 @@ using System.Collections;
 
 namespace Kallithea_Klone.States
 {
-    public class CloneState : TemplateState
+    public class CloneState : ActionState
     {
         //  Variables
         //  =========
@@ -88,7 +88,7 @@ namespace Kallithea_Klone.States
             }
         }
 
-        public override async void OnReload()
+        public override async Task OnReloadAsync()
         {
             await DownloadRepositories();
         }

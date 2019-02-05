@@ -35,14 +35,14 @@ namespace Kallithea_Klone
         //  ============
 
         /// <exception cref="Exception"></exception>
-        public MainWindow(RunTypes runType, string runFrom)
+        public MainWindow(IState state)
         {
             if (singleton == null)
                 singleton = this;
             else
                 throw new Exception("Cannot create a second mainWindow!");
 
-            state = runType.GetState(runFrom);
+            this.state = state;
 
             InitializeComponent();
 
@@ -92,7 +92,7 @@ namespace Kallithea_Klone
                 DragMove();
         }
 
-        private void BtnReload_Click(object sender, RoutedEventArgs e)
+        private async void BtnReload_Click(object sender, RoutedEventArgs e)
         {
             if (AccountSettings.VerifySettings())
             {
@@ -100,7 +100,7 @@ namespace Kallithea_Klone
                 PbProgress.IsIndeterminate = true;
                 BtnReload.IsEnabled = false;
 
-                state.OnReload();
+                await state.OnReloadAsync();
 
                 PbProgress.Visibility = Visibility.Hidden;
                 PbProgress.IsIndeterminate = false;

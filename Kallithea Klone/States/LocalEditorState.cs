@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Kallithea_Klone.States
 {
-    public abstract class LocalEditorState : TemplateState
+    public abstract class LocalEditorState : ActionState
     {
         //  Constructors
         //  ============
@@ -42,7 +43,7 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="NotImplementedException">Ignore.</exception>
-        public override void OnReload()
+        public override Task OnReloadAsync()
         {
             throw new NotImplementedException("Invalid Button Press!");
         }
@@ -63,9 +64,7 @@ namespace Kallithea_Klone.States
 
                 foreach (string folder in Directory.GetDirectories(runLocation))
                 {
-                    string folderName = Path.GetFileName(folder);
-
-                    if (IsRepo(folderName))
+                    if (IsRepo(folder))
                     {
                         foundRepositories.Add(folder);
                     }

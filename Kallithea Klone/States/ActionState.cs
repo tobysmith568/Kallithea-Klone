@@ -11,7 +11,7 @@ using Kallithea_Klone.Other_Classes;
 
 namespace Kallithea_Klone.States
 {
-    public abstract class TemplateState : IState
+    public abstract class ActionState : IState
     {
         //  Properties
         //  ==========
@@ -22,7 +22,7 @@ namespace Kallithea_Klone.States
         //  Constructors
         //  ============
 
-        public TemplateState(string runLocation)
+        public ActionState(string runLocation)
         {
             RunLocation = runLocation;
         }
@@ -37,7 +37,7 @@ namespace Kallithea_Klone.States
         
         public abstract Task OnMainActionAsync(List<string> urls);
 
-        public abstract void OnReload();
+        public abstract Task OnReloadAsync();
 
         public abstract ICollection<Control> OnSearch(string searchTerm);
 
@@ -45,6 +45,11 @@ namespace Kallithea_Klone.States
 
         //  Implemented State Methods
         //  =========================
+
+        public void InitialActions()
+        {
+            //Nothing by default
+        }
 
         /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         /// <exception cref="InvalidCastException">Ignore.</exception>
@@ -194,7 +199,7 @@ namespace Kallithea_Klone.States
             if (location.InnerLocations.Count == 0)
             {
                 string newTag = (parent == null) ? location.Name : parent.Tag + "/" + location.Name;
-                return CreateCheckBox(location.Name, newTag);
+                return CreateCheckBox(Path.GetFileName(location.Name), newTag);
             }
             else
             {

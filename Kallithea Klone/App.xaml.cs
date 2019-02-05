@@ -8,6 +8,7 @@ using System.IO;
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Forms;
+using System.Linq;
 using System.Windows.Threading;
 
 namespace Kallithea_Klone
@@ -29,77 +30,25 @@ namespace Kallithea_Klone
                 AccountSettings.JustInstalled = false;
             }
 
-            if (e.Args.Length > 0)
+            if (e.Args.Length == 0)
             {
-                switch (UppercaseFirst(e.Args[0]))
-                {
-                    case nameof(RunTypes.Clone):
-                        if (e.Args.Length >= 2)
-                            Open(RunTypes.Clone, e.Args[1]);
-                        else
-                            goto default;
-                        break;
-                    case nameof(RunTypes.LocalRevert):
-                        if (e.Args.Length >= 2)
-                            Open(RunTypes.LocalRevert, e.Args[1]);
-                        else
-                            goto default;
-                        break;
-                    case nameof(RunTypes.Reclone):
-                        if (e.Args.Length >= 2)
-                            Open(RunTypes.Reclone, e.Args[1]);
-                        else
-                            goto default;
-                        break;
-                    case nameof(RunTypes.Update):
-                        if (e.Args.Length >= 2)
-                            Open(RunTypes.Update, e.Args[1]);
-                        else
-                            goto default;
-                        break;
-                    case nameof(RunTypes.Settings):
-                        Settings();
-                        break;
-                    case nameof(RunTypes.Setup):
-                        if (e.Args.Length >= 2)
-                            Setup(e.Args[1]);
-                        else
-                            Setup();
-                        Environment.Exit(0);
-                        break;
-                    case nameof(RunTypes.Uninstall):
-                        if (e.Args.Length >= 2)
-                            Uninstall(e.Args[1]);
-                        else
-                            Uninstall();
-                        Environment.Exit(0);
-                        break;
-                    default:
-                        Environment.Exit(1);
-                        break;
-                }
+                RunTypes.Clone.Open(new string[0]);
+                return;
             }
-            else
+
+            if (Enum.TryParse(UppercaseFirst(e.Args[0]), out RunTypes runType))
             {
-                string folder;
-
-                if (CommonFileDialog.IsPlatformSupported)
-                {
-                    folder = SelectWinVistaFolder();
-                }
-                else
-                {
-                    folder = SelectWinXPFolder();
-                }
-
-                Open(RunTypes.Clone, folder);
+                runType.Open(e.Args.Skip(1).ToArray());
+                return;
             }
+
+            System.Windows.MessageBox.Show($"Invalid initial argument [{e.Args[0]}] given!",
+                "Command Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         /// <exception cref="System.Security.SecurityException"></exception>
         void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
         {
-
             System.Windows.MessageBox.Show("An unexpected exception has occurred. Shutting down the application:\n" + args.Exception);
 
             // Prevent default unhandled exception processing
@@ -110,36 +59,6 @@ namespace Kallithea_Klone
 
         //  Methods
         //  =======
-
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        /// <exception cref="Exception">Ignore.</exception>
-        private void Open(RunTypes runType, string ranFrom)
-        {
-            MainWindow window = new MainWindow(runType, ranFrom);
-
-            int windowHeight = (int)window.Height;
-            int windowWidth = (int)window.Width;
-
-            window.Left = Cursor.Position.X - (windowWidth / 2);
-            window.Top = Cursor.Position.Y - (windowHeight / 2);
-
-            int screenHeight = Screen.FromPoint(Cursor.Position).Bounds.Height;
-            int screenWidth = Screen.FromPoint(Cursor.Position).Bounds.Width;
-
-            while (window.Top + windowHeight + 5 > screenHeight)
-                window.Top -= 1;
-
-            while (window.Top - 5 < 0)
-                window.Top += 1;
-
-            while (window.Left + windowWidth + 5 > screenWidth)
-                window.Left -= 1;
-
-            while (window.Left - 5 < 0)
-                window.Left += 1;
-
-            window.Show();
-        }
 
         private void Setup(string attempt = "0")
         {
@@ -236,35 +155,6 @@ namespace Kallithea_Klone
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private void Settings()
-        {
-            Settings window = new Settings();
-
-            int windowHeight = (int)window.Height;
-            int windowWidth = (int)window.Width;
-
-            window.Left = Cursor.Position.X - (windowWidth / 2);
-            window.Top = Cursor.Position.Y - (windowHeight / 2);
-
-            int screenHeight = Screen.FromPoint(Cursor.Position).Bounds.Height;
-            int screenWidth = Screen.FromPoint(Cursor.Position).Bounds.Width;
-
-            while (window.Top + windowHeight + 5 > screenHeight)
-                window.Top -= 1;
-
-            while (window.Top - 5 < 0)
-                window.Top += 1;
-
-            while (window.Left + windowWidth + 5 > screenWidth)
-                window.Left -= 1;
-
-            while (window.Left - 5 < 0)
-                window.Left += 1;
-
-            window.Show();
-        }
-
         private string UppercaseFirst(string s)
         {
             if (string.IsNullOrEmpty(s))
@@ -299,61 +189,6 @@ namespace Kallithea_Klone
                 Process.Start(startInfo);
             }
             Current.Shutdown();
-        }
-
-        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
-        private string SelectWinXPFolder()
-        {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog
-            {
-                Description = "Select a target folder"
-            })
-            {
-                DialogResult result = folderBrowserDialog.ShowDialog();
-
-                switch (result)
-                {
-                    case DialogResult.OK:
-                    case DialogResult.Yes:
-                        break;
-
-                    default:
-                        Environment.Exit(1);
-                        break;
-                }
-
-                return folderBrowserDialog.SelectedPath;
-            }
-        }
-
-        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
-        private string SelectWinVistaFolder()
-        {
-            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog
-            {
-                Title = "Select a target folder",
-                IsFolderPicker = true,
-                DefaultDirectory = @"C:\",
-                AllowNonFileSystemItems = false,
-                EnsurePathExists = true,
-                Multiselect = false,
-                NavigateToShortcut = true
-            })
-            {
-                CommonFileDialogResult result = dialog.ShowDialog();
-
-                switch (result)
-                {
-                    case CommonFileDialogResult.Ok:
-                        break;
-
-                    default:
-                        Environment.Exit(1);
-                        break;
-                }
-
-                return dialog.FileName;
-            }
         }
     }
 }
