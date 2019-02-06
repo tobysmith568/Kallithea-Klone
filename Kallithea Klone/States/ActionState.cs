@@ -104,31 +104,6 @@ namespace Kallithea_Klone.States
                 throw new MainActionException("Unable to find the default remote location in the hmrc file", e);
             }
         }
-
-        /// <summary>
-        /// Reports any error messages given by a CMDProcess while it ran
-        /// </summary>
-        /// <param name="cmdProcess">The CMDProcess to have its errors reported</param>
-        /// <param name="verb">A verb describing what the curent state does</param>
-        /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        protected async Task ReportErrorsAsync(CMDProcess cmdProcess)
-        {
-            try
-            {
-                string errorMessages = await cmdProcess.GetErrorOutAsync();
-
-                if (errorMessages.Length > 0)
-                {
-                    throw new MainActionException($"Finished with the exit code: {cmdProcess.ExitCode}\n\n" +
-                        $"And the error messages: {errorMessages}");
-                }
-            }
-            catch (Exception e) when (!(e is MainActionException))
-            {
-                throw new MainActionException($"Unable to read the process used for {Verb}. This means Kallithea" +
-                    " Klone is unable to tell if it was successful or not.", e);
-            }
-        }
         
         public ICollection<Control> LoadRepositoryTree(ICollection<string> repositories)
         {

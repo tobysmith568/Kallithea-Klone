@@ -91,7 +91,7 @@ namespace Kallithea_Klone.States
                 throw new MainActionException("Unable to start the necessary command window process", e);
             }
 
-            await ReportErrorsAsync(cmdProcess);
+            cmdProcess.ReportErrorsAsync(Verb);
 
             string passwordSafeURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}@{uri.Host}{uri.PathAndQuery}";
             SetDefaultLocation(url, passwordSafeURL);

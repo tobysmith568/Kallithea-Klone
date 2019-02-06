@@ -125,7 +125,7 @@ namespace Kallithea_Klone.States
                 throw new MainActionException("Unable to start the necessary command window process", e);
             }
 
-            await ReportErrorsAsync(cmdProcess);
+            cmdProcess.ReportErrorsAsync(Verb);
         }
 
         public async Task<ICollection<Control>> DownloadRepositories()

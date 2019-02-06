@@ -13,12 +13,14 @@ namespace Kallithea_Klone.Other_Classes
         //  =========
 
         private const string CmdExe = "cmd.exe";
-        private readonly Process process;
+        private readonly string arguments;
 
         //  Properties
         //  ==========
 
-        public int ExitCode => process.ExitCode;
+        public int ExitCode { get; private set; } = -1;
+        public string StandardOut { get; private set; } = "";
+        public string ErrorOut { get; private set; } = "";
 
         //  Constructors
         //  ============
@@ -33,19 +35,7 @@ namespace Kallithea_Klone.Other_Classes
             if (commands.Length < 1)
                 throw new ArgumentException("The commands parameter cannot be empty");
 
-            process = new Process()
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    FileName = CmdExe,
-                    Arguments = "/C " + string.Join("&", commands)
-                }
-            };           
+            arguments = "/C " + string.Join("&", commands);
         }
 
         //  Methods
@@ -59,23 +49,45 @@ namespace Kallithea_Klone.Other_Classes
         {
             await Task.Run(() =>
             {
-                process.Start();
-                process.WaitForExit();
+                using (Process process = new Process()
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        FileName = CmdExe,
+                        Arguments = arguments
+                    }
+                })
+                {
+                    process.Start();
+                    process.WaitForExit();
+                    ExitCode = process.ExitCode;
+                    StandardOut += process.StandardOutput.ReadToEnd();
+                    ErrorOut += process.StandardError.ReadToEnd();
+                }
             });
         }
 
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
-        public async Task<string> GetStandardOutAsync()
+        /// <exception cref="Kallithea_Klone.MainActionException"></exception>
+        public void ReportErrorsAsync(string action)
         {
-            return await process.StandardOutput.ReadToEndAsync();
-        }
-
-        /// <exception cref="ObjectDisposedException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
-        public async Task<string> GetErrorOutAsync()
-        {
-            return await process.StandardError.ReadToEndAsync();
+            try
+            {
+                if (ErrorOut.Length > 0)
+                {
+                    throw new MainActionException($"Finished with the exit code: {ExitCode}\n\n" +
+                        $"And the error messages: {ErrorOut}");
+                }
+            }
+            catch (Exception e) when (!(e is MainActionException))
+            {
+                throw new MainActionException($"Unable to read the process used for {action}. This means Kallithea" +
+                    " Klone is unable to tell if it was successful or not.", e);
+            }
         }
     }
 }
