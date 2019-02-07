@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,8 +13,9 @@ namespace Kallithea_Klone.Other_Classes
         //  Variables
         //  =========
 
-        private const string CmdExe = "cmd.exe";
+        private readonly static ILog log = LogManager.GetLogger(typeof(CMDProcess));
         private readonly string arguments;
+        private const string CmdExe = "cmd.exe";
 
         //  Properties
         //  ==========
@@ -68,6 +70,15 @@ namespace Kallithea_Klone.Other_Classes
                     ExitCode = process.ExitCode;
                     StandardOut += process.StandardOutput.ReadToEnd();
                     ErrorOut += process.StandardError.ReadToEnd();
+
+                    if (log.IsInfoEnabled)
+                    {
+                        log.Info(StandardOut);
+                    }
+                    if (log.IsErrorEnabled && ErrorOut.Length > 0)
+                    {
+                        log.Error(ErrorOut);
+                    }
                 }
             });
         }

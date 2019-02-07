@@ -1,13 +1,14 @@
 ﻿using Kallithea_Klone.Account_Settings;
-using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.States;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Security.Principal;
 using System.Windows;
-using System.Linq;
 using System.Windows.Threading;
+using System.Linq;
+using System.IO;
+using System;
+using log4net.Config;
+using log4net.Appender;
+using log4net.Layout;
+using log4net;
 
 namespace Kallithea_Klone
 {
@@ -16,12 +17,32 @@ namespace Kallithea_Klone
     /// </summary>
     public partial class App : Application
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(App));
         //  Events
         //  ======
 
         /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         void App_Startup(object sender, StartupEventArgs e)
         {
+            log4net.Util.LogLog.InternalDebugging = true;
+            PatternLayout  p = new PatternLayout()
+            {
+                ConversionPattern = "[%date{dd/MM/yyyy HH:mm:ss}] [%level] %message%newline"
+            };
+            p.ActivateOptions();
+            RollingFileAppender a = new RollingFileAppender()
+            {
+                Layout = p,
+                File = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Kallithea Klone", "Output.log"),
+                RollingStyle = RollingFileAppender.RollingMode.Date,
+                MaxSizeRollBackups = 5,
+                ImmediateFlush = true,
+                PreserveLogFileNameExtension = true,
+                StaticLogFileName = true,
+            };
+            a.ActivateOptions();
+            BasicConfigurator.Configure(a);
+
             if (AccountSettings.JustInstalled)
             {
                 AccountSettings.Upgrade();
