@@ -13,6 +13,12 @@ namespace Kallithea_Klone.States
 {
     public abstract class ActionState : IState
     {
+        //  Variables
+        //  =========
+
+        protected const string debugArg = "--debug";
+        protected const string tracebackArg = "--traceback";
+
         //  Properties
         //  ==========
 

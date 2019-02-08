@@ -77,9 +77,9 @@ namespace Kallithea_Klone.States
             CMDProcess cmdProcess = new CMDProcess(new string[]
             {
                     $"cd /d \"{url}\"",
-                    $"hg init",
-                    $"hg pull {fullURL}",
-                    $"hg update"
+                    $"hg init {debugArg} {tracebackArg}",
+                    $"hg pull {fullURL} {debugArg} {tracebackArg}",
+                    $"hg update {debugArg} {tracebackArg}"
             });
 
             try
