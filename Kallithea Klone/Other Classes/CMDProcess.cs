@@ -21,8 +21,8 @@ namespace Kallithea_Klone.Other_Classes
         //  ==========
 
         public int ExitCode { get; private set; } = -1;
-        public string StandardOut { get; private set; } = "";
-        public string ErrorOut { get; private set; } = "";
+        public ICollection<string> StandardOut { get; private set; } = new List<string>();
+        public ICollection<string> ErrorOut { get; private set; } = new List<string>();
 
         //  Constructors
         //  ============
@@ -38,6 +38,27 @@ namespace Kallithea_Klone.Other_Classes
                 throw new ArgumentException("The commands parameter cannot be empty");
 
             arguments = "/C " + string.Join("&", commands);
+        }
+
+        //  Events
+        //  ======
+
+        private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                ErrorOut.Add(e.Data);
+                log.Error(e.Data);
+            }
+        }
+
+        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                StandardOut.Add(e.Data);
+                log.Info(e.Data);
+            }
         }
 
         //  Methods
@@ -65,20 +86,15 @@ namespace Kallithea_Klone.Other_Classes
                     }
                 })
                 {
+                    process.OutputDataReceived += Process_OutputDataReceived;
+                    process.ErrorDataReceived += Process_ErrorDataReceived;
                     process.Start();
-                    process.WaitForExit();
-                    ExitCode = process.ExitCode;
-                    StandardOut += process.StandardOutput.ReadToEnd();
-                    ErrorOut += process.StandardError.ReadToEnd();
+                    process.BeginOutputReadLine();
+                    process.BeginErrorReadLine();
 
-                    if (log.IsInfoEnabled)
-                    {
-                        log.Info(StandardOut);
-                    }
-                    if (log.IsErrorEnabled && ErrorOut.Length > 0)
-                    {
-                        log.Error(ErrorOut);
-                    }
+                    process.WaitForExit();
+
+                    ExitCode = process.ExitCode;
                 }
             });
         }
@@ -88,10 +104,12 @@ namespace Kallithea_Klone.Other_Classes
         {
             try
             {
-                if (ErrorOut.Length > 0)
+                if (ErrorOut.Count > 0)
                 {
-                    throw new MainActionException($"Finished with the exit code: {ExitCode}\n\n" +
-                        $"And the error messages: {ErrorOut}");
+                    throw new MainActionException($"Finished with the exit code: {ExitCode}" +
+                        $"{Environment.NewLine}{Environment.NewLine}" +
+                        $"And the error messages: {Environment.NewLine}" +
+                        $"{string.Join(Environment.NewLine, ErrorOut.ToArray())}");
                 }
             }
             catch (Exception e) when (!(e is MainActionException))
