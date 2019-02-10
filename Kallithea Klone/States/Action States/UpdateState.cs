@@ -72,10 +72,10 @@ namespace Kallithea_Klone.States
             CMDProcess cmdProcess = new CMDProcess(new string[]
             {
                     $"cd /d {url}" +
-                    $"hg --config \"extensions.shelve = \" shelve --name {shelfName} {debugArg} {tracebackArg}" +
-                    $"hg pull {fullURL} {debugArg} {tracebackArg}" +
-                    $"hg update -m {debugArg} {tracebackArg}" +
-                    $"hg --config \"extensions.shelve = \" unshelve --name {shelfName} --tool :other {debugArg} {tracebackArg}"
+                    $"hg --config \"extensions.shelve = \" shelve --name {shelfName} {debugArg}" +
+                    $"hg pull {fullURL} {debugArg}" +
+                    $"hg update -m {debugArg}" +
+                    $"hg --config \"extensions.shelve = \" unshelve --name {shelfName} --tool :other {debugArg}"
             });
 
             try

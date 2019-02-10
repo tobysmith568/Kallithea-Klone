@@ -59,8 +59,8 @@ namespace Kallithea_Klone.States
             CMDProcess cmdProcess = new CMDProcess(new string[]
             {
                     $"cd /d {url}",
-                    $"hg revert --all {debugArg} {tracebackArg}",
-                    $"hg --config \"extensions.purge = \" purge --all {debugArg} {tracebackArg}"
+                    $"hg revert --all {debugArg}",
+                    $"hg --config \"extensions.purge = \" purge --all {debugArg}"
             });
 
             try

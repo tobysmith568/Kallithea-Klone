@@ -114,7 +114,7 @@ namespace Kallithea_Klone.States
         public async Task CloneAsync(Uri host, string url)
         {
             string fullURL = $"{host.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{host.Host}{host.PathAndQuery}{url}";
-            CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{RunLocation}\\{Path.GetFileName(url)}\" {debugArg} {tracebackArg}");
+            CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{RunLocation}\\{Path.GetFileName(url)}\" {debugArg}");
 
             try
             {
