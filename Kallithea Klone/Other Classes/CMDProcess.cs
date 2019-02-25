@@ -1,5 +1,4 @@
-﻿using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace Kallithea_Klone.Other_Classes
         //  Variables
         //  =========
 
-        private readonly static ILog log = LogManager.GetLogger(typeof(CMDProcess));
+        private readonly static Logger log = new Logger(typeof(CMDProcess));
         private readonly string arguments;
         private const string CmdExe = "cmd.exe";
 

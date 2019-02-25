@@ -113,6 +113,7 @@
     <Compile Include="Account Settings\IAccountSettings.cs" />
     <Compile Include="Other Classes\CMDProcess.cs" />
     <Compile Include="Other Classes\ContextMenuImplementations.cs" />
+    <Compile Include="Other Classes\Logger.cs" />
     <Compile Include="Other Classes\MainWindowStartProperties.cs" />
     <Compile Include="ContextMenu\MenuParent.cs" />
     <Compile Include="States\Action States\CloneState.cs" />
