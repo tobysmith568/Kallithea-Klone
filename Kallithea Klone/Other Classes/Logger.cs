@@ -16,7 +16,7 @@ namespace Kallithea_Klone.Other_Classes
 
         private const string DEBUG_FORMAT = "[{0}] [DEBUG] {1}";
         private const string INFO_FORMAT = "[{0}] [INFO] {1}";
-        private const string REPO_FORMAT = "[{0}] [REPO] [{1}] [{2}] [{3}]";
+        private const string REPO_FORMAT = "[{0}] [{1}] [{2}] {3}";
         private const string WARN_FORMAT = "[{0}] [WARN] {1}";
         private const string ERROR_FORMAT = "[{0}] [ERROR] {1}";
         private const string FATAL_FORMAT = "[{0}] [FATAL] {1}";
