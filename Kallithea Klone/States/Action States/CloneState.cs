@@ -75,13 +75,14 @@ namespace Kallithea_Klone.States
 
             foreach (string url in urls)
             {
+                string repo = Path.GetFileName(url);
                 try
                 {
-                    await CloneAsync(host, url);
+                    await CloneAsync(host, repo, url);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}",
+                    MessageBox.Show($"Error {Verb} {repo}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}",
                         MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 }
             }
@@ -111,10 +112,10 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        public async Task CloneAsync(Uri host, string url)
+        public async Task CloneAsync(Uri host, string repo, string url)
         {
             string fullURL = $"{host.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{host.Host}{host.PathAndQuery}{url}";
-            CMDProcess cmdProcess = new CMDProcess($"hg clone {fullURL} \"{RunLocation}\\{Path.GetFileName(url)}\" {debugArg}");
+            CMDProcess cmdProcess = new CMDProcess("CLONE", repo, $"hg clone {fullURL} \"{RunLocation}\\{repo}\" {debugArg}");
 
             try
             {

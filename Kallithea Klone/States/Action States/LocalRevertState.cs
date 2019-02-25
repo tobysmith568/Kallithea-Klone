@@ -39,13 +39,14 @@ namespace Kallithea_Klone.States
         {
             foreach (string url in urls)
             {
+                string repo = Path.GetFileName(url);
                 try
                 {
-                    await Revert(url);
+                    await Revert(repo, url);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {repo}:\n" + e.Message, $"Error {Verb} {repo}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -54,9 +55,9 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        private async Task Revert(string url)
+        private async Task Revert(string repo, string url)
         {
-            CMDProcess cmdProcess = new CMDProcess(new string[]
+            CMDProcess cmdProcess = new CMDProcess("REVERT", repo, new string[]
             {
                     $"cd /d {url}",
                     $"hg revert --all {debugArg}",

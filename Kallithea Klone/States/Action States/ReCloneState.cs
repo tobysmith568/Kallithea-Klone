@@ -43,13 +43,14 @@ namespace Kallithea_Klone.States
         {
             foreach (string url in urls)
             {
+                string repo = Path.GetFileName(url);
                 try
                 {
-                    await ReClone(url);
+                    await ReClone(repo, url);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {repo}:\n" + e.Message, $"Error {Verb} {repo}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -58,7 +59,7 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        private async Task ReClone(string url)
+        private async Task ReClone(string repo, string url)
         {
             string remotePath = GetDefaultRemotePath(url);
             Uri uri = new Uri(remotePath);
@@ -74,7 +75,7 @@ namespace Kallithea_Klone.States
                 throw new MainActionException($"Unable to properly delete the original repository, it is now probably half deleted.", e);
             }
 
-            CMDProcess cmdProcess = new CMDProcess(new string[]
+            CMDProcess cmdProcess = new CMDProcess("RE-CLONE", repo, new string[]
             {
                     $"cd /d \"{url}\"",
                     $"hg init {debugArg}",

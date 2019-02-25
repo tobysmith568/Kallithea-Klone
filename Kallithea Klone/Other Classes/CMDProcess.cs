@@ -15,6 +15,8 @@ namespace Kallithea_Klone.Other_Classes
         private readonly static Logger log = new Logger(typeof(CMDProcess));
         private readonly string arguments;
         private const string CmdExe = "cmd.exe";
+        private readonly string action;
+        private readonly string repo;
 
         //  Properties
         //  ==========
@@ -26,14 +28,17 @@ namespace Kallithea_Klone.Other_Classes
         //  Constructors
         //  ============
 
-        public CMDProcess(string command) : this(new string[] { command })
+        public CMDProcess(string action, string repo, string command) : this(action, repo, new string[] { command })
         {
 
         }
 
-        public CMDProcess(string[] commands)
+        public CMDProcess(string action, string repo, string[] commands)
         {
-            if (commands.Length < 1)
+            this.action = action;
+            this.repo = repo;
+
+            if (commands == null || commands.Length < 1)
                 throw new ArgumentException("The commands parameter cannot be empty");
 
             arguments = "/C " + string.Join("&", commands);
@@ -56,7 +61,7 @@ namespace Kallithea_Klone.Other_Classes
             if (e.Data != null)
             {
                 StandardOut.Add(e.Data);
-                log.Info(e.Data);
+                log.Repo(action, repo, e.Data);
             }
         }
 

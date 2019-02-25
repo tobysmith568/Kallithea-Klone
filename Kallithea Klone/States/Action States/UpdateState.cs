@@ -48,13 +48,14 @@ namespace Kallithea_Klone.States
         {
             foreach (string url in urls)
             {
+                string repo = Path.GetFileName(url);
                 try
                 {
-                    await Update(url);
+                    await Update(repo, url);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {Path.GetFileName(url)}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {repo}:\n" + e.Message, $"Error {Verb} {repo}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -62,14 +63,14 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        private async Task Update(string url)
+        private async Task Update(string repo, string url)
         {
             string remotePath = GetDefaultRemotePath(url);
             Uri uri = new Uri(remotePath);
 
             string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
             string shelfName = DateTime.Now.ToString(dateTimeFormat);
-            CMDProcess cmdProcess = new CMDProcess(new string[]
+            CMDProcess cmdProcess = new CMDProcess("UPDATE", repo, new string[]
             {
                     $"cd /d {url}" +
                     $"hg --config \"extensions.shelve = \" shelve --name {shelfName} {debugArg}" +
