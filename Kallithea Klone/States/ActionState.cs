@@ -41,7 +41,7 @@ namespace Kallithea_Klone.States
 
         public abstract MainWindowStartProperties OnLoaded();
         
-        public abstract Task OnMainActionAsync(List<string> urls);
+        public abstract Task OnMainActionAsync(List<Repo> urls);
 
         public abstract Task<ICollection<Control>> OnReloadAsync();
 
@@ -142,7 +142,12 @@ namespace Kallithea_Klone.States
 
             foreach (string location in repositories)
             {
-                results.Add(CreateCheckBox(Path.GetFileName(location), location));
+                Repo repo = new Repo
+                {
+                    Name = Path.GetFileName(location),
+                    URL = location
+                };
+                results.Add(CreateCheckBox(repo));
             }
 
             return results;
@@ -177,25 +182,30 @@ namespace Kallithea_Klone.States
         
         private Control CreateTreeControl(Location location, TreeViewItem parent = null)
         {
+            Repo repo = new Repo
+            {
+                Name = location.Name,
+                URL = (parent == null) ? location.Name : (parent.Tag as Repo).URL + "/" + location.Name
+            };
+
             if (location.InnerLocations.Count == 0)
             {
-                string newTag = (parent == null) ? location.Name : parent.Tag + "/" + location.Name;
-                return CreateCheckBox(Path.GetFileName(location.Name), newTag);
+                return CreateCheckBox(repo);
             }
             else
             {
-                return CreateTreeViewItem(location, parent);
+                return CreateTreeViewItem(repo, location.InnerLocations, parent);
             }
         }
         
-        private CheckBox CreateCheckBox(string content, string tag)
+        private CheckBox CreateCheckBox(Repo repo)
         {
             CheckBox newCheckbox = new CheckBox
             {
-                Content = content,
+                Content = repo.Name,
                 VerticalContentAlignment = VerticalAlignment.Center,
-                Tag = tag,
-                IsChecked = MainWindow.CheckedURLs.Contains(tag)
+                Tag = repo,
+                IsChecked = MainWindow.CheckedURLs.Select(u => u.URL).Contains(repo.URL)
             };
             newCheckbox.Checked += MainWindow.singleton.NewItem_Checked;
             newCheckbox.Unchecked += MainWindow.singleton.NewItem_Unchecked;
@@ -204,15 +214,15 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private Control CreateTreeViewItem(Location location, TreeViewItem parent)
+        private Control CreateTreeViewItem(Repo repo, List<Location> innerLocations, TreeViewItem parent)
         {
             TreeViewItem newTreeItem = new TreeViewItem
             {
-                Header = location.Name,
-                Tag = parent == null ? location.Name : parent.Tag + "/" + location.Name
+                Header = repo.Name,
+                Tag = repo
             };
 
-            foreach (Location subLocation in location.InnerLocations)
+            foreach (Location subLocation in innerLocations)
             {
                 newTreeItem.Items.Add(CreateTreeControl(subLocation, newTreeItem));
             }

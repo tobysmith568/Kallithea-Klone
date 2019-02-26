@@ -69,20 +69,19 @@ namespace Kallithea_Klone.States
             return null;
         }
 
-        public override async Task OnMainActionAsync(List<string> urls)
+        public override async Task OnMainActionAsync(List<Repo> repos)
         {
             Uri host = new Uri(AccountSettings.Host);
 
-            foreach (string url in urls)
+            foreach (Repo repo in repos)
             {
-                string repo = Path.GetFileName(url);
                 try
                 {
-                    await CloneAsync(host, repo, url);
+                    await CloneAsync(host, repo);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {repo}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(url)}",
+                    MessageBox.Show($"Error {Verb} {repo.Name}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(repo.URL)}",
                         MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 }
             }
@@ -112,10 +111,10 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        public async Task CloneAsync(Uri host, string repo, string url)
+        public async Task CloneAsync(Uri host, Repo repo)
         {
-            string fullURL = $"{host.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{host.Host}{host.PathAndQuery}{url}";
-            CMDProcess cmdProcess = new CMDProcess("CLONE", repo, $"hg clone {fullURL} \"{RunLocation}\\{repo}\" {debugArg}");
+            string fullURL = $"{host.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{host.Host}{host.PathAndQuery}{repo.URL}";
+            CMDProcess cmdProcess = new CMDProcess("CLONE", repo.Name, $"hg clone {fullURL} \"{RunLocation}\\{repo.Name}\" {debugArg}");
 
             try
             {

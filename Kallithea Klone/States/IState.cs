@@ -28,6 +28,6 @@ namespace Kallithea_Klone.States
         ICollection<Control> OnSearchCleared(string searchTerm);
         ICollection<Control> OnSearch(string searchTerm);
         
-        Task OnMainActionAsync(List<string> urls);
+        Task OnMainActionAsync(List<Repo> urls);
     }
 }

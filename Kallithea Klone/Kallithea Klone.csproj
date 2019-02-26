@@ -116,6 +116,7 @@
     <Compile Include="Other Classes\Logger.cs" />
     <Compile Include="Other Classes\MainWindowStartProperties.cs" />
     <Compile Include="ContextMenu\MenuParent.cs" />
+    <Compile Include="Other Classes\Repo.cs" />
     <Compile Include="States\Action States\CloneState.cs" />
     <Compile Include="Github API\GithubRelease.cs" />
     <Compile Include="Other Classes\IniFile.cs" />
