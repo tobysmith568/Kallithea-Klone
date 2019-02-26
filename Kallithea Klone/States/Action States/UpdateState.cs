@@ -44,18 +44,17 @@ namespace Kallithea_Klone.States
             };
         }
         
-        public override async Task OnMainActionAsync(List<string> urls)
+        public override async Task OnMainActionAsync(List<Repo> repos)
         {
-            foreach (string url in urls)
+            foreach (Repo repo in repos)
             {
-                string repo = Path.GetFileName(url);
                 try
                 {
-                    await Update(repo, url);
+                    await Update(repo);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {repo}:\n" + e.Message, $"Error {Verb} {repo}", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {repo.Name}:\n" + e.Message, $"Error {Verb} {repo.Name}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -63,16 +62,16 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        private async Task Update(string repo, string url)
+        private async Task Update(Repo repo)
         {
-            string remotePath = GetDefaultRemotePath(url);
+            string remotePath = GetDefaultRemotePath(repo.URL);
             Uri uri = new Uri(remotePath);
 
             string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
             string shelfName = DateTime.Now.ToString(dateTimeFormat);
-            CMDProcess cmdProcess = new CMDProcess("UPDATE", repo, new string[]
+            CMDProcess cmdProcess = new CMDProcess("UPDATE", repo.Name, new string[]
             {
-                    $"cd /d {url}" +
+                    $"cd /d {repo.URL}" +
                     $"hg --config \"extensions.shelve = \" shelve --name {shelfName} {debugArg}" +
                     $"hg pull {fullURL} {debugArg}" +
                     $"hg update -m {debugArg}" +

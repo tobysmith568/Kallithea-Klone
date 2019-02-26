@@ -41,7 +41,7 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public Task OnMainActionAsync(List<string> urls)
+        public Task OnMainActionAsync(List<Repo> urls)
         {
             throw new InvalidOperationException();
         }

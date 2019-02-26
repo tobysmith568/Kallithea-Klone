@@ -27,7 +27,7 @@ namespace Kallithea_Klone
 
         public static MainWindow singleton = null;
 
-        public static List<string> CheckedURLs = new List<string>();
+        public static List<Repo> CheckedURLs = new List<Repo>();
 
         private IState state;
 
@@ -133,14 +133,20 @@ namespace Kallithea_Klone
 
         public void NewItem_Unchecked(object sender, RoutedEventArgs e)
         {
-            CheckedURLs.Remove(((Control)sender).Tag.ToString());
-            SelectionUpdated();
+            if (((Control)sender).Tag is Repo repo)
+            {
+                CheckedURLs.Remove(repo);
+                SelectionUpdated();
+            }
         }
 
         public void NewItem_Checked(object sender, RoutedEventArgs e)
         {
-            CheckedURLs.Add(((Control)sender).Tag.ToString());
-            SelectionUpdated();
+            if (((Control)sender).Tag is Repo repo)
+            {
+                CheckedURLs.Add(repo);
+                SelectionUpdated();
+            }
         }
 
         //  Methods
