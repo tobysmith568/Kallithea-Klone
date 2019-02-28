@@ -29,7 +29,7 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public ICollection<Control> OnLoadRepositories()
+        public ICollection<Location> OnLoadRepositories()
         {
             throw new InvalidOperationException();
         }
@@ -41,25 +41,13 @@ namespace Kallithea_Klone.States
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public Task OnMainActionAsync(List<Repo> urls)
+        public Task OnMainActionAsync(List<Location> urls)
         {
             throw new InvalidOperationException();
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public Task<ICollection<Control>> OnReloadAsync()
-        {
-            throw new InvalidOperationException();
-        }
-
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public ICollection<Control> OnSearch(string searchTerm)
-        {
-            throw new InvalidOperationException();
-        }
-
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        public ICollection<Control> OnSearchCleared(string searchTerm)
+        public Task<ICollection<Location>> OnReloadAsync()
         {
             throw new InvalidOperationException();
         }

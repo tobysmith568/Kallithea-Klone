@@ -35,17 +35,17 @@ namespace Kallithea_Klone.States
             };
         }
         
-        public override async Task OnMainActionAsync(List<Repo> repos)
+        public override async Task OnMainActionAsync(List<Location> locations)
         {
-            foreach (Repo repo in repos)
+            foreach (Location location in locations)
             {
                 try
                 {
-                    await Revert(repo);
+                    await Revert(location);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {repo.Name}:\n" + e.Message, $"Error {Verb} {repo.Name}", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {location.Name}:\n" + e.Message, $"Error {Verb} {location.Name}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -54,11 +54,11 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        private async Task Revert(Repo repo)
+        private async Task Revert(Location location)
         {
-            CMDProcess cmdProcess = new CMDProcess("REVERT", repo.Name, new string[]
+            CMDProcess cmdProcess = new CMDProcess("REVERT", location.Name, new string[]
             {
-                    $"cd /d {repo.URL}",
+                    $"cd /d {location.URL}",
                     $"hg revert --all {debugArg}",
                     $"hg --config \"extensions.purge = \" purge --all {debugArg}"
             });

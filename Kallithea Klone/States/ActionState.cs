@@ -37,17 +37,13 @@ namespace Kallithea_Klone.States
         //  ======================
 
         /// <exception cref="InvalidOperationException"></exception>
-        public abstract ICollection<Control> OnLoadRepositories();
+        public abstract ICollection<Location> OnLoadRepositories();
 
         public abstract MainWindowStartProperties OnLoaded();
         
-        public abstract Task OnMainActionAsync(List<Repo> urls);
+        public abstract Task OnMainActionAsync(List<Location> locations);
 
-        public abstract Task<ICollection<Control>> OnReloadAsync();
-
-        public abstract ICollection<Control> OnSearch(string searchTerm);
-
-        public abstract ICollection<Control> OnSearchCleared(string searchTerm);
+        public abstract Task<ICollection<Location>> OnReloadAsync();
 
         //  Implemented State Methods
         //  =========================
@@ -110,124 +106,17 @@ namespace Kallithea_Klone.States
                 throw new MainActionException("Unable to find the default remote location in the hmrc file", e);
             }
         }
-        
-        public ICollection<Control> LoadRepositoryTree(ICollection<string> repositories)
+
+        protected ICollection<Location> CreateLocations(string[] urls)
         {
-            Location baseLocation = new Location("Base Location");
+            List<Location> results = new List<Location>();
 
-            foreach (string location in repositories)
+            foreach (string url in urls)
             {
-                Location current = baseLocation;
-
-                foreach (string part in location.Split('/'))
-                {
-                    current = GetOrCreateChild(current, part);
-                }
-            }
-
-            SortChildren(baseLocation);
-
-            ICollection<Control> results = new List<Control>();
-            foreach (Location location in baseLocation.InnerLocations)
-            {
-                results.Add(CreateTreeControl(location));
+                results.Add(new Location(url));
             }
 
             return results;
-        }
-
-        public ICollection<Control> LoadRepositoryList(List<string> repositories)
-        {
-            ICollection<Control> results = new List<Control>();
-
-            foreach (string location in repositories)
-            {
-                Repo repo = new Repo
-                {
-                    Name = Path.GetFileName(location),
-                    URL = location
-                };
-                results.Add(CreateCheckBox(repo));
-            }
-
-            return results;
-        }
-
-        private void SortChildren(Location location)
-        {
-            foreach (Location subLocation in location.InnerLocations)
-            {
-                SortChildren(subLocation);
-            }
-
-            location.InnerLocations = location.InnerLocations.OrderBy(l => l.InnerLocations.Count == 0 ? 1 : 0).ThenBy(l => l.Name).ToList();
-        }
-
-        private Location GetOrCreateChild(Location current, string location)
-        {
-            if (current.InnerLocations.Count(l => l.Name == location) > 0)
-            {
-                return current.InnerLocations.FirstOrDefault(l => l.Name == location);
-            }
-            else
-            {
-                Location inner = new Location
-                {
-                    Name = location
-                };
-                current.InnerLocations.Add(inner);
-                return inner;
-            }
-        }
-        
-        private Control CreateTreeControl(Location location, TreeViewItem parent = null)
-        {
-            Repo repo = new Repo
-            {
-                Name = location.Name,
-                URL = (parent == null) ? location.Name : (parent.Tag as Repo).URL + "/" + location.Name
-            };
-
-            if (location.InnerLocations.Count == 0)
-            {
-                return CreateCheckBox(repo);
-            }
-            else
-            {
-                return CreateTreeViewItem(repo, location.InnerLocations, parent);
-            }
-        }
-        
-        private CheckBox CreateCheckBox(Repo repo)
-        {
-            CheckBox newCheckbox = new CheckBox
-            {
-                Content = repo.Name,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                Tag = repo,
-                IsChecked = MainWindow.CheckedURLs.Select(u => u.URL).Contains(repo.URL)
-            };
-            newCheckbox.Checked += MainWindow.singleton.NewItem_Checked;
-            newCheckbox.Unchecked += MainWindow.singleton.NewItem_Unchecked;
-
-            return newCheckbox;
-        }
-
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private Control CreateTreeViewItem(Repo repo, List<Location> innerLocations, TreeViewItem parent)
-        {
-            TreeViewItem newTreeItem = new TreeViewItem
-            {
-                Header = repo.Name,
-                Tag = repo
-            };
-
-            foreach (Location subLocation in innerLocations)
-            {
-                newTreeItem.Items.Add(CreateTreeControl(subLocation, newTreeItem));
-            }
-
-            return newTreeItem;
         }
     }
 }

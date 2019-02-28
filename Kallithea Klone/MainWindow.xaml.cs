@@ -14,6 +14,7 @@ using Kallithea_Klone.States;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Account_Settings;
 using Kallithea_Klone.Github_API;
+using System.IO;
 
 namespace Kallithea_Klone
 {
@@ -27,9 +28,26 @@ namespace Kallithea_Klone
 
         public static MainWindow singleton = null;
 
-        public static List<Repo> CheckedURLs = new List<Repo>();
-
         private IState state;
+
+        private static readonly char[] urlSplitChars = new char[]
+        {
+                Path.DirectorySeparatorChar,
+                Path.AltDirectorySeparatorChar
+        };
+
+        //  Properties
+        //  ==========
+
+        public ICollection<Location> Locations { get; set; }
+
+        public List<Location> CheckedURLs
+        {
+            get
+            {
+                return Locations.Where(l => l.IsChecked).ToList();
+            }
+        }
 
         //  Constructors
         //  ============
@@ -46,7 +64,9 @@ namespace Kallithea_Klone
 
             InitializeComponent();
 
-            MainTree.ItemsSource = state.OnLoadRepositories();
+            Locations = state.OnLoadRepositories();
+
+            LoadRepositoryTree();
         }
 
         //  Events
@@ -117,7 +137,7 @@ namespace Kallithea_Klone
         {
             if (TbxSearch.Text.Length == 0)
             {
-                MainTree.ItemsSource = state.OnSearchCleared(TbxSearch.Text);
+                LoadRepositoryTree();
                 SetEmpty();
             }
         }
@@ -126,25 +146,25 @@ namespace Kallithea_Klone
         {
             if (e.Key == Key.Return && TbxSearch.Text.Length >= 3)
             {
-                MainTree.ItemsSource = state.OnSearch(TbxSearch.Text);
+                LoadRepositoryList(TbxSearch.Text);
                 SetEmpty();
             }
         }
 
         public void NewItem_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (((Control)sender).Tag is Repo repo)
+            if (((Control)sender).Tag is Location location)
             {
-                CheckedURLs.Remove(repo);
+                location.IsChecked = !location.IsChecked;
                 SelectionUpdated();
             }
         }
 
         public void NewItem_Checked(object sender, RoutedEventArgs e)
         {
-            if (((Control)sender).Tag is Repo repo)
+            if (((Control)sender).Tag is Location location)
             {
-                CheckedURLs.Add(repo);
+                location.IsChecked = !location.IsChecked;
                 SelectionUpdated();
             }
         }
@@ -349,6 +369,105 @@ namespace Kallithea_Klone
         public void SetEmpty()
         {
             NoResults.Visibility = MainTree.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        public void LoadRepositoryTree(string searchTerm = null)
+        {
+            IEnumerable<Location> locations = Locations;
+
+            if (searchTerm != null)
+            {
+                foreach (string term in searchTerm.ToLower().Split(' '))
+                {
+                    locations = locations.Where(r => r.URL.ToLower().Contains(term));
+                }
+            }
+
+            TreeViewItem baseItem = new TreeViewItem
+            {
+                Header = "Base Item"
+            };
+
+            //TODO
+
+            MainTree.ItemsSource = baseItem.Items;
+        }
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        public void LoadRepositoryList(string searchTerm = null)
+        {
+            IEnumerable<Location> locations = Locations;
+
+            if (searchTerm != null)
+            {
+                foreach (string term in searchTerm.ToLower().Split(' '))
+                {
+                    locations = locations.Where(r => r.URL.ToLower().Contains(term));
+                }
+            }
+
+            TreeViewItem baseItem = new TreeViewItem();
+
+            foreach (Location repository in locations)
+            {
+                baseItem.Items.Add(CreateCheckBox(repository, baseItem));
+            }
+
+            MainTree.ItemsSource = baseItem.Items;
+        }
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        private TreeViewItem GetOrCreateTreeViewItemChild(string name, TreeViewItem parent)
+        {
+            if (parent != null)
+            {
+                foreach (TreeViewItem control in parent.Items.OfType<TreeViewItem>())
+                {
+                    if (control.Header.ToString() == name)
+                    {
+                        return control;
+                    }
+                }
+            }
+
+            return CreateTreeViewItem(name, parent);
+        }
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        private CheckBox CreateCheckBox(Location location, TreeViewItem parent)
+        {
+            CheckBox newCheckbox = new CheckBox
+            {
+                Content = location.Name,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                Tag = location,
+                IsChecked = location.IsChecked
+            };
+            newCheckbox.Checked += NewItem_Checked;
+            newCheckbox.Unchecked += NewItem_Unchecked;
+
+            if (parent != null)
+            {
+                parent.Items.Add(newCheckbox);
+            }
+
+            return newCheckbox;
+        }
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        private TreeViewItem CreateTreeViewItem(string name, TreeViewItem parent)
+        {
+            TreeViewItem newTreeItem = new TreeViewItem
+            {
+                Header = name
+            };
+
+            if (parent != null)
+            {
+                parent.Items.Add(newTreeItem);
+            }
+
+            return newTreeItem;
         }
     }
 }

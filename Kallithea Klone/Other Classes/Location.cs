@@ -1,26 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Kallithea_Klone.Other_Classes
 {
     public class Location
     {
-        //  Variables
-        //  =========
+        //  Properties
+        //  ==========
 
-        public string Name { get; set; }
-
-        public List<Location> InnerLocations { get; set; }
-
-        public List<string> Repositories { get; set; }
+        public string Name
+        {
+            get
+            {
+                return Path.GetFileName(URL);
+            }
+        }
+        public string URL { get; }
+        public bool IsChecked { get; set; }
 
         //  Constructors
         //  ============
 
-        public Location(string name = null)
+        public Location(string url)
+        {            
+            if (!Uri.IsWellFormedUriString(url ?? "", UriKind.RelativeOrAbsolute))
+            {
+                throw new ArgumentException("url is not a well-formed URL");
+            }
+
+            URL = url;
+        }
+
+        //  Overrides
+        //  =========
+
+        public override string ToString()
         {
-            Name = name ?? "";
-            InnerLocations = new List<Location>();
-            Repositories = new List<string>();
+            return Name.ToString();
         }
     }
 }

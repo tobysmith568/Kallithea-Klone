@@ -39,17 +39,17 @@ namespace Kallithea_Klone.States
             };
         }
 
-        public override async Task OnMainActionAsync(List<Repo> repos)
+        public override async Task OnMainActionAsync(List<Location> locations)
         {
-            foreach (Repo repo in repos)
+            foreach (Location location in locations)
             {
                 try
                 {
-                    await ReClone(repo);
+                    await ReClone(location);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {repo.Name}:\n" + e.Message, $"Error {Verb} {repo.Name}", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error {Verb} {location.Name}:\n" + e.Message, $"Error {Verb} {location.Name}", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -58,25 +58,25 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        private async Task ReClone(Repo repo)
+        private async Task ReClone(Location location)
         {
-            string remotePath = GetDefaultRemotePath(repo.URL);
+            string remotePath = GetDefaultRemotePath(location.URL);
             Uri uri = new Uri(remotePath);
 
             string fullURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{uri.Host}{uri.PathAndQuery}";
 
             try
             {
-                ClearOutRepository(repo.Name);
+                ClearOutRepository(location.Name);
             }
             catch (Exception e)
             {
                 throw new MainActionException($"Unable to properly delete the original repository, it is now probably half deleted.", e);
             }
 
-            CMDProcess cmdProcess = new CMDProcess("RE-CLONE", repo.Name, new string[]
+            CMDProcess cmdProcess = new CMDProcess("RE-CLONE", location.Name, new string[]
             {
-                    $"cd /d \"{repo.URL}\"",
+                    $"cd /d \"{location.URL}\"",
                     $"hg init {debugArg}",
                     $"hg pull {fullURL} {debugArg}",
                     $"hg update {debugArg}"
@@ -94,7 +94,7 @@ namespace Kallithea_Klone.States
             cmdProcess.ReportErrorsAsync(Verb);
 
             string passwordSafeURL = $"{uri.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}@{uri.Host}{uri.PathAndQuery}";
-            SetDefaultLocation(repo.URL, passwordSafeURL);
+            SetDefaultLocation(location.URL, passwordSafeURL);
         }
 
         /// <exception cref="UnauthorizedAccessException"></exception>

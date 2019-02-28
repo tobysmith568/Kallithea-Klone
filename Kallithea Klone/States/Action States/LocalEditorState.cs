@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kallithea_Klone.Other_Classes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,28 +23,13 @@ namespace Kallithea_Klone.States
         //  =========================
 
         /// <exception cref="InvalidOperationException"></exception>
-        public override ICollection<Control> OnLoadRepositories()
+        public override ICollection<Location> OnLoadRepositories()
         {
-            return LoadRepositoryTree(GetLocalRepositories(RunLocation));
-        }
-
-        public override ICollection<Control> OnSearch(string searchTerm)
-        {
-            IEnumerable<string> repositories = GetLocalRepositories(RunLocation);
-            foreach (string term in searchTerm.ToLower().Split(' '))
-            {
-                repositories = repositories.Where(r => r.ToLower().Contains(term));
-            }
-            return LoadRepositoryList(repositories.ToList());
-        }
-
-        public override ICollection<Control> OnSearchCleared(string searchTerm)
-        {
-            return LoadRepositoryTree(GetLocalRepositories(RunLocation));
+            return CreateLocations(GetLocalRepositories(RunLocation));
         }
 
         /// <exception cref="NotImplementedException">Ignore.</exception>
-        public override Task<ICollection<Control>> OnReloadAsync()
+        public override Task<ICollection<Location>> OnReloadAsync()
         {
             throw new NotImplementedException("Invalid Button Press!");
         }
@@ -51,7 +37,7 @@ namespace Kallithea_Klone.States
         //  Other Methods
         //  =============
 
-        protected ICollection<string> GetLocalRepositories(string runLocation)
+        private string[] GetLocalRepositories(string runLocation)
         {
             ICollection<string> foundRepositories = new List<string>();
 
@@ -59,7 +45,7 @@ namespace Kallithea_Klone.States
             {
                 if (IsRepo(runLocation))
                 {
-                    return new List<string> { runLocation };
+                    return new string[] { runLocation };
                 }
 
                 foreach (string folder in Directory.GetDirectories(runLocation))
@@ -76,7 +62,7 @@ namespace Kallithea_Klone.States
                     "Error reading disk!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            return foundRepositories;
+            return foundRepositories.ToArray();
         }
 
         /// <exception cref="UnauthorizedAccessException"></exception>
