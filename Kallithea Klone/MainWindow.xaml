@@ -128,7 +128,7 @@
 
             <DockPanel Margin="0,10,0,0" Grid.Row="1" Grid.ColumnSpan="2" >
                 <ProgressBar x:Name="PbProgress" Height="16" Value="0" DockPanel.Dock="Bottom" Visibility="Collapsed"/>
-                <TreeView x:Name="MainTree" FontSize="18" Background="Transparent" BorderBrush="Black" Margin="0" BorderThickness="0,0,0,1" />
+                <TreeView x:Name="MainTree" FontSize="18" Background="Transparent" BorderBrush="Black" Margin="0" BorderThickness="0,0,0,1"/>
             </DockPanel>
 
             <!-- Footer -->

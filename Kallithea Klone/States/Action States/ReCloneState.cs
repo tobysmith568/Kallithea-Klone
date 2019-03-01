@@ -39,9 +39,9 @@ namespace Kallithea_Klone.States
             };
         }
 
-        public override async Task OnMainActionAsync(List<Location> locations)
+        public override async Task OnMainActionAsync(ICollection<RepositoryData> locations)
         {
-            foreach (Location location in locations)
+            foreach (RepositoryData location in locations)
             {
                 try
                 {
@@ -58,7 +58,7 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        private async Task ReClone(Location location)
+        private async Task ReClone(RepositoryData location)
         {
             string remotePath = GetDefaultRemotePath(location.URL);
             Uri uri = new Uri(remotePath);

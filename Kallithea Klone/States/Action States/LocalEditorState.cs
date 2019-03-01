@@ -23,13 +23,13 @@ namespace Kallithea_Klone.States
         //  =========================
 
         /// <exception cref="InvalidOperationException"></exception>
-        public override ICollection<Location> OnLoadRepositories()
+        public override ICollection<string> OnLoadRepositories()
         {
-            return CreateLocations(GetLocalRepositories(RunLocation));
+            return GetLocalRepositories(RunLocation);
         }
 
         /// <exception cref="NotImplementedException">Ignore.</exception>
-        public override Task<ICollection<Location>> OnReloadAsync()
+        public override Task<ICollection<string>> OnReloadAsync()
         {
             throw new NotImplementedException("Invalid Button Press!");
         }

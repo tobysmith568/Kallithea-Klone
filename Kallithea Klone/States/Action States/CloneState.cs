@@ -37,7 +37,7 @@ namespace Kallithea_Klone.States
         //  State Methods
         //  =============
 
-        public override ICollection<Location> OnLoadRepositories()
+        public override ICollection<string> OnLoadRepositories()
         {
             try
             {
@@ -47,16 +47,16 @@ namespace Kallithea_Klone.States
                 if (!File.Exists(allReposFile))
                 {
                     File.WriteAllText(allReposFile, "");
-                    return CreateLocations(new string[0]);
+                    return new string[0];
                 }
                 else
                 {
-                    return CreateLocations(File.ReadAllLines(allReposFile));
+                    return File.ReadAllLines(allReposFile);
                 }
             }
             catch
             {
-                return CreateLocations(new string[0]);
+                return new string[0];
             }
         }
 
@@ -65,25 +65,25 @@ namespace Kallithea_Klone.States
             return null;
         }
 
-        public override async Task OnMainActionAsync(List<Location> locations)
+        public override async Task OnMainActionAsync(ICollection<RepositoryData> repositories)
         {
             Uri host = new Uri(AccountSettings.Host);
 
-            foreach (Location location in locations)
+            foreach (RepositoryData repository in repositories)
             {
                 try
                 {
-                    await CloneAsync(host, location);
+                    await CloneAsync(host, repository);
                 }
                 catch (MainActionException e)
                 {
-                    MessageBox.Show($"Error {Verb} {location.Name}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(location.URL)}",
+                    MessageBox.Show($"Error {Verb} {repository.Name}:\n" + e.Message, $"Error {Verb} {Path.GetFileName(repository.URL)}",
                         MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 }
             }
         }
 
-        public override async Task<ICollection<Location>> OnReloadAsync()
+        public override async Task<ICollection<string>> OnReloadAsync()
         {
             return await DownloadRepositories();
         }
@@ -92,7 +92,7 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        public async Task CloneAsync(Uri host, Location location)
+        public async Task CloneAsync(Uri host, RepositoryData location)
         {
             string fullURL = $"{host.Scheme}://{HttpUtility.UrlEncode(AccountSettings.Username)}:{HttpUtility.UrlEncode(AccountSettings.Password)}@{host.Host}{host.PathAndQuery}{location.URL}";
             CMDProcess cmdProcess = new CMDProcess("CLONE", location.Name, $"hg clone {fullURL} \"{RunLocation}\\{location.Name}\" {debugArg}");
@@ -109,7 +109,7 @@ namespace Kallithea_Klone.States
             cmdProcess.ReportErrorsAsync(Verb);
         }
 
-        public async Task<ICollection<Location>> DownloadRepositories()
+        public async Task<ICollection<string>> DownloadRepositories()
         {
             RestClient client = new RestClient($"{AccountSettings.Host}/_admin/api");
             RestRequest request = new RestRequest(Method.POST);
@@ -136,7 +136,7 @@ namespace Kallithea_Klone.States
                             File.WriteAllLines(allReposFile, repos.Select(r => r.URL).ToArray());
                         }
 
-                        return CreateLocations(repos.Select(r => r.URL).ToArray());
+                        return repos.Select(r => r.URL).ToArray();
                     case ResponseStatus.TimedOut:
                         MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
                         return null;

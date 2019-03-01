@@ -18,13 +18,13 @@ namespace Kallithea_Klone.States
 
         void InitialActions(string[] args);
         /// <exception cref="InvalidOperationException"></exception>
-        ICollection<Location> OnLoadRepositories();
+        ICollection<string> OnLoadRepositories();
         MainWindowStartProperties OnLoaded();
         void OnLoseFocus(bool completingMainAction);
 
         void OnSettings();
-        Task<ICollection<Location>> OnReloadAsync();
+        Task<ICollection<string>> OnReloadAsync();
         
-        Task OnMainActionAsync(List<Location> locations);
+        Task OnMainActionAsync(ICollection<RepositoryData> locations);
     }
 }

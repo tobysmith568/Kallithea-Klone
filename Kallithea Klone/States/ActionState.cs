@@ -37,13 +37,13 @@ namespace Kallithea_Klone.States
         //  ======================
 
         /// <exception cref="InvalidOperationException"></exception>
-        public abstract ICollection<Location> OnLoadRepositories();
+        public abstract ICollection<string> OnLoadRepositories();
 
         public abstract MainWindowStartProperties OnLoaded();
         
-        public abstract Task OnMainActionAsync(List<Location> locations);
+        public abstract Task OnMainActionAsync(ICollection<RepositoryData> locations);
 
-        public abstract Task<ICollection<Location>> OnReloadAsync();
+        public abstract Task<ICollection<string>> OnReloadAsync();
 
         //  Implemented State Methods
         //  =========================
@@ -105,18 +105,6 @@ namespace Kallithea_Klone.States
             {
                 throw new MainActionException("Unable to find the default remote location in the hmrc file", e);
             }
-        }
-
-        protected ICollection<Location> CreateLocations(string[] urls)
-        {
-            List<Location> results = new List<Location>();
-
-            foreach (string url in urls)
-            {
-                results.Add(new Location(url));
-            }
-
-            return results;
         }
     }
 }

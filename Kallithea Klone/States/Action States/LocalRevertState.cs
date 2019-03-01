@@ -35,9 +35,9 @@ namespace Kallithea_Klone.States
             };
         }
         
-        public override async Task OnMainActionAsync(List<Location> locations)
+        public override async Task OnMainActionAsync(ICollection<RepositoryData> locations)
         {
-            foreach (Location location in locations)
+            foreach (RepositoryData location in locations)
             {
                 try
                 {
@@ -54,7 +54,7 @@ namespace Kallithea_Klone.States
         //  =============
 
         /// <exception cref="Kallithea_Klone.MainActionException"></exception>
-        private async Task Revert(Location location)
+        private async Task Revert(RepositoryData location)
         {
             CMDProcess cmdProcess = new CMDProcess("REVERT", location.Name, new string[]
             {
