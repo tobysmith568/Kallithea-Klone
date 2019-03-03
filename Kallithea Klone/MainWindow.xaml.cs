@@ -92,7 +92,7 @@ namespace Kallithea_Klone
                     currentNode = GetOrAddFolder(parts[i], currentNode);
                 }
 
-                LocationList.Add(CreateRepo(parts[parts.Length - 1], url, currentNode));
+                LocationList.Add(AddRepository(parts[parts.Length - 1], url, currentNode));
             }
 
             ShowTree();
@@ -412,7 +412,7 @@ namespace Kallithea_Klone
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private CheckBox CreateRepo(string name, string url, TreeViewItem parent)
+        private CheckBox AddRepository(string name, string url, TreeViewItem parent)
         {
             CheckBox result = new CheckBox
             {
