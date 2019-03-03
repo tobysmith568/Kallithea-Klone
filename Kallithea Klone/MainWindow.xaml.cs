@@ -1,4 +1,4 @@
-﻿using RestSharp;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -164,7 +164,12 @@ namespace Kallithea_Klone
 
         private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (TbxSearch.Text.Length == 0)
+            if (TbxSearch.Text.Length >= 3)
+            {
+                ShowList(TbxSearch.Text);
+                SetEmpty();
+            }
+            else if (TbxSearch.Text.Length == 0)
             {
                 ShowTree();
                 SetEmpty();
@@ -175,7 +180,7 @@ namespace Kallithea_Klone
         {
             if (e.Key == Key.Return && TbxSearch.Text.Length >= 3)
             {
-                ShowList();
+                ShowList(TbxSearch.Text);
                 SetEmpty();
             }
         }
@@ -369,14 +374,24 @@ namespace Kallithea_Klone
             return result;
         }
 
-        private void ShowTree()
+        private void ShowTree(string searchTerm = null)
         {
             MainTree.ItemsSource = LocationTree.Items;
         }
 
-        private void ShowList()
+        private void ShowList(string searchTerm = null)
         {
-            MainTree.ItemsSource = LocationList;
+            IEnumerable<CheckBox> results = LocationList;
+
+            if (searchTerm != null)
+            {
+                foreach (string word in searchTerm.Split(' '))
+                {
+                    results = results.Where(c => (c.Tag as RepositoryData).URL.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0);
+                }
+            }
+
+            MainTree.ItemsSource = results;
         }
     }
 }
