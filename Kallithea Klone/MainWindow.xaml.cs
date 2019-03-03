@@ -1,4 +1,4 @@
-using RestSharp;
+﻿using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,23 +77,7 @@ namespace Kallithea_Klone
 
             InitializeComponent();
 
-            ICollection<string> repositories = state.OnLoadRepositories();
-
-            foreach (string url in repositories)
-            {
-                string[] parts = url.Split(urlSplitChars, StringSplitOptions.RemoveEmptyEntries);
-
-                if (parts.Length == 0)
-                    return;
-
-                TreeViewItem currentNode = LocationTree;
-                for (int i = 0; i < parts.Length - 1; i++)
-                {
-                    currentNode = GetOrAddFolder(parts[i], currentNode);
-                }
-
-                LocationList.Add(AddRepository(parts[parts.Length - 1], url, currentNode));
-            }
+            LoadRepositories(state.OnLoadRepositories());
 
             ShowTree();
         }
@@ -331,6 +315,27 @@ namespace Kallithea_Klone
         public void SetEmpty()
         {
             NoResults.Visibility = MainTree.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void LoadRepositories(ICollection<string> collection)
+        {
+            foreach (string url in state.OnLoadRepositories())
+            {
+                string[] parts = url.Split(urlSplitChars, StringSplitOptions.RemoveEmptyEntries);
+
+                if (parts.Length == 0)
+                    return;
+
+                TreeViewItem currentNode = LocationTree;
+                for (int i = 0; i < parts.Length - 1; i++)
+                {
+                    currentNode = GetOrAddFolder(parts[i], currentNode);
+                }
+
+                LocationList.Add(AddRepository(parts[parts.Length - 1], url, currentNode));
+            }
+
+            LocationList.Sort((c1, c2) => c1.Content.ToString().CompareTo(c2.Content.ToString()));
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
