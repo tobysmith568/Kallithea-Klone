@@ -33,8 +33,8 @@ namespace Kallithea_Klone
 
         private static readonly char[] urlSplitChars = new char[]
         {
-                Path.DirectorySeparatorChar,
-                Path.AltDirectorySeparatorChar
+            Path.DirectorySeparatorChar,
+            Path.AltDirectorySeparatorChar
         };
 
         //  Properties
@@ -72,9 +72,9 @@ namespace Kallithea_Klone
 
             this.state = state;
 
-            InitializeComponent();
-
             LoadRepositories(state.OnLoadRepositories());
+
+            InitializeComponent();
 
             ShowTree();
         }
@@ -122,6 +122,7 @@ namespace Kallithea_Klone
                 DragMove();
         }
 
+        /// <exception cref="InvalidOperationException"></exception>
         private async void BtnReload_Click(object sender, RoutedEventArgs e)
         {
             if (AccountSettings.VerifySettings())
@@ -130,7 +131,7 @@ namespace Kallithea_Klone
                 PbProgress.IsIndeterminate = true;
                 BtnReload.IsEnabled = false;
 
-                MainTree.ItemsSource = await state.OnReloadAsync();
+                LoadRepositories(await state.OnReloadAsync());
 
                 PbProgress.Visibility = Visibility.Collapsed;
                 PbProgress.IsIndeterminate = false;
