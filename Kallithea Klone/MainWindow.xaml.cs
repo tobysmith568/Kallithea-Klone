@@ -309,6 +309,7 @@ namespace Kallithea_Klone
             NoResults.Visibility = MainTree.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
+        /// <exception cref="InvalidOperationException"></exception>
         private void LoadRepositories(ICollection<string> collection)
         {
             foreach (string url in state.OnLoadRepositories())
@@ -321,38 +322,13 @@ namespace Kallithea_Klone
                 RepositoryFolder currentNode = LocationTree;
                 for (int i = 0; i < parts.Length - 1; i++)
                 {
-                    currentNode = GetOrAddFolder(parts[i], currentNode);
+                    currentNode = currentNode.GetOrAddChildFolder(parts[i]);
                 }
 
-                LocationList.Add(AddRepository(parts[parts.Length - 1], url, currentNode));
+                LocationList.Add(currentNode.AddChildRepository(parts[parts.Length - 1], url, NewItem_Checked));
             }
 
             LocationList.Sort((c1, c2) => c1.Content.ToString().CompareTo(c2.Content.ToString()));
-        }
-
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private RepositoryFolder GetOrAddFolder(string name, RepositoryFolder parent)
-        {
-            RepositoryFolder result = parent.Items.OfType<RepositoryFolder>().FirstOrDefault(c => c.Header.ToString() == name);
-
-            if (result == null)
-            {
-                result = new RepositoryFolder(name);
-
-                parent.Items.Add(result);
-            }
-
-            return result;
-        }
-
-        /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private Repository AddRepository(string name, string url, RepositoryFolder parent)
-        {
-            Repository result = new Repository(name, url, NewItem_Checked);
-
-            parent.Items.Add(result);
-
-            return result;
         }
 
         private void ShowTree(string searchTerm = null)
