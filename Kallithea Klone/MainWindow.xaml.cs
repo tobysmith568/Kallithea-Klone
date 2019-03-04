@@ -15,6 +15,7 @@ using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Account_Settings;
 using Kallithea_Klone.Github_API;
 using System.IO;
+using Kallithea_Klone.WPF_Controls;
 
 namespace Kallithea_Klone
 {
@@ -40,22 +41,18 @@ namespace Kallithea_Klone
         //  ==========
 
         public TreeViewItem LocationTree { get; } = new TreeViewItem();
-        public List<CheckBox> LocationList { get; } = new List<CheckBox>();
+        public List<Repository> LocationList { get; } = new List<Repository>();
 
         public ICollection<RepositoryData> CheckedURLs
         {
             get
             {
                 List<RepositoryData> result = new List<RepositoryData>();
-                foreach (CheckBox checkBox in LocationList)
+                foreach (Repository checkBox in LocationList)
                 {
                     if (checkBox.IsChecked == true)
                     {
-                        result.Add(new RepositoryData
-                        {
-                            Name = checkBox.Content.ToString(),
-                            URL = checkBox.Tag.ToString()
-                        });
+                        result.Add(checkBox);
                     }
                 }
                 return result;
@@ -167,11 +164,6 @@ namespace Kallithea_Klone
                 ShowList(TbxSearch.Text);
                 SetEmpty();
             }
-        }
-
-        public void NewItem_Unchecked(object sender, RoutedEventArgs e)
-        {
-            SelectionUpdated();
         }
 
         public void NewItem_Checked(object sender, RoutedEventArgs e)
@@ -358,21 +350,9 @@ namespace Kallithea_Klone
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private CheckBox AddRepository(string name, string url, TreeViewItem parent)
+        private Repository AddRepository(string name, string url, TreeViewItem parent)
         {
-            CheckBox result = new CheckBox
-            {
-                Content = name,
-                Tag = new RepositoryData
-                {
-                    Name = name,
-                    URL = url,
-                },
-                VerticalContentAlignment = VerticalAlignment.Center,
-                FontSize = 18
-            };
-            result.Checked += NewItem_Checked;
-            result.Unchecked += NewItem_Unchecked;
+            Repository result = new Repository(name, url, NewItem_Checked);
 
             parent.Items.Add(result);
 
@@ -386,13 +366,13 @@ namespace Kallithea_Klone
 
         private void ShowList(string searchTerm = null)
         {
-            IEnumerable<CheckBox> results = LocationList;
+            IEnumerable<Repository> results = LocationList;
 
             if (searchTerm != null)
             {
                 foreach (string word in searchTerm.Split(' '))
                 {
-                    results = results.Where(c => (c.Tag as RepositoryData).URL.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0);
+                    results = results.Where(c => c.RepoURL.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0);
                 }
             }
 
