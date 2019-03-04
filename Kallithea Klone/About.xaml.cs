@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Navigation;
@@ -24,7 +25,15 @@ namespace Kallithea_Klone
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            try
+            {
+                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show($"Unable to open URL: {e.Uri.AbsoluteUri}", "Error opening link", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
             e.Handled = true;
         }
 
