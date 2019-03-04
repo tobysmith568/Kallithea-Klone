@@ -148,6 +148,7 @@
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="WPF Controls\Repository.cs" />
+    <Compile Include="WPF Controls\RepositoryFolder.cs" />
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

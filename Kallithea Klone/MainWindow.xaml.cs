@@ -40,7 +40,7 @@ namespace Kallithea_Klone
         //  Properties
         //  ==========
 
-        public TreeViewItem LocationTree { get; } = new TreeViewItem();
+        public RepositoryFolder LocationTree { get; } = new RepositoryFolder("Base Folder");
         public List<Repository> LocationList { get; } = new List<Repository>();
 
         public ICollection<RepositoryData> CheckedURLs
@@ -318,7 +318,7 @@ namespace Kallithea_Klone
                 if (parts.Length == 0)
                     return;
 
-                TreeViewItem currentNode = LocationTree;
+                RepositoryFolder currentNode = LocationTree;
                 for (int i = 0; i < parts.Length - 1; i++)
                 {
                     currentNode = GetOrAddFolder(parts[i], currentNode);
@@ -331,17 +331,13 @@ namespace Kallithea_Klone
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private TreeViewItem GetOrAddFolder(string name, TreeViewItem parent)
+        private RepositoryFolder GetOrAddFolder(string name, RepositoryFolder parent)
         {
-            TreeViewItem result = parent.Items.OfType<TreeViewItem>().FirstOrDefault(c => c.Header.ToString() == name);
+            RepositoryFolder result = parent.Items.OfType<RepositoryFolder>().FirstOrDefault(c => c.Header.ToString() == name);
 
             if (result == null)
             {
-                result = new TreeViewItem
-                {
-                    Header = name,
-                    FontSize = 18
-                };
+                result = new RepositoryFolder(name);
 
                 parent.Items.Add(result);
             }
@@ -350,7 +346,7 @@ namespace Kallithea_Klone
         }
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        private Repository AddRepository(string name, string url, TreeViewItem parent)
+        private Repository AddRepository(string name, string url, RepositoryFolder parent)
         {
             Repository result = new Repository(name, url, NewItem_Checked);
 
