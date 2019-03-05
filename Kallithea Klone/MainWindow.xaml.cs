@@ -313,7 +313,7 @@ namespace Kallithea_Klone
         /// <exception cref="InvalidOperationException"></exception>
         private void LoadRepositories(ICollection<string> collection)
         {
-            foreach (string url in state.OnLoadRepositories())
+            foreach (string url in collection)
             {
                 string[] parts = url.Split(urlSplitChars, StringSplitOptions.RemoveEmptyEntries);
 

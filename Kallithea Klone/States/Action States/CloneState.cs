@@ -11,6 +11,7 @@ using System.Web;
 using Kallithea_Klone.Other_Classes;
 using Kallithea_Klone.Kallithea;
 using Kallithea_Klone.Account_Settings;
+using Kallithea_Klone.Kallithea_API;
 
 namespace Kallithea_Klone.States
 {
@@ -111,45 +112,20 @@ namespace Kallithea_Klone.States
 
         public async Task<ICollection<string>> DownloadRepositories()
         {
-            RestClient client = new RestClient($"{AccountSettings.Host}/_admin/api");
-            RestRequest request = new RestRequest(Method.POST);
-            request.AddHeader("Cache-Control", "no-cache");
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + AccountSettings.APIKey + "\",\"method\":\"get_repos\",\"args\":{}}", ParameterType.RequestBody);
+            KallitheaRestClient<Repository[]> client = new KallitheaRestClient<Repository[]>("get_repos");
 
             try
             {
-                IRestResponse response = await Task.Run(() =>
-                {
-                    return client.Execute(request);
-                });
+                KallitheaResponse<Repository[]> response = await client.Run();
 
-                switch (response.ResponseStatus)
-                {
-                    case ResponseStatus.Completed:
-                        Repository[] repos = JsonConvert.DeserializeObject<KallitheaResponse<Repository[]>>(response.Content).Result;
+                if (!Directory.Exists(appDataFolder))
+                    Directory.CreateDirectory(appDataFolder);
+                File.WriteAllLines(allReposFile, response.Result.Select(r => r.URL).ToArray());
 
-                        if (repos.Length != 0)
-                        {
-                            if (!Directory.Exists(appDataFolder))
-                                Directory.CreateDirectory(appDataFolder);
-                            File.WriteAllLines(allReposFile, repos.Select(r => r.URL).ToArray());
-                        }
-
-                        return repos.Select(r => r.URL).ToArray();
-                    case ResponseStatus.TimedOut:
-                        MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return null;
-                    case ResponseStatus.Error:
-                    case ResponseStatus.Aborted:
-                    default:
-                        MessageBox.Show("Error: " + response.ErrorMessage, "Uncaught Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                        return null;
-                }
+                return response.Result.Select(r => r.URL).ToArray();
             }
-            catch (Exception ee)
+            catch
             {
-                MessageBox.Show("Error: " + ee.Message, "Uncaught Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 return null;
             }
         }

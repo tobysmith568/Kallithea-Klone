@@ -1,5 +1,6 @@
 ﻿using Kallithea_Klone.Account_Settings;
 using Kallithea_Klone.Kallithea;
+using Kallithea_Klone.Kallithea_API;
 using Kallithea_Klone.Other_Classes;
 using Newtonsoft.Json;
 using RestSharp;
@@ -155,55 +156,22 @@ namespace Kallithea_Klone
             BtnSave.IsEnabled = false;
             GridCoverAll.Visibility = Visibility.Visible;
 
-            RestClient client = new RestClient($"{TbxHost.Text}/_admin/api");
-            RestRequest request = new RestRequest(Method.POST);
-            request.AddHeader("Cache-Control", "no-cache");
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + TbxAPIKey.Text + "\",\"method\":\"get_user\",\"args\":{}}", ParameterType.RequestBody);
+            KallitheaRestClient<User> client = new KallitheaRestClient<User>("get_user", TbxHost.Text, TbxAPIKey.Text);
 
             try
             {
-                //Get the data async
-                IRestResponse response = await Task.Run(() =>
-                {
-                    return client.Execute(request);
-                });
-
-                switch (response.ResponseStatus)
-                {
-                    case ResponseStatus.Completed:
-                        KallitheaResponse<User> user = JsonConvert.DeserializeObject<KallitheaResponse<User>>(response.Content);
-                        if (user.Result == null)
-                        {
-                            MessageBox.Show("Error: " + user.Error, "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                            BtnSave.IsEnabled = true;
-                            GridCoverAll.Visibility = Visibility.Hidden;
-                            return false;
-                        }
-                        username = user.Result.Username;
-                        return true;
-                    case ResponseStatus.TimedOut:
-                        MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
-                        BtnSave.IsEnabled = true;
-                        GridCoverAll.Visibility = Visibility.Hidden;
-                        break;
-                    case ResponseStatus.Error:
-                    case ResponseStatus.Aborted:
-                    default:
-                        MessageBox.Show("Error: " + response.ErrorMessage, "Uncaught Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                        BtnSave.IsEnabled = true;
-                        GridCoverAll.Visibility = Visibility.Hidden;
-                        break;
-                }
+                KallitheaResponse<User> response = await client.Run();
+                username = response.Result.Username;
+                return true;
             }
-            catch (Exception ee)
+            catch (Exception e)
             {
-                MessageBox.Show("Error: " + ee.Message, "Uncaught Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                MessageBox.Show("Error: " + e.Message, "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+
                 BtnSave.IsEnabled = true;
                 GridCoverAll.Visibility = Visibility.Hidden;
+                return false;
             }
-
-            return false;
         }
 
         private void SaveAndClose()

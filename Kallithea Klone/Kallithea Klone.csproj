@@ -111,6 +111,8 @@
     <Compile Include="ContextMenu\BreakChild.cs" />
     <Compile Include="ContextMenu\IMenuItem.cs" />
     <Compile Include="Account Settings\IAccountSettings.cs" />
+    <Compile Include="Kallithea API\InvalidKallitheaResponseTypeException.cs" />
+    <Compile Include="Kallithea API\KallitheaRestClient.cs" />
     <Compile Include="Other Classes\CMDProcess.cs" />
     <Compile Include="Other Classes\ContextMenuImplementations.cs" />
     <Compile Include="Other Classes\Logger.cs" />
