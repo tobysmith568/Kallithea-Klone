@@ -332,7 +332,7 @@ namespace Kallithea_Klone
             LocationList.Sort((c1, c2) => c1.Content.ToString().CompareTo(c2.Content.ToString()));
         }
 
-        private void ShowTree(string searchTerm = null)
+        private void ShowTree()
         {
             MainTree.ItemsSource = LocationTree.Items;
         }
