@@ -137,6 +137,15 @@ namespace Kallithea_Klone
                 if (newRepositories != null)
                 {
                     LoadRepositories(newRepositories);
+
+                    if (MainTree.ItemsSource == LocationTree.Items)
+                    {
+                        ShowTree();
+                    }
+                    else
+                    {
+                        ShowList(TbxSearch.Text);
+                    }
                 }
 
                 PbProgress.Visibility = Visibility.Collapsed;
@@ -320,6 +329,9 @@ namespace Kallithea_Klone
         /// <exception cref="InvalidOperationException"></exception>
         private void LoadRepositories(ICollection<string> collection)
         {
+            LocationTree.Items.Clear();
+            LocationList.Clear();
+
             foreach (string url in collection)
             {
                 string[] parts = url.Split(urlSplitChars, StringSplitOptions.RemoveEmptyEntries);
