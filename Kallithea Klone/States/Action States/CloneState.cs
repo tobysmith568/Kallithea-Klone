@@ -124,8 +124,9 @@ namespace Kallithea_Klone.States
 
                 return response.Result.Select(r => r.URL).ToArray();
             }
-            catch
+            catch (Exception e)
             {
+                MessageBox.Show("Error: " + e.Message, "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 return null;
             }
         }

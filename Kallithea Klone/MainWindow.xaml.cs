@@ -130,12 +130,19 @@ namespace Kallithea_Klone
                 PbProgress.Visibility = Visibility.Visible;
                 PbProgress.IsIndeterminate = true;
                 BtnReload.IsEnabled = false;
+                BtnMainAction.IsEnabled = false;
 
-                LoadRepositories(await state.OnReloadAsync());
+                ICollection<string> newRepositories = await state.OnReloadAsync();
+
+                if (newRepositories != null)
+                {
+                    LoadRepositories(newRepositories);
+                }
 
                 PbProgress.Visibility = Visibility.Collapsed;
                 PbProgress.IsIndeterminate = false;
                 BtnReload.IsEnabled = true;
+                SelectionUpdated();
             }
         }
 
