@@ -325,11 +325,10 @@ namespace Kallithea_Klone
         {
             NoResults.Visibility = MainTree.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
         }
-
-        /// <exception cref="InvalidOperationException"></exception>
+        
         private void LoadRepositories(ICollection<string> collection)
         {
-            LocationTree.Items.Clear();
+            LocationTree.ItemsSource = new List<IRepoControl>();
             LocationList.Clear();
 
             foreach (string url in collection)

@@ -8,21 +8,27 @@ using System.Windows.Controls;
 
 namespace Kallithea_Klone.WPF_Controls
 {
-    public class RepositoryFolder : TreeViewItem
+    public class RepositoryFolder : TreeViewItem, IRepoControl
     {
+        //  Properties
+        //  ==========
+
+        public SortingCategory SortingCategory { get; } = SortingCategory.Folder;
+        public string LocationName { get; }
+
         //  Constructors
         //  ============
 
         public RepositoryFolder(string header) : base()
         {
+            LocationName = header;
             Header = header;
             FontSize = 18;
         }
 
         //  Methods
         //  =======
-
-        /// <exception cref="InvalidOperationException"></exception>
+        
         public RepositoryFolder GetOrAddChildFolder(string header)
         {
             RepositoryFolder result = Items.OfType<RepositoryFolder>().FirstOrDefault(c => c.Header.ToString() == header);
@@ -30,21 +36,28 @@ namespace Kallithea_Klone.WPF_Controls
             if (result == null)
             {
                 result = new RepositoryFolder(header);
-
-                Items.Add(result);
+                ItemsSource = AddNewItemInOrder(Items.OfType<IRepoControl>().ToList(), result);
             }
 
             return result;
         }
 
-        /// <exception cref="InvalidOperationException"></exception>
         public Repository AddChildRepository(string name, string url, RoutedEventHandler clickEvent)
         {
             Repository result = new Repository(name, url, clickEvent);
 
-            Items.Add(result);
+            ItemsSource = AddNewItemInOrder(Items.OfType<IRepoControl>().ToList(), result);
 
             return result;
+        }
+
+        private ICollection<IRepoControl> AddNewItemInOrder(ICollection<IRepoControl> collection, IRepoControl newItem)
+        {
+            collection.Add(newItem);
+
+            collection = collection.OrderBy(l => l.SortingCategory).ThenBy(l => l.LocationName).ToList();
+
+            return collection;
         }
     }
 }

@@ -9,11 +9,13 @@ using System.Windows.Controls;
 
 namespace Kallithea_Klone.WPF_Controls
 {
-    public class Repository : CheckBox
+    public class Repository : CheckBox, IRepoControl
     {
         //  Properties
         //  ==========
 
+        public SortingCategory SortingCategory { get; } = SortingCategory.Repository;
+        public string LocationName { get; }
         public string RepoName { get; set; }
         public string RepoURL { get; set; }
 
@@ -22,6 +24,7 @@ namespace Kallithea_Klone.WPF_Controls
 
         public Repository(string repoName, string repoURL, RoutedEventHandler checkedEvent) : base()
         {
+            LocationName = repoName;
             RepoName = repoName;
             RepoURL = repoURL;
 
