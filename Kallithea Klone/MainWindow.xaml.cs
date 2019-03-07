@@ -167,7 +167,7 @@ namespace Kallithea_Klone
                 ShowList(TbxSearch.Text);
                 SetEmpty();
             }
-            else if (TbxSearch.Text.Length == 0)
+            else
             {
                 ShowTree();
                 SetEmpty();
