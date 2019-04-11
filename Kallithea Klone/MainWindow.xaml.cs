@@ -1,20 +1,21 @@
 ﻿using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Newtonsoft.Json;
-using System.Web;
-using System.Security.Cryptography;
 using System.Deployment.Application;
 using System.Reflection;
-using System.Diagnostics;
 using System.Net;
+using Kallithea_Klone.States;
+using Kallithea_Klone.Other_Classes;
+using Kallithea_Klone.Account_Settings;
+using Kallithea_Klone.Github_API;
+using System.IO;
+using Kallithea_Klone.WPF_Controls;
 
 namespace Kallithea_Klone
 {
@@ -28,102 +29,54 @@ namespace Kallithea_Klone
 
         public static MainWindow singleton = null;
 
-        public string runFrom;
-
-        public static List<string> CheckedURLs = new List<string>();
-
         private IState state;
 
-        public static string APIKey
+        private static readonly char[] urlSplitChars = new char[]
+        {
+            Path.DirectorySeparatorChar,
+            Path.AltDirectorySeparatorChar
+        };
+
+        //  Properties
+        //  ==========
+
+        public RepositoryFolder LocationTree { get; } = new RepositoryFolder("Base Folder");
+        public List<Repository> LocationList { get; } = new List<Repository>();
+
+        public ICollection<RepositoryData> CheckedURLs
         {
             get
             {
-                return Properties.Settings.Default.APIKey;
-            }
-            set
-            {
-                Properties.Settings.Default.APIKey = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static string Username
-        {
-            get
-            {
-                return Properties.Settings.Default.Username;
-            }
-            set
-            {
-                Properties.Settings.Default.Username = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static string Host
-        {
-            get
-            {
-                return Properties.Settings.Default.Host;
-            }
-            set
-            {
-                Properties.Settings.Default.Host = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static string Password
-        {
-            get
-            {
-                if (Properties.Settings.Default.Password == "")
-                    return Properties.Settings.Default.Password;
-
-                return Encoding.Unicode.GetString(ProtectedData.Unprotect(
-                    Convert.FromBase64String(Properties.Settings.Default.Password),
-                    null,
-                    DataProtectionScope.LocalMachine));
-            }
-            set
-            {
-                Properties.Settings.Default.Password = Convert.ToBase64String(ProtectedData.Protect(
-                    Encoding.Unicode.GetBytes(value),
-                    null,
-                    DataProtectionScope.LocalMachine));
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public static bool Updates
-        {
-            get
-            {
-                return Properties.Settings.Default.CheckForUpdates;
-            }
-            set
-            {
-                Properties.Settings.Default.CheckForUpdates = value;
-                Properties.Settings.Default.Save();
+                List<RepositoryData> result = new List<RepositoryData>();
+                foreach (Repository checkBox in LocationList)
+                {
+                    if (checkBox.IsChecked == true)
+                    {
+                        result.Add(checkBox);
+                    }
+                }
+                return result;
             }
         }
 
         //  Constructors
         //  ============
 
-        public MainWindow(RunTypes runType, string runFrom)
+        /// <exception cref="Exception"></exception>
+        public MainWindow(IState state)
         {
             if (singleton == null)
                 singleton = this;
             else
                 throw new Exception("Cannot create a second mainWindow!");
 
-            state = runType.GetState();
+            this.state = state;
 
-            this.runFrom = runFrom;
+            LoadRepositories(state.OnLoadRepositories());
+
             InitializeComponent();
 
-            state.OnLoad();
+            ShowTree();
         }
 
         //  Events
@@ -131,8 +84,116 @@ namespace Kallithea_Klone
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            state.OnLoaded();
+            MainWindowStartProperties properties = state.OnLoaded();
 
+            if (properties != null)
+            {
+                LblTitle.Content = properties.Title;
+                BtnMainAction.Content = properties.MainActionContent;
+                BtnReload.Visibility = properties.ReloadVisibility;
+            }
+
+            CreateHeaderContextMenu();
+
+            if (AccountSettings.Updates)
+                await CheckForUpdate();
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            state.OnLoseFocus(GridCoverAll.Visibility == Visibility.Visible);
+        }
+
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
+        private async void BtnClone_Click(object sender, RoutedEventArgs e)
+        {
+            if (AccountSettings.VerifySettings())
+            {
+                DisableAll();
+                await state.OnMainActionAsync(CheckedURLs);
+                Environment.Exit(0);
+            }
+        }
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        private void DragWindow(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        }
+
+        /// <exception cref="InvalidOperationException"></exception>
+        private async void BtnReload_Click(object sender, RoutedEventArgs e)
+        {
+            if (AccountSettings.VerifySettings())
+            {
+                PbProgress.Visibility = Visibility.Visible;
+                PbProgress.IsIndeterminate = true;
+                BtnReload.IsEnabled = false;
+                BtnMainAction.IsEnabled = false;
+
+                ICollection<string> newRepositories = await state.OnReloadAsync();
+
+                if (newRepositories != null)
+                {
+                    LoadRepositories(newRepositories);
+
+                    if (MainTree.ItemsSource == LocationTree.Items)
+                    {
+                        ShowTree();
+                    }
+                    else
+                    {
+                        ShowList(TbxSearch.Text);
+                    }
+                }
+
+                PbProgress.Visibility = Visibility.Collapsed;
+                PbProgress.IsIndeterminate = false;
+                BtnReload.IsEnabled = true;
+                SelectionUpdated();
+            }
+        }
+
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            state.OnSettings();
+        }
+
+        private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (TbxSearch.Text.Length >= 3)
+            {
+                ShowList(TbxSearch.Text);
+                SetEmpty();
+            }
+            else
+            {
+                ShowTree();
+                SetEmpty();
+            }
+        }
+
+        private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return && TbxSearch.Text.Length >= 3)
+            {
+                ShowList(TbxSearch.Text);
+                SetEmpty();
+            }
+        }
+
+        public void NewItem_Checked(object sender, RoutedEventArgs e)
+        {
+            SelectionUpdated();
+        }
+
+        //  Methods
+        //  =======
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        private void CreateHeaderContextMenu()
+        {
             string GetVersion()
             {
                 try
@@ -161,72 +222,13 @@ namespace Kallithea_Klone
                 about.ShowDialog();
             };
 
-            ContextMenu contextMenu = new ContextMenu();
+            System.Windows.Controls.ContextMenu contextMenu = new System.Windows.Controls.ContextMenu();
             contextMenu.Items.Add(MIVersion);
             contextMenu.Items.Add(new Separator());
             contextMenu.Items.Add(MIAbout);
 
             BdrHeader.ContextMenu = contextMenu;
-
-            if (Updates)
-                await CheckForUpdate();
         }
-
-        private void Window_Deactivated(object sender, EventArgs e)
-        {
-            state.OnLoseFocus();
-        }
-
-        private void BtnClone_Click(object sender, RoutedEventArgs e)
-        {
-            state.OnMainAction();
-        }
-
-        private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                DragMove();
-        }
-
-        private void BtnReload_Click(object sender, RoutedEventArgs e)
-        {
-            state.OnReload();
-        }
-
-        private void BtnSettings_Click(object sender, RoutedEventArgs e)
-        {
-            state.OnSettings();
-        }
-
-        private void SearchTermTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            state.OnSearchTermChanged();
-            SetEmpty();
-        }
-
-        private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Return)
-            {
-                state.OnSearch();
-            }
-            SetEmpty();
-        }
-
-        public void NewItem_Unchecked(object sender, RoutedEventArgs e)
-        {
-            CheckedURLs.Remove(((Control)sender).Tag.ToString());
-            SelectionUpdated();
-        }
-
-        public void NewItem_Checked(object sender, RoutedEventArgs e)
-        {
-            CheckedURLs.Add(((Control)sender).Tag.ToString());
-            SelectionUpdated();
-        }
-
-        //  Methods
-        //  =======
 
         private async Task CheckForUpdate()
         {
@@ -272,15 +274,15 @@ namespace Kallithea_Klone
                 return;
 
             Version.TryParse(release.Tag.Split('-')[0].Replace("v", ""), out Version version);
-                        
+
             if (Assembly.GetExecutingAssembly().GetName().Version.CompareTo(version) >= 0)
                 return;
-            
+
             Asset asset = release.Assets.FirstOrDefault(r => r.URL.EndsWith(".msi"));
 
             if (asset == null)
                 return;
-            
+
             UpdateWindow prompt = new UpdateWindow(release.URL, asset.URL)
             {
                 Owner = this
@@ -295,87 +297,77 @@ namespace Kallithea_Klone
             Topmost = false;
         }
 
-        private void ShowAndCollapse(ItemsControl parent)
+        public static bool OpenSettings()
         {
-            foreach (Control control in parent.Items)
+            try
             {
-                control.Visibility = Visibility.Visible;
-
-                if (control is TreeViewItem treeViewItem)
+                Settings settings = new Settings
                 {
-                    ShowAndCollapse(treeViewItem);
-
-                    treeViewItem.IsExpanded = false;
-                }
+                    Owner = singleton
+                };
+                return settings.ShowDialog() == true;
             }
-        }
-
-        private void Filter(ItemsControl parent, string searchTerm)
-        {
-            foreach (Control child in parent.Items)
+            catch (InvalidOperationException)
             {
-                if (child is TreeViewItem treeViewItem)
-                {
-                    Filter(treeViewItem, searchTerm);
-
-                    if (IsEmpty(treeViewItem))
-                    {
-                        treeViewItem.IsExpanded = false;
-                        treeViewItem.Visibility = Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        treeViewItem.IsExpanded = true;
-                        treeViewItem.Visibility = Visibility.Visible;
-                    }
-                }
-                else if (child is CheckBox checkBox)
-                {
-                    checkBox.Visibility = Visibility.Visible;
-                    foreach (string term in searchTerm.ToLower().Split(' '))
-                    {
-                        if (!checkBox.Tag.ToString().ToLower().Contains(term))
-                        {
-                            checkBox.Visibility = Visibility.Collapsed;
-                            break;
-                        }
-                    }
-                }
-                else
-                    throw new Exception("Unexpected child type!");
+                MessageBox.Show("Error: Unable to open the settings window!", "Error!",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private bool IsEmpty(TreeViewItem treeViewItem)
-        {
-            foreach (Control item in treeViewItem.Items)
-            {
-                if (item.Visibility == Visibility.Visible)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public void OpenSettings()
-        {
-            Settings settings = new Settings
-            {
-                Owner = this
-            };
-            settings.ShowDialog();
+            return false;
         }
 
         public void SelectionUpdated()
         {
             lblNumberSelected.Content = CheckedURLs.Count + " " + (CheckedURLs.Count == 1 ? "Repository" : "Repositories") + " selected";
-            BtnClone.IsEnabled = CheckedURLs.Count > 0;
+            BtnMainAction.IsEnabled = CheckedURLs.Count > 0;
         }
 
         public void SetEmpty()
         {
             NoResults.Visibility = MainTree.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
+        }
+        
+        private void LoadRepositories(ICollection<string> collection)
+        {
+            LocationTree.ItemsSource = new List<IRepoControl>();
+            LocationList.Clear();
+
+            foreach (string url in collection)
+            {
+                string[] parts = url.Split(urlSplitChars, StringSplitOptions.RemoveEmptyEntries);
+
+                if (parts.Length == 0)
+                    return;
+
+                RepositoryFolder currentNode = LocationTree;
+                for (int i = 0; i < parts.Length - 1; i++)
+                {
+                    currentNode = currentNode.GetOrAddChildFolder(parts[i]);
+                }
+
+                LocationList.Add(currentNode.AddChildRepository(parts[parts.Length - 1], url, NewItem_Checked));
+            }
+
+            LocationList.Sort((c1, c2) => c1.Content.ToString().CompareTo(c2.Content.ToString()));
+        }
+
+        private void ShowTree()
+        {
+            MainTree.ItemsSource = LocationTree.Items;
+        }
+
+        private void ShowList(string searchTerm = null)
+        {
+            IEnumerable<Repository> results = LocationList;
+
+            if (searchTerm != null)
+            {
+                foreach (string word in searchTerm.Split(' '))
+                {
+                    results = results.Where(c => c.RepoURL.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0);
+                }
+            }
+
+            MainTree.ItemsSource = results;
         }
     }
 }

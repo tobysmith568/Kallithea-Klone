@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Kallithea_Klone
 {
@@ -39,6 +28,11 @@ namespace Kallithea_Klone
         //  Events
         //  ======
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="System.IO.FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void BtnGithub_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo(parent.GithubURL));

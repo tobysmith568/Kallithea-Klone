@@ -99,11 +99,11 @@
                     </LinearGradientBrush>
                 </Border.Background>
             </Border>
-            
+
             <!-- Header -->
             <Label Content="Settings" FontSize="38" FontWeight="Bold" Foreground="#FFB1D597" VerticalContentAlignment="Bottom" FontFamily="{DynamicResource OfficinaSans}" Margin="10,0,60,0" Height="61" VerticalAlignment="Top" IsHitTestVisible="False"/>
             <Button x:Name="BtnClose" Style="{DynamicResource CloseButton}" Margin="0,10,10,0" Width="{Binding ActualHeight, ElementName=BtnClose, Mode=OneWay}" HorizontalAlignment="Right" Click="BtnClose_Click" Height="45" VerticalAlignment="Top"/>
-            
+
             <!-- Tabs -->
             <TabControl Margin="0,70,0,43" Background="{x:Null}" BorderBrush="Black" BorderThickness="0, 1, 0, 0">
                 <!-- Kallithea Tab -->
@@ -168,7 +168,7 @@
                         <PasswordBox x:Name="PbOne" Margin="10,176,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
                         <Label x:Name="LblPasswordConfirm" Content="Confirm Password" Margin="10,212,10,0" VerticalAlignment="Top" FontSize="18"/>
                         <PasswordBox x:Name="PbTwo" Margin="10,241,10,0" Height="36" VerticalAlignment="Top" Style="{StaticResource roundcornerpassword}" Password="123" VerticalContentAlignment="Center" Background="#FFB1D597" Foreground="Black" KeyDown="Tbx_KeyDown" />
-                        <Label x:Name="LblNotMatching" Margin="10,272,105,-3" FontSize="14" Content="Passwords do not match!" HorizontalContentAlignment="Left" Foreground="Red" Visibility="Visible"/>
+                        <Label x:Name="LblNotMatching" Margin="10,272,105,-3" FontSize="14" Content="Passwords do not match!" HorizontalContentAlignment="Left" Foreground="Red" Visibility="Hidden"/>
                     </Grid>
                 </TabItem>
                 <!-- Other Tab -->
@@ -177,11 +177,30 @@
                         <TextBlock Text="Other" />
                     </TabItem.Header>
                     <Grid Margin="0">
-                        <CheckBox Name="CbUpdates" Checked="CbUpdates_Toggled" Unchecked="CbUpdates_Toggled"  Margin="10,259,10,0" Height="30" Content="Check for updates on startup" VerticalAlignment="Top" VerticalContentAlignment="Center" />
+                        <Grid x:Name="GdAdminWarning" Margin="10,133,10,126">
+                            <Image HorizontalAlignment="Left" Source="Images/Warning.png" Width="37" Margin="5,0,0,0" />
+                            <TextBlock FontSize="14" Foreground="Black" Margin="42,0,10,0" TextWrapping="Wrap"><Run Text="Saving "/><Run Text="these "/><Run Text="changes will require Admin permissions"/></TextBlock>
+                        </Grid>
+                        <GroupBox HorizontalAlignment="Left" Height="123" Margin="10,10,0,0" VerticalAlignment="Top" Width="257" BorderBrush="Black">
+                            <GroupBox.Foreground>
+                                <SolidColorBrush Color="#FFB1D597" Opacity="0"/>
+                            </GroupBox.Foreground>
+                            <GroupBox.Header>
+                                <CheckBox x:Name="CbAdvancedOptions" VerticalContentAlignment="Center" Checked="AdvancedOptionChanged" Unchecked="AdvancedOptionChanged">Enable Advanced Options</CheckBox>
+                            </GroupBox.Header>
+
+                            <Grid IsEnabled="{Binding ElementName=CbAdvancedOptions, Path=IsChecked}">
+                                <CheckBox x:Name="CbRevert" Content="Revert all changes" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="235" VerticalContentAlignment="Center" Unchecked="AdvancedOptionChanged" Checked="AdvancedOptionChanged"/>
+                                <CheckBox x:Name="CbReclone" Content="Delete and re-clone" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Width="235" VerticalContentAlignment="Center" Checked="AdvancedOptionChanged" Unchecked="AdvancedOptionChanged"/>
+                                <CheckBox x:Name="CbUpdate" Content="Update to latest changeset" HorizontalAlignment="Left" Margin="10,46,0,0" VerticalAlignment="Top" Width="235" VerticalContentAlignment="Center" Unchecked="AdvancedOptionChanged" Checked="AdvancedOptionChanged"/>
+                                <CheckBox x:Name="CbSettings" Content="Settings" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="235" VerticalContentAlignment="Center" IsChecked="True" Unchecked="AdvancedOptionChanged" Checked="AdvancedOptionChanged"/>
+                            </Grid>
+                        </GroupBox>
+                        <CheckBox Name="CbCheckForUpdates" Margin="10,260,10,0" Height="30" Content="Check for updates on startup" VerticalAlignment="Top" VerticalContentAlignment="Center" />
                     </Grid>
                 </TabItem>
             </TabControl>
-            
+
             <Button x:Name="BtnSave" Content="Save" Margin="0,0,10,10" Click="BtnSave_Click" HorizontalAlignment="Right" Width="95" Height="28" VerticalAlignment="Bottom" IsEnabled="False"/>
 
             <Grid x:Name="GridCoverAll" Margin="0" Visibility="Hidden">

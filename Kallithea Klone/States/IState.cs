@@ -1,23 +1,30 @@
-﻿using System;
+﻿using Kallithea_Klone.Other_Classes;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
-namespace Kallithea_Klone
+namespace Kallithea_Klone.States
 {
     public interface IState
     {
-        void OnLoad();
-        void OnLoaded();
-        void OnLoseFocus();
+        //  Properties
+        //  ==========
+
+        string Verb { get; }
+        string RunLocation { get; }
+
+        //  Methods
+        //  =======
+
+        void InitialActions(string[] args);
+        /// <exception cref="InvalidOperationException"></exception>
+        ICollection<string> OnLoadRepositories();
+        MainWindowStartProperties OnLoaded();
+        void OnLoseFocus(bool completingMainAction);
 
         void OnSettings();
-        void OnReload();
-
-        void OnSearchTermChanged();
-        void OnSearch();
-
-        void OnMainAction();
+        Task<ICollection<string>> OnReloadAsync();
+        
+        Task OnMainActionAsync(ICollection<RepositoryData> locations);
     }
 }

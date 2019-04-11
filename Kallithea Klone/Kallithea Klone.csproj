@@ -56,6 +56,9 @@
     <ApplicationIcon>Images\Kallithea Klone.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -68,8 +71,8 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp, Version=106.5.4.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.106.5.4\lib\net452\RestSharp.dll</HintPath>
+    <Reference Include="RestSharp, Version=106.6.7.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.6.7\lib\net452\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -99,24 +102,44 @@
     <Compile Include="About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Other Classes\CheckableItem.cs" />
-    <Compile Include="Other Classes\URIPair.cs" />
-    <Compile Include="States\CloneState.cs" />
-    <Compile Include="Other Classes\GithubRelease.cs" />
+    <Compile Include="Account Settings\AccountSettings.cs" />
+    <Compile Include="Account Settings\AdvancedOptions.cs" />
+    <Compile Include="ContextMenu\Child.cs" />
+    <Compile Include="ContextMenu\IContextItem.cs" />
+    <Compile Include="ContextMenu\MenuLocation.cs" />
+    <Compile Include="ContextMenu\MenuChild.cs" />
+    <Compile Include="ContextMenu\BreakChild.cs" />
+    <Compile Include="ContextMenu\IMenuItem.cs" />
+    <Compile Include="Account Settings\IAccountSettings.cs" />
+    <Compile Include="Kallithea API\InvalidKallitheaResponseTypeException.cs" />
+    <Compile Include="Kallithea API\KallitheaRestClient.cs" />
+    <Compile Include="Other Classes\CMDProcess.cs" />
+    <Compile Include="Other Classes\ContextMenuImplementations.cs" />
+    <Compile Include="Other Classes\Logger.cs" />
+    <Compile Include="Other Classes\MainWindowStartProperties.cs" />
+    <Compile Include="ContextMenu\MenuParent.cs" />
+    <Compile Include="States\Action States\CloneState.cs" />
+    <Compile Include="Github API\GithubRelease.cs" />
     <Compile Include="Other Classes\IniFile.cs" />
     <Compile Include="States\IState.cs" />
-    <Compile Include="States\UpdateState.cs" />
-    <Compile Include="States\ReCloneState.cs" />
-    <Compile Include="States\LocalRevertState.cs" />
-    <Compile Include="Other Classes\Repository.cs" />
-    <Compile Include="Other Classes\KallitheaResponse.cs" />
+    <Compile Include="MainActionException.cs" />
+    <Compile Include="States\Action States\LocalEditorState.cs" />
+    <Compile Include="States\LogicOnlyState.cs" />
+    <Compile Include="States\Logic-Only States\SettingsState.cs" />
+    <Compile Include="States\Logic-Only States\SetupState.cs" />
+    <Compile Include="States\Logic-Only States\UninstallState.cs" />
+    <Compile Include="States\Action States\UpdateState.cs" />
+    <Compile Include="States\Action States\ReCloneState.cs" />
+    <Compile Include="States\Action States\LocalRevertState.cs" />
+    <Compile Include="Kallithea API\Repository.cs" />
+    <Compile Include="Kallithea API\KallitheaResponse.cs" />
     <Compile Include="States\RunTypes.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="States\TemplateState.cs" />
-    <Compile Include="Other Classes\User.cs" />
+    <Compile Include="States\ActionState.cs" />
+    <Compile Include="Kallithea API\User.cs" />
     <Compile Include="UpdateDownloading.xaml.cs">
       <DependentUpon>UpdateDownloading.xaml</DependentUpon>
     </Compile>
@@ -126,6 +149,10 @@
     <Compile Include="UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WPF Controls\IRepoControl.cs" />
+    <Compile Include="WPF Controls\Repository.cs" />
+    <Compile Include="WPF Controls\RepositoryFolder.cs" />
+    <Compile Include="WPF Controls\SortingCategory.cs" />
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -138,7 +165,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Other Classes\Location.cs" />
+    <Compile Include="Other Classes\RepositoryData.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -230,6 +257,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Warning.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,20 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Kallithea_Klone
 {
@@ -34,11 +23,12 @@ namespace Kallithea_Klone
         //  Constructors
         //  ============
 
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         public UpdateDownloading(UpdateWindow parent)
         {
             this.parent = parent;
-            downloadFolder = System.IO.Path.GetTempPath() + "Kallithea Klone";
-            downloadLocation = downloadFolder + "\\Update.msi";
+            downloadFolder = Path.Combine(Path.GetTempPath(), "Kallithea Klone");
+            downloadLocation = Path.Combine(downloadFolder, "Update.msi");
 
             InitializeComponent();
         }
@@ -56,6 +46,10 @@ namespace Kallithea_Klone
             pbDownloadingProgress.Value = e.ProgressPercentage;
         }
 
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void Client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             if (!e.Cancelled && e.Error == null)
@@ -79,6 +73,10 @@ namespace Kallithea_Klone
             }
         }
 
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.Security.SecurityException">Ignore.</exception>
         private void BtnInstall_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(downloadLocation);
@@ -88,6 +86,12 @@ namespace Kallithea_Klone
         //  Methods
         //  =======
 
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        /// <exception cref="WebException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Download()
         {
             Directory.CreateDirectory(downloadFolder);

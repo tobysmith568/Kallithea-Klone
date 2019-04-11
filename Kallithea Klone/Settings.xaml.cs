@@ -1,21 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using Kallithea_Klone.Account_Settings;
+using Kallithea_Klone.Kallithea;
+using Kallithea_Klone.Kallithea_API;
+using Kallithea_Klone.Other_Classes;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Kallithea_Klone
 {
@@ -24,6 +19,13 @@ namespace Kallithea_Klone
     /// </summary>
     public partial class Settings : Window
     {
+        //  Variables
+        //  =========
+
+        private int originalAdvancedSettingValue;
+        string username = "";
+        bool isFullySetUp = false;
+
         //  Constructors
         //  ============
 
@@ -37,15 +39,27 @@ namespace Kallithea_Klone
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            TbxAPIKey.Text = MainWindow.APIKey;
-            TbxHost.Text = MainWindow.Host;
-            PbOne.Password = MainWindow.Password;
-            PbTwo.Password = MainWindow.Password;
+            GdAdminWarning.Visibility = Visibility.Hidden;
+
+            TbxAPIKey.Text = AccountSettings.APIKey;
+            TbxHost.Text = AccountSettings.Host;
+            PbOne.Password = AccountSettings.Password;
+            PbTwo.Password = AccountSettings.Password;
 
             PbOne.PasswordChanged += PasswordChanged;
             PbTwo.PasswordChanged += PasswordChanged;
 
-            CbUpdates.IsChecked = MainWindow.Updates;
+            AdvancedOptions advancedOptions = AccountSettings.AdvancedOptions;
+            originalAdvancedSettingValue = advancedOptions.PackedValue;
+            CbAdvancedOptions.IsChecked = advancedOptions.Enabled;
+            CbRevert.IsChecked = advancedOptions.Revert;
+            CbReclone.IsChecked = advancedOptions.Reclone;
+            CbUpdate.IsChecked = advancedOptions.Update;
+            CbSettings.IsChecked = advancedOptions.Settings;
+
+            CbCheckForUpdates.IsChecked = AccountSettings.Updates;
+
+            isFullySetUp = true;
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -53,47 +67,42 @@ namespace Kallithea_Klone
             Close();
         }
 
-        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            SaveAndClose();
-        }
-
-        private void Tbx_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Return)
+            if (await IsValidAccountInformation())
                 SaveAndClose();
         }
 
+        private async void Tbx_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return && await IsValidAccountInformation())
+                SaveAndClose();
+        }
+
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
+        /// <exception cref="ObjectDisposedException">Ignore.</exception>
+        /// <exception cref="System.IO.FileNotFoundException">Ignore.</exception>
+        /// <exception cref="System.ComponentModel.Win32Exception">Ignore.</exception>
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             if (ValidHost())
                 Process.Start(new ProcessStartInfo(TbxHost.Text + "/_admin/my_account/api_keys"));
             else
-                MessageBox.Show("In order to find your API key you must correctly enter your host domain above.", "Incorrect Host!", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("In order to find your API key you must correctly enter your host domain above.", "Invalid Host!", MessageBoxButton.OK, MessageBoxImage.Error);
 
             e.Handled = true;
         }
 
-        private void TbAPIKey_MouseEnter(object sender, MouseEventArgs e)
-        {
-            TextBlock textBlock = (TextBlock)sender;
-
-            textBlock.TextDecorations.Clear();
-        }
-
-        private void TbAPIKey_MouseLeave(object sender, MouseEventArgs e)
-        {
-            TextBlock textBlock = (TextBlock)sender;
-
-            textBlock.TextDecorations.Add(new TextDecoration(TextDecorationLocation.Underline, null, 0, TextDecorationUnit.Pixel, TextDecorationUnit.Pixel));
-        }
-
         private void PasswordChanged(object sender, RoutedEventArgs e)
         {
+            if (!isFullySetUp)
+                return;
+
             LblNotMatching.Visibility = PbOne.Password == PbTwo.Password ? Visibility.Hidden : Visibility.Visible;
             BtnSave.IsEnabled = GetSaveButtonEnabled();
         }
 
+        /// <exception cref="InvalidOperationException">Ignore.</exception>
         private void BdrHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -105,9 +114,12 @@ namespace Kallithea_Klone
             BtnSave.IsEnabled = GetSaveButtonEnabled();
         }
 
-        private void CbUpdates_Toggled(object sender, RoutedEventArgs e)
+        private void AdvancedOptionChanged(object sender, RoutedEventArgs e)
         {
-            MainWindow.Updates = ((CheckBox)sender).IsChecked == true;
+            if (!isFullySetUp)
+                return;
+
+            GdAdminWarning.Visibility = AdvancedOptionsHaveChanged() ? Visibility.Visible : Visibility.Hidden;
         }
 
         //  Methods
@@ -133,74 +145,96 @@ namespace Kallithea_Klone
             return true;
         }
 
-        private async void SaveAndClose()
+        private async Task<bool> IsValidAccountInformation()
         {
             if (!ValidHost())
             {
                 MessageBox.Show("Your Host doesn't appear to be a fully formed URL.", "Incorrect Host!", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                return false;
             }
 
             BtnSave.IsEnabled = false;
             GridCoverAll.Visibility = Visibility.Visible;
 
-            RestClient client = new RestClient($"{TbxHost.Text}/_admin/api");
-            RestRequest request = new RestRequest(Method.POST);
-            request.AddHeader("Cache-Control", "no-cache");
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("undefined", "{\"id\":\"1\",\"api_key\":\"" + TbxAPIKey.Text + "\",\"method\":\"get_user\",\"args\":{}}", ParameterType.RequestBody);
+            KallitheaRestClient<User> client = new KallitheaRestClient<User>("get_user", TbxHost.Text, TbxAPIKey.Text);
 
             try
             {
-                //Get the data async
-                IRestResponse response = await Task.Run(() =>
-                {
-                    return client.Execute(request);
-                });
-
-                switch (response.ResponseStatus)
-                {
-                    case ResponseStatus.Completed:
-                        KallitheaResponse<User> user = JsonConvert.DeserializeObject<KallitheaResponse<User>>(response.Content);
-                        if (user.Result == null)
-                        {
-                            MessageBox.Show("Error: " + user.Error, "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                            BtnSave.IsEnabled = true;
-                            GridCoverAll.Visibility = Visibility.Hidden;
-                            break;
-                        }
-                        MainWindow.APIKey = TbxAPIKey.Text;
-                        MainWindow.Host = TbxHost.Text;
-                        MainWindow.Username = user.Result.Username;
-                        MainWindow.Password = PbOne.Password;
-                        Close();
-                        break;
-                    case ResponseStatus.TimedOut:
-                        MessageBox.Show($"Webrequest to {response.ResponseUri} timed out", "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error);
-                        BtnSave.IsEnabled = true;
-                        GridCoverAll.Visibility = Visibility.Hidden;
-                        break;
-                    case ResponseStatus.Error:
-                    case ResponseStatus.Aborted:
-                    default:
-                        MessageBox.Show("Error: " + response.ErrorMessage, "Uncaught Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                        BtnSave.IsEnabled = true;
-                        GridCoverAll.Visibility = Visibility.Hidden;
-                        break;
-                }
+                KallitheaResponse<User> response = await client.Run();
+                username = response.Result.Username;
+                return true;
             }
-            catch (Exception ee)
+            catch (Exception e)
             {
-                MessageBox.Show("Error: " + ee.Message, "Uncaught Error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                MessageBox.Show("Error: " + e.Message, "Error!\t\t\t\t", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+
                 BtnSave.IsEnabled = true;
                 GridCoverAll.Visibility = Visibility.Hidden;
+                return false;
             }
+        }
+
+        private void SaveAndClose()
+        {
+            AccountSettings.APIKey = TbxAPIKey.Text;
+            AccountSettings.Host = TbxHost.Text;
+            AccountSettings.Username = username;
+            AccountSettings.Password = PbOne.Password;
+            AccountSettings.Updates = CbCheckForUpdates.IsChecked == true;
+            AccountSettings.AdvancedOptions = new AdvancedOptions(
+                enabled: CbAdvancedOptions.IsChecked == true,
+                revert: CbRevert.IsChecked == true,
+                reclone: CbReclone.IsChecked == true,
+                update: CbUpdate.IsChecked == true,
+                settings: CbSettings.IsChecked == true);
+
+            if (AdvancedOptionsHaveChanged())
+            {
+                Process process;
+                try
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName)
+                    {
+                        Verb = "runas",
+                        Arguments = "Setup"
+                    };
+                    process = Process.Start(startInfo);
+                    process.WaitForExit();
+
+                    if (process.ExitCode != 0)
+                    {
+                        throw new Exception();
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to edit the Windows Explorer context menu options.\n" +
+                        "If this continues please uninstall and re-install", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            
+            if (System.Windows.Interop.ComponentDispatcher.IsThreadModal)
+                DialogResult = true;
+
+            Close();
         }
 
         private bool ValidHost()
         {
             return Uri.TryCreate(TbxHost.Text, UriKind.Absolute, out Uri uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        }
+
+        private bool AdvancedOptionsHaveChanged()
+        {
+            AdvancedOptions advancedOptions = new AdvancedOptions(
+                enabled: CbAdvancedOptions.IsChecked == true,
+                revert: CbRevert.IsChecked == true,
+                reclone: CbReclone.IsChecked == true,
+                update: CbUpdate.IsChecked == true,
+                settings: CbSettings.IsChecked == true);
+
+            return advancedOptions.PackedValue != originalAdvancedSettingValue;
         }
     }
 }
