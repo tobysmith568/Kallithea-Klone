@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kallithea Klone", "Kallithea Klone\Kallithea Klone.csproj", "{8B61B581-EE18-4227-9D58-A525A24C7E47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kallithea Klone (Deprecated)", "Kallithea Klone (Deprecated)\Kallithea Klone (Deprecated).csproj", "{8B61B581-EE18-4227-9D58-A525A24C7E47}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{B89A2749-7692-4025-82C4-8C44B0F98C4E}"
 EndProject
