@@ -49,6 +49,8 @@
     <Compile Include="Models\Dialogs\MessagePrompts\MessageType.cs" />
     <Compile Include="Models\JSONConverter\IJSONConverter.cs" />
     <Compile Include="Models\JSONConverter\JSONConverter.cs" />
+    <Compile Include="Models\Repositories\IRepositoryManager.cs" />
+    <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Models\Settings\ISettings.cs" />
     <Compile Include="Models\Updater\Asset.cs" />
     <Compile Include="Models\Updater\GithubRelease.cs" />
