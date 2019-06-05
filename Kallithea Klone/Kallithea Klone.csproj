@@ -44,8 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Dialogs\MessagePrompts\IMessagePrompt.cs" />
+    <Compile Include="Models\Dialogs\MessagePrompts\MessageResult.cs" />
+    <Compile Include="Models\Dialogs\MessagePrompts\MessageType.cs" />
     <Compile Include="Models\JSONConverter\IJSONConverter.cs" />
     <Compile Include="Models\JSONConverter\JSONConverter.cs" />
+    <Compile Include="Models\Settings\ISettings.cs" />
+    <Compile Include="Models\Updater\Asset.cs" />
+    <Compile Include="Models\Updater\GithubRelease.cs" />
+    <Compile Include="Models\Updater\IUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
