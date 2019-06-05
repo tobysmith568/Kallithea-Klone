@@ -51,6 +51,8 @@
     <Compile Include="Models\JSONConverter\JSONConverter.cs" />
     <Compile Include="Models\Repositories\IRepositoryManager.cs" />
     <Compile Include="Models\Repositories\IRepository.cs" />
+    <Compile Include="Models\Repositories\Repository.cs" />
+    <Compile Include="Models\Repositories\RepositoryManager.cs" />
     <Compile Include="Models\Settings\ISettings.cs" />
     <Compile Include="Models\Updater\Asset.cs" />
     <Compile Include="Models\Updater\GithubRelease.cs" />

@@ -9,6 +9,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kallithea Klone", "Kallithea Klone\Kallithea Klone.csproj", "{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF Application", "WPF Application\WPF Application.csproj", "{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

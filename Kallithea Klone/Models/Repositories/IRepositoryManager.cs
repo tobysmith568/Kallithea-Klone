@@ -11,7 +11,7 @@ namespace KallitheaKlone.Models.Repositories
         //  Methods
         //  =======
 
-        Task<T> GetAllRepositories();
+        Task<ICollection<T>> GetAllRepositories();
 
         Task<bool> OverwriteAllRespositories(ICollection<T> repositories);
     }
