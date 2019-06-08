@@ -1,4 +1,4 @@
-﻿using KallitheaKlone.Models.Settings;
+﻿using KallitheaKlone.Models.Repositories;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -6,29 +6,21 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace KallitheaKlone.Models.Repositories.Kallithea
+namespace KallitheaKlone.Models.Kallithea
 {
     public class KallitheaAPI : IKallitheaAPI
     {
-        //  Variables
-        //  =========
-
-        private readonly ISettings settings;
-
-        //  Constructors
-        //  ============
-
-        public KallitheaAPI(ISettings settings)
-        {
-            this.settings = settings;
-        }
-
         //  Methods
         //  =======
 
-        public async Task<ICollection<Repository>> GetRepositories()
+        public async Task<ICollection<Repository>> GetRepositories(string host, string apiKey)
         {
-            throw new NotImplementedException();
+            host = host ?? throw new ArgumentNullException(nameof(host));
+            apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
+
+            ICollection<Repository> repositoryResponses = await GetResponse<ICollection<Repository>>(host, apiKey, "get_repos");
+
+            return repositoryResponses;
         }
 
         /// <exception cref="TimeoutException"></exception>
@@ -38,14 +30,14 @@ namespace KallitheaKlone.Models.Repositories.Kallithea
             host = host ?? throw new ArgumentNullException(nameof(host));
             apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
 
-            UserResponse userResponse = await GetResponse<UserResponse>(host, apiKey, "get_user");
+            User userResponse = await GetResponse<User>(host, apiKey, "get_user");
 
-            return userResponse != null;
+            return userResponse != null && userResponse.Username != null;
         }
 
         /// <exception cref="TimeoutException"></exception>
         /// <exception cref="WebException"></exception>
-        private async Task<T> GetResponse<T>(string host, string apiKey, string action) where T : IKallitheaResponse
+        private async Task<T> GetResponse<T>(string host, string apiKey, string action)
         {
             RestClient restClient = new RestClient($"{host}/_admin/api");
 
@@ -69,14 +61,14 @@ namespace KallitheaKlone.Models.Repositories.Kallithea
 
         /// <exception cref="TimeoutException"></exception>
         /// <exception cref="WebException"></exception>
-        private T ProcessRestResponse<T>(IRestResponse response) where T : IKallitheaResponse
+        private T ProcessRestResponse<T>(IRestResponse response)
         {
             switch (response.ResponseStatus)
             {
                 case ResponseStatus.Completed:
                     KallitheaBaseResponse<T> result = JsonConvert.DeserializeObject<KallitheaBaseResponse<T>>(response.Content);
 
-                    if (result.Result == null)
+                    if (result.Result == default)
                     {
                         return default;
                     }

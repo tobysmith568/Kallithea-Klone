@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using KallitheaKlone.Models.Repositories;
 
-namespace KallitheaKlone.Models.Repositories.Kallithea
+namespace KallitheaKlone.Models.Kallithea
 {
     public interface IKallitheaAPI
     {
         //  Methods
         //  =======
 
-        Task<ICollection<Repository>> GetRepositories();
+        /// <exception cref="TimeoutException"></exception>
+        /// <exception cref="WebException"></exception>
+        Task<ICollection<Repository>> GetRepositories(string host, string apiKey);
         
         /// <exception cref="TimeoutException"></exception>
         /// <exception cref="WebException"></exception>

@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace KallitheaKlone.Models.Repositories.Kallithea
+namespace KallitheaKlone.Models.Kallithea
 {
-    public class UserResponse : IKallitheaResponse
+    public class User
     {
         //  JSON Properties
         //  ===============
