@@ -2,7 +2,7 @@
 
 namespace KallitheaKlone.Models.JSONConverter
 {
-    public class JSONConverter : IJSONConverter
+    public class NewtonSoftJSONConverter : IJSONConverter
     {
         //  Methods
         //  =======
