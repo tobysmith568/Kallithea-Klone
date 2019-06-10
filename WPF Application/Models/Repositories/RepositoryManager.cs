@@ -1,14 +1,13 @@
 ﻿using KallitheaKlone.Models.Dialogs.MessagePrompts;
+using KallitheaKlone.Models.JSONConverter;
 using KallitheaKlone.Models.Repositories;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace KallitheaKlone.WPF.Models.Repositories
 {
-    public class RepositoryManager : IRepositoryManager<Repository>
+    public class RepositoryManager : IRepositoryManager<RepositoryFolder, Repository>
     {
         //  Constants
         //  =========
@@ -24,79 +23,67 @@ namespace KallitheaKlone.WPF.Models.Repositories
         private static readonly string nl = Environment.NewLine;
 
         private readonly IMessagePrompt messagePrompt;
+        private readonly IJSONConverter jsonConverter;
 
         //  Constructors
         //  ============
 
-        public RepositoryManager(IMessagePrompt messagePrompt)
+        public RepositoryManager(IMessagePrompt messagePrompt, IJSONConverter jsonConverter)
         {
             this.messagePrompt = messagePrompt;
+            this.jsonConverter = jsonConverter;
         }
 
         //  Methods
         //  =======
 
-        public async Task<ICollection<Repository>> GetAllRepositories()
+        public async Task<IRepositoryFolder<RepositoryFolder, Repository>> GetAllRepositories()
         {
             return await Task.Run(() => AsyncImplementation());
 
-            ICollection<Repository> AsyncImplementation()
+            RepositoryFolder AsyncImplementation()
             {
                 try
                 {
-                    if (!Directory.Exists(appDataFolder))
-                    {
-                        Directory.CreateDirectory(appDataFolder);
-                    }
+                    EnsureDirectoryExists();
 
                     if (!File.Exists(allReposFile))
                     {
                         File.WriteAllText(allReposFile, string.Empty);
-                        return new List<Repository>(0);
+                        return new RepositoryFolder();
                     }
-                    else
-                    {
-                        string[] repoURLs = File.ReadAllLines(allReposFile);
-                        ICollection<Repository> result = new List<Repository>(repoURLs.Length);
 
-                        foreach (string repoURL in repoURLs)
-                        {
-                            result.Add(new Repository()
-                            {
-                                URL = repoURL
-                            });
-                        }
+                    string fileData = File.ReadAllText(allReposFile);
 
-                        return result;
-                    }
+                    RepositoryFolder result = jsonConverter.FromJson<RepositoryFolder>(fileData);
+
+                    return result;
                 }
                 catch
                 {
                     messagePrompt.PromptOK($"Unable to read repositories from storage!{nl}" +
                                            $"Please reload your repositories.", "Error", MessageType.Error);
 
-                    return new List<Repository>(0);
+                    return new RepositoryFolder();
                 }
             }
         }
 
-        public Task<bool> OverwriteAllRespositories(ICollection<Repository> _repositories)
+        public Task<bool> OverwriteAllRespositories(IRepositoryFolder<RepositoryFolder, Repository> _baseRepository)
         {
-            _repositories = _repositories ?? new List<Repository>(0);
+            _baseRepository = _baseRepository ?? new RepositoryFolder();
 
-            return Task.Run(() => AsyncImplementation(_repositories));
+            return Task.Run(() => AsyncImplementation(_baseRepository));
 
-            bool AsyncImplementation(ICollection<Repository> repositories)
+            bool AsyncImplementation(IRepositoryFolder<RepositoryFolder, Repository> baseRepository)
             {
                 try
                 {
+                    EnsureDirectoryExists();
 
-                    if (!Directory.Exists(appDataFolder))
-                    {
-                        Directory.CreateDirectory(appDataFolder);
-                    }
+                    string fileData = jsonConverter.ToJson(baseRepository);
 
-                    File.WriteAllLines(allReposFile, repositories.Select(r => r.URL));
+                    File.WriteAllText(allReposFile, fileData);
 
                     return true;
                 }
@@ -107,6 +94,18 @@ namespace KallitheaKlone.WPF.Models.Repositories
 
                     return false;
                 }
+            }
+        }
+
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="PathTooLongException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        private void EnsureDirectoryExists()
+        {
+            if (!Directory.Exists(appDataFolder))
+            {
+                Directory.CreateDirectory(appDataFolder);
             }
         }
     }

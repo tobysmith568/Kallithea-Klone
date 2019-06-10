@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace KallitheaKlone.Models.Repositories
 {
-    public interface IRepositoryManager<T> where T : IRepository
+    public interface IRepositoryManager<F, R> where F : IRepositoryFolder<F, R> where R : IRepository
     {
         //  Methods
         //  =======
 
-        Task<ICollection<T>> GetAllRepositories();
+        Task<IRepositoryFolder<F, R>> GetAllRepositories();
 
-        Task<bool> OverwriteAllRespositories(ICollection<T> repositories);
+        Task<bool> OverwriteAllRespositories(IRepositoryFolder<F, R> repositories);
     }
 }

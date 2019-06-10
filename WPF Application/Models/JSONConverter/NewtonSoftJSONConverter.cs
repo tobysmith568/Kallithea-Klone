@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using KallitheaKlone.Models.JSONConverter;
+using Newtonsoft.Json;
 
-namespace KallitheaKlone.Models.JSONConverter
+namespace KallitheaKlone.WPF.Models.JSONConverter
 {
     public class NewtonSoftJSONConverter : IJSONConverter
     {

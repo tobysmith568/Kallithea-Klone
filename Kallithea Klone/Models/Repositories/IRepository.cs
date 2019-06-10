@@ -5,6 +5,10 @@
         //  Properties
         //  ==========
 
+        string Name { get; set; }
+
         string URL { get; set; }
+
+        RepositoryType RepositoryType { get; set; }
     }
 }
