@@ -135,6 +135,67 @@ namespace KallitheaKlone.WPF.Models.Repositories.Tests
 
 
         #endregion
+        #region OverwriteAllRespositories
+
+
+        /// <exception cref="Exception"></exception>
+        [Test]
+        public async Task OverwriteAllRespositories_CreatesAppDataFolderIfItDoesNotExist()
+        {
+            Given_subject_appDataFolder_Is(testDirectory);
+            Given_FolderDoesNotExist(testDirectory);
+
+            await subject.OverwriteAllRespositories(null);
+
+            Assert.IsTrue(Directory.Exists(testDirectory));
+        }
+
+        /// <exception cref="Exception"></exception>
+        [Test]
+        public async Task OverwriteAllRepositories_SavesResultOfJSONConverter()
+        {
+            RepositoryFolder repositoryFolder = new RepositoryFolder();
+            string testFileData = "testString";
+
+            Given_subject_appDataFolder_Is(testDirectory);
+            Given_subject_allRepositoriesFile_Is(testFile);
+            Given_FolderDoesExist(testDirectory);
+            Given_jsonConverter_ToJson_ReturnsWhenGiven(testFileData, repositoryFolder);
+
+            bool result = await subject.OverwriteAllRespositories(repositoryFolder);
+
+            Assert.True(result);
+            Assert.AreEqual(testFileData, File.ReadAllText(testFile));
+        }
+
+        /// <exception cref="Exception"></exception>
+        [Test]
+        public async Task OverwriteAllRepositories_ReturnsFalseOnException()
+        {
+            RepositoryFolder repositoryFolder = new RepositoryFolder();
+            string testFileData = "testString";
+
+            Given_subject_appDataFolder_Is(testDirectory);
+            Given_subject_allRepositoriesFile_Is(testFile);
+            Given_FolderDoesExist(testDirectory);
+            Given_FileDoesExistWithData(testFile, string.Empty);
+            Given_jsonConverter_ToJson_ReturnsWhenGiven(testFileData, repositoryFolder);
+
+            bool result;
+
+            using (File.Open(testFile, FileMode.Open))
+            {
+                result = await subject.OverwriteAllRespositories(repositoryFolder);
+            }
+
+            Assert.False(result);
+
+            messagePrompt.Verify(m => m.PromptOK($"Unable to save repositories to storage!{Environment.NewLine}" +
+                                           $"Please reopen the program and try again.", "Error", MessageType.Error), Times.Once);
+        }
+
+
+        #endregion
 
 
         /// <exception cref="Exception"></exception>
@@ -188,6 +249,11 @@ namespace KallitheaKlone.WPF.Models.Repositories.Tests
         private void Given_jsonConverter_FromJson_ThrowsAnException()
         {
             jsonConverter.Setup(j => j.FromJson<RepositoryFolder>(It.IsAny<string>())).Throws(new Exception());
+        }
+
+        private void Given_jsonConverter_ToJson_ReturnsWhenGiven(string testFileData, IRepositoryFolder<RepositoryFolder, Repository> repositoryFolder)
+        {
+            jsonConverter.Setup(j => j.ToJson(repositoryFolder)).Returns(testFileData);
         }
 
         private void Given_messagePrompt_PromptOK_IsStubbed()
