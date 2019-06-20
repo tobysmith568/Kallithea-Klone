@@ -1,11 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kallithea Klone", "Kallithea Klone\Kallithea Klone.csproj", "{8B61B581-EE18-4227-9D58-A525A24C7E47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_Kallithea Klone (Deprecated)", "Kallithea Klone (Deprecated)\_Kallithea Klone (Deprecated).csproj", "{8B61B581-EE18-4227-9D58-A525A24C7E47}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{B89A2749-7692-4025-82C4-8C44B0F98C4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kallithea Klone", "Kallithea Klone\Kallithea Klone.csproj", "{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF Application", "WPF Application\WPF Application.csproj", "{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF Application Tests", "WPF Application Tests\WPF Application Tests.csproj", "{79D814C9-59E8-4B4D-8E13-B48A7F1A7C3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test Utils", "Test Utils\Test Utils.csproj", "{DBE5AA9D-49A0-45F3-8630-67732841355C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +27,22 @@ Global
 		{8B61B581-EE18-4227-9D58-A525A24C7E47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B89A2749-7692-4025-82C4-8C44B0F98C4E}.Debug|Any CPU.ActiveCfg = Debug
 		{B89A2749-7692-4025-82C4-8C44B0F98C4E}.Release|Any CPU.ActiveCfg = Release
+		{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCFA1133-8A2B-4B69-A07A-F4AB9CC62015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB6D353-F2DE-42D0-82A4-AD7A725AFD0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79D814C9-59E8-4B4D-8E13-B48A7F1A7C3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79D814C9-59E8-4B4D-8E13-B48A7F1A7C3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79D814C9-59E8-4B4D-8E13-B48A7F1A7C3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79D814C9-59E8-4B4D-8E13-B48A7F1A7C3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBE5AA9D-49A0-45F3-8630-67732841355C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBE5AA9D-49A0-45F3-8630-67732841355C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBE5AA9D-49A0-45F3-8630-67732841355C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBE5AA9D-49A0-45F3-8630-67732841355C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
