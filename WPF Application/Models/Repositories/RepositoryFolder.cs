@@ -10,12 +10,12 @@ namespace KallitheaKlone.WPF.Models.Repositories
         //  ==========
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [JsonProperty("childFolders")]
-        public ICollection<RepositoryFolder> ChildFolders { get; set; }
+        public ICollection<RepositoryFolder> ChildFolders { get; set; } = new List<RepositoryFolder>();
 
         [JsonProperty("childRepositories")]
-        public ICollection<Repository> ChildRepositories { get; set; }
+        public ICollection<Repository> ChildRepositories { get; set; } = new List<Repository>();
     }
 }

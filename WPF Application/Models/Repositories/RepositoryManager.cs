@@ -13,13 +13,13 @@ namespace KallitheaKlone.WPF.Models.Repositories
         //  =========
 
         private const string AppDataFolderName = "Kallithea Klone";
-        private const string RepositoryFileName = "AppRepositories.dat";
+        private const string RepositoryFileName = "AllRepositories.dat";
 
         //  Variables
         //  =========
 
         private static readonly string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDataFolderName);
-        private static readonly string allReposFile = Path.Combine(appDataFolder, RepositoryFileName);
+        private static readonly string allRepositoriesFile = Path.Combine(appDataFolder, RepositoryFileName);
         private static readonly string nl = Environment.NewLine;
 
         private readonly IMessagePrompt messagePrompt;
@@ -47,13 +47,13 @@ namespace KallitheaKlone.WPF.Models.Repositories
                 {
                     EnsureDirectoryExists();
 
-                    if (!File.Exists(allReposFile))
+                    if (!File.Exists(allRepositoriesFile))
                     {
-                        File.WriteAllText(allReposFile, string.Empty);
+                        File.WriteAllText(allRepositoriesFile, string.Empty);
                         return new RepositoryFolder();
                     }
 
-                    string fileData = File.ReadAllText(allReposFile);
+                    string fileData = File.ReadAllText(allRepositoriesFile);
 
                     RepositoryFolder result = jsonConverter.FromJson<RepositoryFolder>(fileData);
 
@@ -83,7 +83,7 @@ namespace KallitheaKlone.WPF.Models.Repositories
 
                     string fileData = jsonConverter.ToJson(baseRepository);
 
-                    File.WriteAllText(allReposFile, fileData);
+                    File.WriteAllText(allRepositoriesFile, fileData);
 
                     return true;
                 }
