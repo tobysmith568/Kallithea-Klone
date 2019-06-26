@@ -13,7 +13,7 @@ namespace KallitheaKlone.WPF.Models.Repositories
         //  =========
 
         private const string AppDataFolderName = "Kallithea Klone";
-        private const string RepositoryFileName = "AllRepositories.dat";
+        private const string RepositoryFileName = "KallitheaRepositories.dat";
 
         //  Variables
         //  =========

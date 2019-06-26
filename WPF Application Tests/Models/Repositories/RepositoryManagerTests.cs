@@ -23,7 +23,7 @@ namespace KallitheaKlone.WPF.Models.Repositories.Tests
         private Mock<IJSONConverter> jsonConverter;
 
         private static readonly string testDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "testDir");
-        private static readonly string testFile = Path.Combine(testDirectory, "AllRepositories.dat");
+        private static readonly string testFile = Path.Combine(testDirectory, "KallitheaRepositories.dat");
 
         [SetUp]
         public void SetUp()
