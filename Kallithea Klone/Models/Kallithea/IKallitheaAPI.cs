@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
-using KallitheaKlone.Models.Repositories;
+using KallitheaKlone.Models.RemoteRepositories;
 
 namespace KallitheaKlone.Models.Kallithea
 {

@@ -1,7 +1,7 @@
-﻿using KallitheaKlone.Models.Repositories;
+﻿using KallitheaKlone.Models.RemoteRepositories;
 using Newtonsoft.Json;
 
-namespace KallitheaKlone.WPF.Models.Repositories
+namespace KallitheaKlone.WPF.Models.RemoteRepositories
 {
     public class Repository : IRepository
     {

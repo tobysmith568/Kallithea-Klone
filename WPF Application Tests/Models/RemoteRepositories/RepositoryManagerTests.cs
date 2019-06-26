@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using KallitheaKlone.WPF.Models.Repositories;
+using KallitheaKlone.WPF.Models.RemoteRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,9 @@ using KallitheaKlone.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.Models.JSONConverter;
 using System.Reflection;
 using System.IO;
-using KallitheaKlone.Models.Repositories;
+using KallitheaKlone.Models.RemoteRepositories;
 
-namespace KallitheaKlone.WPF.Models.Repositories.Tests
+namespace KallitheaKlone.WPF.Models.RemoteRepositories.Tests
 {
     [TestFixture, IntegrationTests]
     public class RepositoryManagerTests

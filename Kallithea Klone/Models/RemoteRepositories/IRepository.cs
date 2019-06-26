@@ -1,4 +1,4 @@
-﻿namespace KallitheaKlone.Models.Repositories
+﻿namespace KallitheaKlone.Models.RemoteRepositories
 {
     public interface IRepository
     {

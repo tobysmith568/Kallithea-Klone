@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KallitheaKlone.Models.Repositories
+namespace KallitheaKlone.Models.RemoteRepositories
 {
     public interface IRepositoryFolder<F, R> where F : IRepositoryFolder<F, R> where R : IRepository
     {

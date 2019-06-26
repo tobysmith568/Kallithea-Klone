@@ -66,9 +66,9 @@
     </Compile>
     <Compile Include="Models\Dialogs\MessagePrompts\MessagePrompt.cs" />
     <Compile Include="Models\JSONConverter\NewtonSoftJSONConverter.cs" />
-    <Compile Include="Models\Repositories\Repository.cs" />
-    <Compile Include="Models\Repositories\RepositoryFolder.cs" />
-    <Compile Include="Models\Repositories\RepositoryManager.cs" />
+    <Compile Include="Models\RemoteRepositories\Repository.cs" />
+    <Compile Include="Models\RemoteRepositories\RepositoryFolder.cs" />
+    <Compile Include="Models\RemoteRepositories\RepositoryManager.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

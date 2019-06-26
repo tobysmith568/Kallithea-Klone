@@ -69,7 +69,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Models\Repositories\RepositoryManagerTests.cs" />
+    <Compile Include="Models\RemoteRepositories\RepositoryManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

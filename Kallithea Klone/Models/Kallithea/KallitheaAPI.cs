@@ -1,4 +1,4 @@
-﻿using KallitheaKlone.Models.Repositories;
+﻿using KallitheaKlone.Models.RemoteRepositories;
 using Newtonsoft.Json;
 using RestSharp;
 using System;

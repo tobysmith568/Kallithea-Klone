@@ -1,9 +1,9 @@
 ﻿using KallitheaKlone.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.Models.JSONConverter;
-using KallitheaKlone.Models.Repositories;
+using KallitheaKlone.Models.RemoteRepositories;
 using KallitheaKlone.WPF.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.WPF.Models.JSONConverter;
-using KallitheaKlone.WPF.Models.Repositories;
+using KallitheaKlone.WPF.Models.RemoteRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
