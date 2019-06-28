@@ -1,11 +1,11 @@
 ﻿using KallitheaKlone.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.Models.JSONConverter;
-using KallitheaKlone.Models.RemoteRepositories;
+using KallitheaKlone.Models.Repositories.RemoteRepositories;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace KallitheaKlone.WPF.Models.RemoteRepositories
+namespace KallitheaKlone.WPF.Models.Repositories.RemoteRepositories
 {
     public class RepositoryManager : IRepositoryManager<RepositoryFolder, Repository>
     {

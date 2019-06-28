@@ -1,4 +1,4 @@
-﻿namespace KallitheaKlone.Models.RemoteRepositories
+﻿namespace KallitheaKlone.Models.Repositories
 {
     public enum RepositoryType
     {
