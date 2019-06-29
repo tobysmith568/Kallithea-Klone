@@ -5,7 +5,7 @@
         //  Properties
         //  ==========
 
-        string Name { get; set; }
-        IChangeSet ChangeSet { get; set; }
+        string Name { get; }
+        IChangeSet ChangeSet { get; }
     }
 }

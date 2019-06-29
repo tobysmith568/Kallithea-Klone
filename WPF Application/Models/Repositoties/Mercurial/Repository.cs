@@ -36,8 +36,11 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  Constructor
         //  ===========
 
-        public Repository(IRunner runner)
+        public Repository(string uri, string name, IRunner runner)
         {
+            URI = uri ?? throw new ArgumentNullException(nameof(uri));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+
             this.runner = runner ?? throw new ArgumentNullException(nameof(runner));
         }
 
@@ -61,11 +64,9 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                     continue;
                 }
 
-                results.Add(new Branch()
-                {
-                    Name = parts[0],
-                    ChangeSet = await ChangeSet.Load(parts[1], runner)
-                });
+                IChangeSet branchChangeSet = await ChangeSet.Load(parts[1], runner);
+
+                results.Add(new Branch(parts[0], branchChangeSet));
             }
 
             return results;
