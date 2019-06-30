@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KallitheaKlone.Models.Repositories
 {
-    public class VersionControlException : Exception
+    public abstract class VersionControlException : Exception
     {
         //  Constants
         //  =========
