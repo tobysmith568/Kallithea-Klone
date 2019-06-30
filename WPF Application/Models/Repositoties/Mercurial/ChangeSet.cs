@@ -25,8 +25,8 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  Properties
         //  ==========
 
-        public string Number { get; set; }
-        public string Hash { get; set; }
+        public string Number { get; }
+        public string Hash { get; }
         public string ShortHash
         {
             get
@@ -44,17 +44,22 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 return Hash.Substring(0, 12);
             }
         }
-        public string Message { get; set; }
-        public string Author { get; set; }
-        public string Timestamp { get; set; }
-        public ICollection<IDiff> Diffs { get; set; }
+        public string Message { get; }
+        public string Author { get; }
+        public string Timestamp { get; }
+        public ICollection<IFile> Files { get; }
 
         //  Constructors
         //  ============
 
-        private ChangeSet(string number, IRunner runner)
+        private ChangeSet(string number, string hash, string author, string timestamp, string message, IRunner runner)
         {
             Number = number ?? throw new ArgumentNullException(nameof(number));
+            Hash = hash ?? throw new ArgumentNullException(nameof(number));
+            Author = author ?? throw new ArgumentNullException(nameof(author));
+            Timestamp = timestamp ?? throw new ArgumentNullException(nameof(timestamp));
+            Message = message ?? throw new ArgumentNullException(nameof(message));
+
             this.runner = runner ?? throw new ArgumentNullException(nameof(runner));
         }
 
@@ -75,17 +80,11 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 throw new HgException(command, "did not return at least 4 lines");
             }
 
-            IChangeSet result = new ChangeSet(number, runner)
-            {
-                Hash = lines[0],
-                Author = lines[1],
-                Timestamp = lines[2],
-                Message = lines[3]
-            };
+            IChangeSet result = new ChangeSet(number, lines[0], lines[1], lines[2], lines[3], runner);
 
             for (int i = 4; i < lines.Length; i++)
             {
-                result.Files.Add(new File(lines[i]));
+                result.Files.Add(await File.Load(result, lines[i], runner));
             }
 
             return result;

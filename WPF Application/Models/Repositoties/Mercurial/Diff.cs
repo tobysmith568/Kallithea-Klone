@@ -1,20 +1,21 @@
 ﻿using KallitheaKlone.Models.Repositories;
+using KallitheaKlone.Models.Runner;
 
 namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 {
-    public class Diff : IDiff
+    public struct Diff : IDiff
     {
         //  Properties
         //  ==========
 
-        public string Value { get; set; }
+        public string Text { get; }
 
         //  Constructors
         //  ============
 
-        public Diff(string file)
+        public Diff(string text)
         {
-
+            Text = text;
         }
     }
 }
