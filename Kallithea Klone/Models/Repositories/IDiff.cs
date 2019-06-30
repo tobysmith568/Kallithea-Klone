@@ -5,6 +5,6 @@
         //  Properties
         //  ==========
 
-        string Value { get; set; }
+        string Text { get; }
     }
 }

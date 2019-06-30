@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using KallitheaKlone.Models.Runner;
+using System.Collections.Generic;
 
 namespace KallitheaKlone.Models.Repositories
 {
@@ -7,12 +8,12 @@ namespace KallitheaKlone.Models.Repositories
         //  Properties
         //  ==========
 
-        string Number { get; set; }
-        string Hash { get; set; }
+        string Number { get; }
+        string Hash { get; }
         string ShortHash { get; }
-        string Message { get; set; }
-        string Author { get; set; }
-        string Timestamp { get; set; }
-        ICollection<IFile> Files { get; set; }
+        string Message { get; }
+        string Author { get; }
+        string Timestamp { get; }
+        ICollection<IFile> Files { get; }
     }
 }   

@@ -1,10 +1,14 @@
-﻿namespace KallitheaKlone.Models.Repositories
+﻿using System.Collections.Generic;
+
+namespace KallitheaKlone.Models.Repositories
 {
     public interface IFile
     {
-        //  Property
-        //  ========
+        //  Properties
+        //  ==========
 
-        string Filename { get; set; }
+        string Filename { get; }
+
+        ICollection<IDiff> Diffs { get; }
     }
 }
