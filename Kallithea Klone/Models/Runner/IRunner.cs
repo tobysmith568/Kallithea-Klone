@@ -11,6 +11,6 @@ namespace KallitheaKlone.Models.Runner
         //  Methods
         //  =======
 
-        Task<IRunResult> Run(params string[] commands);
+        Task<IRunResult> Run(string repositoryLocation, params string[] commands);
     }
 }

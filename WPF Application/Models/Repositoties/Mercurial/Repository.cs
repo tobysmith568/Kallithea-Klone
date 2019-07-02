@@ -54,7 +54,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
             ICollection<IBranch> results = new List<IBranch>();
 
-            foreach (string line in runResult.StandardOut.Split(lineEndings, StringSplitOptions.RemoveEmptyEntries))
+            foreach (string line in runResult.StandardOut)
             {
                 string[] parts = line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 

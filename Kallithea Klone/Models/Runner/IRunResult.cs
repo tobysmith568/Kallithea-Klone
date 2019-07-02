@@ -1,4 +1,6 @@
-﻿namespace KallitheaKlone.Models.Runner
+﻿using System.Collections.Generic;
+
+namespace KallitheaKlone.Models.Runner
 {
     public interface IRunResult
     {
@@ -6,7 +8,8 @@
         //  ==========
 
         int ExitCode { get; set; }
-        string StandardOut { get; set; }
-        string ErrorOut { get; set; }
+        ICollection<string> AllOut { get; set; }
+        ICollection<string> StandardOut { get; set; }
+        ICollection<string> ErrorOut { get; set; }
     }
 }

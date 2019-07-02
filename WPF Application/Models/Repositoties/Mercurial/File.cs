@@ -50,7 +50,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
             ICollection<IDiff> diffs = new List<IDiff>();
             string text = string.Empty;
-            foreach (string line in runResult.StandardOut.Split(lineEndings, StringSplitOptions.RemoveEmptyEntries))
+            foreach (string line in runResult.StandardOut)
             {
                 if (!line.StartsWith(string.Empty)
                  || !line.StartsWith("diff")

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using KallitheaKlone.Models.Repositories;
@@ -73,16 +74,16 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
             IRunResult runResult = await runner.Run(command);
 
-            string[] lines = runResult.StandardOut.Split(lineEndings, StringSplitOptions.RemoveEmptyEntries);
+            List<string> lines = runResult.StandardOut.ToList();
 
-            if (lines.Length > 4)
+            if (lines.Count > 4)
             {
                 throw new HgException(command, "did not return at least 4 lines");
             }
 
             IChangeSet result = new ChangeSet(number, lines[0], lines[1], lines[2], lines[3], runner);
 
-            for (int i = 4; i < lines.Length; i++)
+            for (int i = 4; i < lines.Count; i++)
             {
                 result.Files.Add(await File.Load(result, lines[i], runner));
             }
