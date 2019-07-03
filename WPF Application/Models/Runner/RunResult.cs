@@ -13,8 +13,8 @@ namespace KallitheaKlone.WPF.Models.Runner
         //  ==========
 
         public int ExitCode { get; set; }
-        public ICollection<string> AllOut { get; set; }
-        public ICollection<string> StandardOut { get; set; }
-        public ICollection<string> ErrorOut { get; set; }
+        public ICollection<string> AllOut { get; set; } = new List<string>();
+        public ICollection<string> StandardOut { get; set; } = new List<string>();
+        public ICollection<string> ErrorOut { get; set; } = new List<string>();
     }
 }
