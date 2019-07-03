@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,11 @@ namespace KallitheaKlone.WPF.Models.Runner
             repositoryLocation = repositoryLocation ?? throw new ArgumentNullException(nameof(repositoryLocation));
             commands = commands ?? throw new ArgumentNullException(nameof(commands));
 
+            if (!Directory.Exists(repositoryLocation))
+            {
+                throw new ArgumentException("Not a valid directory", nameof(repositoryLocation));
+            }
+
             if (commands.Length < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(commands));
@@ -32,7 +38,7 @@ namespace KallitheaKlone.WPF.Models.Runner
 
             try
             {
-                return await Task.Run(() => RunProcess(arguments));
+                return await Task.Run(() => RunProcess(repositoryLocation, arguments));
             }
             catch (Exception e)
             {
@@ -50,7 +56,7 @@ namespace KallitheaKlone.WPF.Models.Runner
         /// <exception cref="System.ComponentModel.Win32Exception"></exception>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="SystemException"></exception>
-        private IRunResult RunProcess(string arguments)
+        private IRunResult RunProcess(string location, string arguments)
         {
             IRunResult result = new RunResult();
 
@@ -70,6 +76,7 @@ namespace KallitheaKlone.WPF.Models.Runner
             {
                 StartInfo = new ProcessStartInfo
                 {
+                    WorkingDirectory = location,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     CreateNoWindow = true,
                     UseShellExecute = false,
