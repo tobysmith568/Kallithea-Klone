@@ -1,7 +1,9 @@
 ﻿using KallitheaKlone.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.Models.JSONConverter;
+using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.WPF.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.WPF.Models.JSONConverter;
+using KallitheaKlone.WPF.Models.Repositoties.Mercurial;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,8 +31,13 @@ namespace KallitheaKlone.WPF.Views
 
         }
 
+        /// <exception cref="VersionControlException"></exception>
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            IRepository repo = new Repository(@"D:\Users\Toby\Downloads\V21product", "My Repo");
+            ICollection<IChangeSet> changeSets = await repo.GetAllChangeSets();
+            ICollection<IBranch> branches = await repo.GetAllBranches();
+            Console.WriteLine("");
         }
     }
 }

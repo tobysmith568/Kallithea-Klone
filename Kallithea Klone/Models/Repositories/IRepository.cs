@@ -20,9 +20,14 @@ namespace KallitheaKlone.Models.Repositories
 
         /// <exception cref="VersionControlException"></exception>
         Task<ICollection<IBranch>> GetAllBranches();
+
         IBranch GetCurrentBranch();
+
         ICollection<ITag> GetAllTags();
+
+        /// <exception cref="VersionControlException"></exception>
         Task<ICollection<IChangeSet>> GetAllChangeSets();
+
         IChangeSet GetCurrentChangeSet();
     }
 }

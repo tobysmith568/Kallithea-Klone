@@ -16,6 +16,9 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         private const string NewLine = "\n";
         private const string BothNewLines = CarriageReturn + NewLine;
 
+        private const string ChangeSetFromNumberTemplate = "\"{node}\\n{author}\\n{date|isodatesec}\\n{desc}\\n\"";
+        private const int ChangeSetFromNumberTemplateParts = 4;
+
         //  Variables
         //  =========
 
@@ -53,7 +56,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  Constructors
         //  ============
 
-        private ChangeSet(string number, string hash, string author, string timestamp, string message, IRunner runner)
+        public ChangeSet(string number, string hash, string author, string timestamp, string message, IRunner runner)
         {
             Number = number ?? throw new ArgumentNullException(nameof(number));
             Hash = hash ?? throw new ArgumentNullException(nameof(number));
@@ -68,22 +71,22 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  =======
 
         /// <exception cref="HgException"></exception>
-        public async static Task<IChangeSet> Load(string number, IRunner runner)
+        public async static Task<IChangeSet> FromNumber(string number, IRunner runner)
         {
-            string command = "hg log -y --template \"{node}\n{author}\n{date|isodatesec}\n{desc}\" -r " + number;
+            string command = $"hg log -y --template {ChangeSetFromNumberTemplate} -r {number}";
 
             IRunResult runResult = await runner.Run(command);
 
             List<string> lines = runResult.StandardOut.ToList();
 
-            if (lines.Count > 4)
+            if (lines.Count > ChangeSetFromNumberTemplateParts)
             {
-                throw new HgException(command, "did not return at least 4 lines");
+                throw new HgException(command, $"did not return at least {ChangeSetFromNumberTemplateParts} lines");
             }
 
             IChangeSet result = new ChangeSet(number, lines[0], lines[1], lines[2], lines[3], runner);
 
-            for (int i = 4; i < lines.Count; i++)
+            for (int i = ChangeSetFromNumberTemplateParts; i < lines.Count; i++)
             {
                 result.Files.Add(await File.Load(result, lines[i], runner));
             }
