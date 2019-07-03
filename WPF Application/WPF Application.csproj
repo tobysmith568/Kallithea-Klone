@@ -66,9 +66,17 @@
     </Compile>
     <Compile Include="Models\Dialogs\MessagePrompts\MessagePrompt.cs" />
     <Compile Include="Models\JSONConverter\NewtonSoftJSONConverter.cs" />
-    <Compile Include="Models\RemoteRepositories\Repository.cs" />
-    <Compile Include="Models\RemoteRepositories\RepositoryFolder.cs" />
-    <Compile Include="Models\RemoteRepositories\RepositoryManager.cs" />
+    <Compile Include="Models\Repositoties\Mercurial\Branch.cs" />
+    <Compile Include="Models\Repositoties\Mercurial\ChangeSet.cs" />
+    <Compile Include="Models\Repositoties\Mercurial\Diff.cs" />
+    <Compile Include="Models\Repositoties\Mercurial\File.cs" />
+    <Compile Include="Models\Repositoties\Mercurial\HgException.cs" />
+    <Compile Include="Models\Repositoties\Mercurial\Repository.cs" />
+    <Compile Include="Models\Repositoties\RemoteRepositories\Repository.cs" />
+    <Compile Include="Models\Repositoties\RemoteRepositories\RepositoryFolder.cs" />
+    <Compile Include="Models\Repositoties\RemoteRepositories\RepositoryManager.cs" />
+    <Compile Include="Models\Runner\Runner.cs" />
+    <Compile Include="Models\Runner\RunResult.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -111,6 +119,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Repositoties\Git\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

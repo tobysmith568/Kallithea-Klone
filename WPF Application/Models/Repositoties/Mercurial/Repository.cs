@@ -82,6 +82,11 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
             throw new NotImplementedException();
         }
 
+        public async Task<ICollection<IChangeSet>> GetAllChangeSets()
+        {
+
+        }
+
         public IChangeSet GetCurrentChangeSet()
         {
             throw new NotImplementedException();

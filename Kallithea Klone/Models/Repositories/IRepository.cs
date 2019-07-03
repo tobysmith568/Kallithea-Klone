@@ -22,6 +22,7 @@ namespace KallitheaKlone.Models.Repositories
         Task<ICollection<IBranch>> GetAllBranches();
         IBranch GetCurrentBranch();
         ICollection<ITag> GetAllTags();
+        Task<ICollection<IChangeSet>> GetAllChangeSets();
         IChangeSet GetCurrentChangeSet();
     }
 }

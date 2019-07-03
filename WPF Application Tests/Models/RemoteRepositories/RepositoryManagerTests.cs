@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using KallitheaKlone.WPF.Models.RemoteRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,8 @@ using KallitheaKlone.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.Models.JSONConverter;
 using System.Reflection;
 using System.IO;
-using KallitheaKlone.Models.RemoteRepositories;
+using KallitheaKlone.WPF.Models.Repositories.RemoteRepositories;
+using KallitheaKlone.Models.Repositories.RemoteRepositories;
 
 namespace KallitheaKlone.WPF.Models.RemoteRepositories.Tests
 {
