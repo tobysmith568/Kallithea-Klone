@@ -30,7 +30,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  ==========
 
         public string Number { get; }
-        public string Hash { get; }
+        public string Hash { get; private set; }
         public string ShortHash
         {
             get
@@ -48,13 +48,20 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 return Hash.Substring(0, 12);
             }
         }
-        public string Message { get; }
-        public string Author { get; }
-        public string Timestamp { get; }
-        public ICollection<IFile> Files { get; }
+        public string Message { get; private set; }
+        public string Author { get; private set; }
+        public string Timestamp { get; private set; }
+        public ICollection<IFile> Files { get; private set; }
 
         //  Constructors
         //  ============
+
+        public ChangeSet(string number, IRunner runner)
+        {
+            Number = number ?? throw new ArgumentNullException(nameof(number));
+
+            this.runner = runner ?? throw new ArgumentNullException(nameof(runner));
+        }
 
         public ChangeSet(string number, string hash, string author, string timestamp, string message, IRunner runner)
         {
@@ -71,9 +78,9 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  =======
 
         /// <exception cref="HgException"></exception>
-        public async static Task<IChangeSet> FromNumber(string number, IRunner runner)
+        public async void Load()
         {
-            string command = $"hg log -y --template {ChangeSetFromNumberTemplate} -r {number}";
+            string command = $"hg log -y --template {ChangeSetFromNumberTemplate} -r {Number}";
 
             IRunResult runResult = await runner.Run(command);
 
@@ -84,14 +91,15 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 throw new HgException(command, $"did not return at least {ChangeSetFromNumberTemplateParts} lines");
             }
 
-            IChangeSet result = new ChangeSet(number, lines[0], lines[1], lines[2], lines[3], runner);
+            Hash = lines[0];
+            Author = lines[1];
+            Timestamp = lines[2];
+            Message = lines[3];
 
             for (int i = ChangeSetFromNumberTemplateParts; i < lines.Count; i++)
             {
-                result.Files.Add(await File.Load(result, lines[i], runner));
+                Files.Add(await File.Load(this, lines[i], runner));
             }
-
-            return result;
         }
     }
 }

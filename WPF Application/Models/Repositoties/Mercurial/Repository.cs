@@ -74,7 +74,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
             ICollection<IBranch> results = new List<IBranch>();
             for (int i = 0; i < lines.Count; i += AllBranchesTemplateParts)
             {
-                IChangeSet branchChangeSet = await ChangeSet.FromNumber(lines[i + 1], runner);
+                IChangeSet branchChangeSet = new ChangeSet(lines[i + 1], runner);
                 results.Add(new Branch(lines[i], branchChangeSet));
             }
 
