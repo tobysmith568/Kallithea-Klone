@@ -1,5 +1,6 @@
 ﻿using KallitheaKlone.Models.Runner;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace KallitheaKlone.Models.Repositories
 {
@@ -15,5 +16,10 @@ namespace KallitheaKlone.Models.Repositories
         string Author { get; }
         string Timestamp { get; }
         ICollection<IFile> Files { get; }
+
+        //  Methods
+        //  =======
+
+        Task Load();
     }
 }   

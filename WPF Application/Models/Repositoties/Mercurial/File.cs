@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 {
-    public struct File : IFile
+    public class File : IFile
     {
         //  Constants
         //  =========
@@ -18,6 +18,8 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  Variables
         //  =========
 
+        private IRunner runner;
+
         private readonly static string[] lineEndings = { CarriageReturn, NewLine, BothNewLines };
 
         //  Properties
@@ -25,30 +27,30 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
         public string Filename { get; }
 
-        public ICollection<IDiff> Diffs { get; }
+        public ICollection<IDiff> Diffs { get; } = new List<IDiff>();
+
+        public IChangeSet ChangeSet { get; }
 
         //  Constructors
         //  ============
 
-        private File(string filename, ICollection<IDiff> diffs)
+        public File(IChangeSet changeSet, string filename, IRunner runner)
         {
+            ChangeSet = changeSet ?? throw new ArgumentNullException(nameof(changeSet));
             Filename = filename ?? throw new ArgumentNullException(nameof(filename));
-            Diffs = diffs ?? throw new ArgumentNullException(nameof(diffs));
+
+            this.runner = runner ?? throw new ArgumentNullException(nameof(runner));
         }
 
         //  Methods
         //  =======
 
-        public static async Task<IFile> Load(IChangeSet changeSet, string filename, IRunner runner)
+        public async Task Load()
         {
-            changeSet = changeSet ?? throw new ArgumentNullException(nameof(changeSet));
-            runner = runner ?? throw new ArgumentNullException(nameof(runner));
-
-            string command = $"hg diff -y --git -U 3 --noprefix --change {changeSet.Number} path:{filename}";
+            string command = $"hg diff -y --git -U 3 --noprefix --change {ChangeSet.Number} path:{Filename}";
 
             IRunResult runResult = await runner.Run(command);
 
-            ICollection<IDiff> diffs = new List<IDiff>();
             string text = string.Empty;
             foreach (string line in runResult.StandardOut)
             {
@@ -64,7 +66,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 {
                     if (text != string.Empty)
                     {
-                        diffs.Add(new Diff(text));
+                        Diffs.Add(new Diff(text));
                         text = string.Empty;
                     }
                     continue;
@@ -73,7 +75,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 text += Environment.NewLine + line;
             }
 
-            return new File(filename, diffs);
+
         }
     }
 }
