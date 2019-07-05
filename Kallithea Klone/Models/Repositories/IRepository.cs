@@ -14,20 +14,14 @@ namespace KallitheaKlone.Models.Repositories
         RepositoryType RepositoryType { get; }
         string URI { get; set; }
         string Name { get; set; }
+        ICollection<IChangeSet> ChangeSets { get; }
+        ICollection<IBranch> Branches { get; }
+        ICollection<ITag> Tags { get; }
 
         //  Methods
         //  =======
 
         /// <exception cref="VersionControlException"></exception>
-        Task<ICollection<IBranch>> GetAllBranches();
-
-        IBranch GetCurrentBranch();
-
-        ICollection<ITag> GetAllTags();
-
-        /// <exception cref="VersionControlException"></exception>
-        Task<ICollection<IChangeSet>> GetAllChangeSets();
-
-        IChangeSet GetCurrentChangeSet();
+        Task Load();
     }
 }

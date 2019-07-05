@@ -29,9 +29,6 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
         private readonly IRunner runner;
 
-        private static readonly string[] lineEndings = { CarriageReturn, NewLine, BothNewLines};
-        private static readonly char[] delimiters = { ' ', ':' };
-
         private int maximumChangesets = 100;
 
         //  Properties
@@ -41,6 +38,9 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
         public string URI { get; set; }
         public string Name { get; set; }
+        public ICollection<IChangeSet> ChangeSets { get; } = new List<IChangeSet>();
+        public ICollection<IBranch> Branches { get; } = new List<IBranch>();
+        public ICollection<ITag> Tags { get; } = new List<ITag>();
 
         //  Constructor
         //  ===========
@@ -57,42 +57,15 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  =======
 
         /// <exception cref="VersionControlException"></exception>
-        public async Task<ICollection<IBranch>> GetAllBranches()
+        public async Task Load()
         {
-            string command = $"hg branches {StandardArgs} --template {AllBranchesTemplate}";
-
-            IRunResult runResult = await runner.Run(command);
-
-            List<string> lines = runResult.StandardOut.ToList();
-
-            if (lines.Count % AllBranchesTemplateParts != 0)
-            {
-#warning TODO LOG
-                throw new HgException(command, $"Returned [{lines.Count}] lines which isn't a multiple of [{AllBranchesTemplateParts}]");
-            }
-
-            ICollection<IBranch> results = new List<IBranch>();
-            for (int i = 0; i < lines.Count; i += AllBranchesTemplateParts)
-            {
-                IChangeSet branchChangeSet = new ChangeSet(lines[i + 1], runner);
-                results.Add(new Branch(lines[i], branchChangeSet));
-            }
-
-            return results;
-        }
-
-        public ICollection<ITag> GetAllTags()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IBranch GetCurrentBranch()
-        {
-            throw new NotImplementedException();
+            await LoadAllChangeSets();
+            await LoadAllBranches();
+#warning TODO await LoadAllTags();
         }
 
         /// <exception cref="VersionControlException"></exception>
-        public async Task<ICollection<IChangeSet>> GetAllChangeSets()
+        private async Task LoadAllChangeSets()
         {
             string command = $"hg log {StandardArgs} --template {AllChangeSetsTemplate} -l {maximumChangesets}";
 
@@ -106,16 +79,35 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 throw new HgException(command, $"Returned [{lines.Count}] lines which isn't a multiple of [{AllChangeSetsTemplateParts}]");
             }
 
-            ICollection<IChangeSet> result = new List<IChangeSet>();
             for (int i = 0; i < lines.Count; i += AllChangeSetsTemplateParts)
             {
-                result.Add(new ChangeSet(lines[i], lines[i + 1], lines[i + 2], lines[i + 3], lines[i + 4], runner));
+                ChangeSets.Add(new ChangeSet(lines[i], lines[i + 1], lines[i + 2], lines[i + 3], lines[i + 4], runner));
             }
-
-            return result;
         }
 
-        public IChangeSet GetCurrentChangeSet()
+        /// <exception cref="VersionControlException"></exception>
+        private async Task LoadAllBranches()
+        {
+            string command = $"hg branches {StandardArgs} --template {AllBranchesTemplate}";
+
+            IRunResult runResult = await runner.Run(command);
+
+            List<string> lines = runResult.StandardOut.ToList();
+
+            if (lines.Count % AllBranchesTemplateParts != 0)
+            {
+#warning TODO LOG
+                throw new HgException(command, $"Returned [{lines.Count}] lines which isn't a multiple of [{AllBranchesTemplateParts}]");
+            }
+
+            for (int i = 0; i < lines.Count; i += AllBranchesTemplateParts)
+            {
+                IChangeSet branchChangeSet = new ChangeSet(lines[i + 1], runner);
+                Branches.Add(new Branch(lines[i], branchChangeSet));
+            }
+        }
+
+        private async Task LoadAllTags()
         {
             throw new NotImplementedException();
         }
