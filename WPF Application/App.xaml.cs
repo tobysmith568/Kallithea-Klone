@@ -1,4 +1,5 @@
 ﻿using KallitheaKlone.Models.Dialogs.MessagePrompts;
+using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.ViewModels;
 using KallitheaKlone.WPF.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.WPF.Models.Repositoties.Mercurial;
@@ -28,11 +29,11 @@ namespace WPF_Application
         //  ======
 
         /// <exception cref="InvalidOperationException">Ignore.</exception>
-        protected override void OnStartup(StartupEventArgs e)
+        protected async override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             SetUpImplementations();
-            ShowMainWindow();
+            await ShowMainWindow();
         }
 
         //  Methods
@@ -44,15 +45,19 @@ namespace WPF_Application
         }
 
         /// <exception cref="InvalidOperationException"></exception>
-        private void ShowMainWindow()
+        /// <exception cref="VersionControlException">Ignore.</exception>
+        private async Task ShowMainWindow()
         {
             var mainWindowViewModel = container.Resolve<MainWindowViewModel>();
             var window = new MainWindow { DataContext = mainWindowViewModel };
             window.Show();
 
+            IRepository repo = new Repository(@"D:\Users\Toby\Downloads\V21product", "V21 Product");
+            await repo.Load();
+
             mainWindowViewModel.Repositories = new System.Collections.ObjectModel.ObservableCollection<KallitheaKlone.Models.Repositories.IRepository>()
             {
-                new Repository(@"D:\Users\Toby\Downloads\V21product", "V21 Product")
+                repo
             };
         }
     }

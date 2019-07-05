@@ -2,6 +2,7 @@
 using KallitheaKlone.Models.Runner;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -39,7 +40,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         public string URI { get; set; }
         public string Name { get; set; }
         public ICollection<IChangeSet> ChangeSets { get; } = new List<IChangeSet>();
-        public ICollection<IBranch> Branches { get; } = new List<IBranch>();
+        public ObservableCollection <IBranch> Branches { get; } = new ObservableCollection<IBranch>();
         public ICollection<ITag> Tags { get; } = new List<ITag>();
 
         //  Constructor
