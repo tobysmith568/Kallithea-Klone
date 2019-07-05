@@ -34,10 +34,7 @@ namespace KallitheaKlone.WPF.Views
         /// <exception cref="VersionControlException"></exception>
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            IRepository repo = new Repository(@"D:\Users\Toby\Downloads\V21product", "My Repo");
-            ICollection<IChangeSet> changeSets = await repo.GetAllChangeSets();
-            ICollection<IBranch> branches = await repo.GetAllBranches();
-            Console.WriteLine("");
+            
         }
     }
 }

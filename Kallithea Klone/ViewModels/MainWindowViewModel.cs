@@ -1,5 +1,7 @@
-﻿using System;
+﻿using KallitheaKlone.Models.Repositories;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,17 +13,23 @@ namespace KallitheaKlone.ViewModels
         //  Variables
         //  =========
 
+        private ObservableCollection<IRepository> repositories;
+
         //  Properties
         //  ==========
 
-        //public Command Whatever { get; }
+        public ObservableCollection<IRepository> Repositories
+        {
+            get => repositories;
+            set => PropertyChanging(value, ref repositories, nameof(Repositories));
+        }
 
         //  Constructors
         //  ============
 
         public MainWindowViewModel()
         {
-            //Whatever = new Command(DoWhatever);
+            Repositories = new ObservableCollection<IRepository>();
         }
 
         //  Methods

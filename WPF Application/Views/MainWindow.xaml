@@ -4,9 +4,27 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KallitheaKlone.WPF.Views"
+        xmlns:ViewModels="clr-namespace:KallitheaKlone.ViewModels;assembly=KallitheaKlone"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="612" Width="923" Loaded="Window_Loaded">
+    <Window.DataContext>
+        <ViewModels:MainWindowViewModel />
+    </Window.DataContext>
     <Grid>
-        
+        <TabControl Margin="0,30,0,0" ItemsSource="{Binding Repositories}">
+            <TabControl.ItemTemplate>
+                <!-- this is the header template-->
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <!-- this is the body of the TabItem template-->
+                <DataTemplate>
+                    <TextBlock Text="{Binding URI}" />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+
     </Grid>
 </Window>
