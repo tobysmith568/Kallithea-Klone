@@ -41,15 +41,25 @@
                         </ListBox>
 
                         <!-- Main Column -->
-                        <ListBox x:Name="ChangeSets" Focusable="False" Margin="0" Grid.Column="2" ItemsSource="{Binding ChangeSets}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid x:Name="BranchesTemplate" Height="30" Margin="0,0">
-                                        <TextBlock Text="{Binding Message}" HorizontalAlignment="Left"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <Grid x:Name="MainGrid" Margin="0" Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Top Row -->
+                            <DataGrid Grid.Row="0" ItemsSource="{Binding ChangeSets, Mode=OneTime}" AutoGenerateColumns="False" Margin="0" SelectionMode="Single"
+                                      SelectionUnit="FullRow" CanUserResizeRows="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserAddRows="False"
+                                      CanUserSortColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Revision" Width="75" IsReadOnly="True" Binding="{Binding Number, Mode=OneTime}"/>
+                                    <DataGridTextColumn Header="Message" Width="250" IsReadOnly="True" Binding="{Binding Message, Mode=OneTime}"/>
+                                    <DataGridTextColumn Header="Timestamp" Width="150" IsReadOnly="True" Binding="{Binding Timestamp, Mode=OneTime}"/>
+                                    <DataGridTextColumn Header="Author" Width="150" IsReadOnly="True" Binding="{Binding Author, Mode=OneTime}"/>
+                                    <DataGridTextColumn Header="Hash" Width="1*" IsReadOnly="True" Binding="{Binding Hash, Mode=OneTime}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
