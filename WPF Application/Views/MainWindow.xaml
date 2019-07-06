@@ -8,7 +8,13 @@
         xmlns:Properties="clr-namespace:KallitheaKlone.WPF.Properties"
         xmlns:Converters="clr-namespace:KallitheaKlone.WPF.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="612" Width="923" Loaded="Window_Loaded">
+        Title="MainWindow"
+        Loaded="Window_Loaded"
+        WindowState="{Binding Source={x:Static Properties:MainWindow.Default}, Path=WindowState, Mode=TwoWay, Converter={Converters:IntegerToWindowStateConverter}}"    
+        Height="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Height, Mode=TwoWay}" 
+        Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Width, Mode=TwoWay}"
+        Left="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Left, Mode=TwoWay}" 
+        Top="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Top, Mode=TwoWay}">
     <Window.DataContext>
         <ViewModels:MainWindowViewModel />
     </Window.DataContext>

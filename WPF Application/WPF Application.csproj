@@ -75,6 +75,7 @@
     </Compile>
     <Compile Include="Converters\BaseConverter.cs" />
     <Compile Include="Converters\DoubleToPixelGridWidthConverter.cs" />
+    <Compile Include="Converters\IntegerToWindowStateConverter.cs" />
     <Compile Include="Models\Dialogs\MessagePrompts\MessagePrompt.cs" />
     <Compile Include="Models\JSONConverter\NewtonSoftJSONConverter.cs" />
     <Compile Include="Models\Repositoties\Mercurial\Branch.cs" />

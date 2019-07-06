@@ -53,6 +53,7 @@ namespace KallitheaKlone.WPF.Views
         private void ResetPartition()
         {
             Properties.MainWindow.Default.LeftColumnWidth = 150;
+            Properties.MainWindow.Default.Save();
         }
     }
 }
