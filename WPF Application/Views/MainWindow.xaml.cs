@@ -25,16 +25,34 @@ namespace KallitheaKlone.WPF.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        //  Constructors
+        //  ============
+
         public MainWindow()
         {
             InitializeComponent();
 
         }
 
+        //  Events
+        //  ======
+
         /// <exception cref="VersionControlException"></exception>
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
+        }
+
+        private void LeftColumnSplitter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                ResetPartition();
+            }
+        }
+
+        private void ResetPartition()
+        {
+            Properties.MainWindow.Default.LeftColumnWidth = 150;
         }
     }
 }

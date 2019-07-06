@@ -73,6 +73,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\BaseConverter.cs" />
+    <Compile Include="Converters\DoubleToPixelGridWidthConverter.cs" />
     <Compile Include="Models\Dialogs\MessagePrompts\MessagePrompt.cs" />
     <Compile Include="Models\JSONConverter\NewtonSoftJSONConverter.cs" />
     <Compile Include="Models\Repositoties\Mercurial\Branch.cs" />
@@ -86,6 +88,13 @@
     <Compile Include="Models\Repositoties\RemoteRepositories\RepositoryManager.cs" />
     <Compile Include="Models\Runner\Runner.cs" />
     <Compile Include="Models\Runner\RunResult.cs" />
+    <Compile Include="Properties\MainWindow.cs" />
+    <Compile Include="Properties\MainWindow.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MainWindow.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -109,6 +118,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Properties\MainWindow.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>MainWindow.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
