@@ -55,7 +55,7 @@ namespace WPF_Application
             IRepository repo = new Repository(@"D:\Users\Toby\Downloads\V21product", "V21 Product");
             await repo.Load();
 
-            mainWindowViewModel.Repositories = new System.Collections.ObjectModel.ObservableCollection<KallitheaKlone.Models.Repositories.IRepository>()
+            mainWindowViewModel.Repositories = new System.Collections.ObjectModel.ObservableCollection<IRepository>()
             {
                 repo
             };

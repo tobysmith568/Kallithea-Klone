@@ -40,7 +40,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         public string URI { get; set; }
         public string Name { get; set; }
         public ICollection<IChangeSet> ChangeSets { get; } = new List<IChangeSet>();
-        public ObservableCollection <IBranch> Branches { get; } = new ObservableCollection<IBranch>();
+        public ObservableCollection <IBranch> Branches { get; private set; } = new ObservableCollection<IBranch>();
         public ICollection<ITag> Tags { get; } = new List<ITag>();
 
         //  Constructor
@@ -106,6 +106,8 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 IChangeSet branchChangeSet = new ChangeSet(lines[i + 1], runner);
                 Branches.Add(new Branch(lines[i], branchChangeSet));
             }
+
+            Branches = new ObservableCollection<IBranch>(Branches.OrderBy(b => b.Name));
         }
 
         private async Task LoadAllTags()
