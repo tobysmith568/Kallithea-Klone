@@ -94,5 +94,65 @@ namespace KallitheaKlone.WPF.Properties {
                 this["Top"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
+        public double NumberColumnWidth {
+            get {
+                return ((double)(this["NumberColumnWidth"]));
+            }
+            set {
+                this["NumberColumnWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public double MessageColumnWidth {
+            get {
+                return ((double)(this["MessageColumnWidth"]));
+            }
+            set {
+                this["MessageColumnWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double TimestampColumnWidth {
+            get {
+                return ((double)(this["TimestampColumnWidth"]));
+            }
+            set {
+                this["TimestampColumnWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public double AuthorColumnWidth {
+            get {
+                return ((double)(this["AuthorColumnWidth"]));
+            }
+            set {
+                this["AuthorColumnWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public double HashColumnWidth {
+            get {
+                return ((double)(this["HashColumnWidth"]));
+            }
+            set {
+                this["HashColumnWidth"] = value;
+            }
+        }
     }
 }
