@@ -39,9 +39,9 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
         public string URI { get; set; }
         public string Name { get; set; }
-        public ICollection<IChangeSet> ChangeSets { get; } = new List<IChangeSet>();
+        public ObservableCollection<IChangeSet> ChangeSets { get; } = new ObservableCollection<IChangeSet>();
         public ObservableCollection <IBranch> Branches { get; private set; } = new ObservableCollection<IBranch>();
-        public ICollection<ITag> Tags { get; } = new List<ITag>();
+        public ObservableCollection<ITag> Tags { get; } = new ObservableCollection<ITag>();
 
         //  Constructor
         //  ===========

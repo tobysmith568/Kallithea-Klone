@@ -15,9 +15,9 @@ namespace KallitheaKlone.Models.Repositories
         RepositoryType RepositoryType { get; }
         string URI { get; set; }
         string Name { get; set; }
-        ICollection<IChangeSet> ChangeSets { get; }
+        ObservableCollection<IChangeSet> ChangeSets { get; }
         ObservableCollection<IBranch> Branches { get; }
-        ICollection<ITag> Tags { get; }
+        ObservableCollection<ITag> Tags { get; }
 
         //  Methods
         //  =======
