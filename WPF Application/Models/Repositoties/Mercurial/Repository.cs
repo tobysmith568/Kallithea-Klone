@@ -13,10 +13,6 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  Constants
         //  =========
 
-        private const string CarriageReturn = "\r";
-        private const string NewLine = "\n";
-        private const string BothNewLines = CarriageReturn + NewLine;
-
         private const string StandardArgs = "-y --pager no";
 
         private const string AllBranchesTemplate = "\"{branch}\\n{rev}\\n\"";
@@ -42,6 +38,8 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         public ObservableCollection<IChangeSet> ChangeSets { get; } = new ObservableCollection<IChangeSet>();
         public ObservableCollection <IBranch> Branches { get; private set; } = new ObservableCollection<IBranch>();
         public ObservableCollection<ITag> Tags { get; } = new ObservableCollection<ITag>();
+
+        public IChangeSet SelectedChangeSet { get; set; }
 
         //  Constructor
         //  ===========

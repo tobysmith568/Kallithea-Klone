@@ -19,7 +19,12 @@
         <ViewModels:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <TabControl Margin="0,30,0,0" ItemsSource="{Binding Repositories}">
+
+        <!-- ViewModel Event Buttons -->
+        <Button Visibility="Hidden" Name="VMLoadSelectedChangeSetEvent" Command="{Binding LoadSelectedChangeSet}"/>
+        
+        <!-- Main Content -->
+        <TabControl x:Name="tabControl" Margin="0,30,0,0" ItemsSource="{Binding Repositories}">
             <TabControl.ItemTemplate>
                 <!-- Header Template-->
                 <DataTemplate>
@@ -57,11 +62,11 @@
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
-                            
+
                             <!-- Top Row -->
-                            <DataGrid Grid.Row="0" ItemsSource="{Binding ChangeSets, Mode=OneTime}" AutoGenerateColumns="False" Margin="0" SelectionMode="Single"
+                            <DataGrid x:Name="DataGrid" Grid.Row="0" ItemsSource="{Binding ChangeSets, Mode=OneTime}" AutoGenerateColumns="False" Margin="0" SelectionMode="Single"
                                       SelectionUnit="FullRow" CanUserResizeRows="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserAddRows="False"
-                                      CanUserSortColumns="False" GridLinesVisibility="None">
+                                      CanUserSortColumns="False" GridLinesVisibility="None" SelectedCellsChanged="DataGrid_SelectedCellsChanged" SelectedItem="{Binding SelectedChangeSet, Mode=TwoWay}" >
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Revision" IsReadOnly="True" Binding="{Binding Number, Mode=OneTime}"
                                                         Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=NumberColumnWidth, Mode=TwoWay, Converter={Converters:DoubleToStarDataGridLengthConverter}}" />
@@ -75,11 +80,34 @@
                                                         Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=HashColumnWidth, Mode=TwoWay, Converter={Converters:DoubleToStarDataGridLengthConverter}}" />
                                 </DataGrid.Columns>
                             </DataGrid>
+
+                            <!-- Bottom Row -->
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+
+                                <TextBox Text="{Binding SelectedChangeSet.Message, Mode=OneWay}" Grid.Column="0" Grid.Row="0" />
+
+                                <ListView x:Name="ChangeSetFilesViewer" Margin="0" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding SelectedChangeSet.Files}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid x:Name="FileListTemplate" Height="30" Margin="0,0">
+                                                <TextBlock Text="{Binding Filename, Mode=OneWay}" Margin="5" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListView>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
-
     </Grid>
 </Window>

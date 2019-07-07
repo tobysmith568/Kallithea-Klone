@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.Models.Runner;
+using System.Collections.ObjectModel;
 
 namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 {
@@ -53,7 +54,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         public string Message { get; private set; }
         public string Author { get; private set; }
         public string Timestamp { get; private set; }
-        public ICollection<IFile> Files { get; private set; } = new List<IFile>();
+        public ObservableCollection<IFile> Files { get; private set; } = new ObservableCollection<IFile>();
 
         //  Constructors
         //  ============
@@ -99,6 +100,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
             Timestamp = lines[2];
             Message = lines[3];
 
+            Files.Clear();
             for (int i = ChangeSetFromNumberTemplateParts; i < lines.Count; i++)
             {
                 Files.Add(new File(this, lines[i], runner));

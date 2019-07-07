@@ -24,21 +24,29 @@ namespace KallitheaKlone.ViewModels
             set => PropertyChanging(value, ref repositories, nameof(Repositories));
         }
 
+        public Command<IChangeSet> LoadSelectedChangeSet { get; }
+
         //  Constructors
         //  ============
 
         public MainWindowViewModel()
         {
             Repositories = new ObservableCollection<IRepository>();
+
+            LoadSelectedChangeSet = new Command<IChangeSet>(DoLoadSelectedChangeSet);
         }
 
         //  Methods
         //  =======
 
-        /*
-         
-        DoWhatever
+        private async void DoLoadSelectedChangeSet(IChangeSet changeSet)
+        {
+            await changeSet.Load();
 
-         */
+            foreach (IFile file in changeSet.Files)
+            {
+                await file.Load();
+            }
+        }
     }
 }

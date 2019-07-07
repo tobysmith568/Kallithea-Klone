@@ -15,9 +15,12 @@ namespace KallitheaKlone.Models.Repositories
         RepositoryType RepositoryType { get; }
         string URI { get; set; }
         string Name { get; set; }
+
         ObservableCollection<IChangeSet> ChangeSets { get; }
         ObservableCollection<IBranch> Branches { get; }
         ObservableCollection<ITag> Tags { get; }
+
+        IChangeSet SelectedChangeSet { get; set; }
 
         //  Methods
         //  =======

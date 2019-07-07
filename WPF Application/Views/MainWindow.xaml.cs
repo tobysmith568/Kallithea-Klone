@@ -31,7 +31,6 @@ namespace KallitheaKlone.WPF.Views
         public MainWindow()
         {
             InitializeComponent();
-
         }
 
         //  Events
@@ -54,6 +53,24 @@ namespace KallitheaKlone.WPF.Views
         {
             Properties.MainWindow.Default.LeftColumnWidth = 150;
             Properties.MainWindow.Default.Save();
+        }
+
+        private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            ICollection<IChangeSet> processedChangeSets = new List<IChangeSet>();
+            foreach (DataGridCellInfo cell in e.AddedCells)
+            {
+                IChangeSet changeSet = (IChangeSet)cell.Item;
+
+                if (processedChangeSets.Contains(changeSet))
+                {
+                    continue;
+                }
+
+                VMLoadSelectedChangeSetEvent.Command.Execute(changeSet);
+
+                processedChangeSets.Add(changeSet);
+            }
         }
     }
 }
