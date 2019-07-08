@@ -1,10 +1,12 @@
-﻿namespace KallitheaKlone.Models.Repositories
+﻿using System.Collections.ObjectModel;
+
+namespace KallitheaKlone.Models.Repositories
 {
     public interface IDiff
     {
         //  Properties
         //  ==========
 
-        string Text { get; }
+        ObservableCollection<string> Text { get; }
     }
 }

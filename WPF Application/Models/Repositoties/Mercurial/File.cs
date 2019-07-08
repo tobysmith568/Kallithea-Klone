@@ -52,7 +52,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
             IRunResult runResult = await runner.Run(command);
 
-            string text = string.Empty;
+            Diff diff = null;
             foreach (string line in runResult.StandardOut)
             {
                 if (line.StartsWith("diff")
@@ -64,20 +64,24 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
                 if (line.StartsWith("@@"))
                 {
-                    if (text != string.Empty)
+                    if (diff != null)
                     {
-                        Diffs.Add(new Diff(text.Trim('\n', '\r')));
-                        text = string.Empty;
+                        Diffs.Add(diff);
+                        diff = new Diff();
                     }
                     continue;
                 }
 
-                text += Environment.NewLine + line;
+                if (diff == null)
+                {
+                    diff = new Diff();
+                }
+                diff.Text.Add(line);
             }
 
-            if (text != string.Empty)
+            if (diff != null)
             {
-                Diffs.Add(new Diff(text.Trim('\n', '\r')));
+                Diffs.Add(diff);
             }
         }
     }
