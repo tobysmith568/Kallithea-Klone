@@ -21,6 +21,7 @@ namespace KallitheaKlone.Models.Repositories
         ObservableCollection<ITag> Tags { get; }
 
         IChangeSet SelectedChangeSet { get; set; }
+        IFile SelectedFile { get; set; }
 
         //  Methods
         //  =======

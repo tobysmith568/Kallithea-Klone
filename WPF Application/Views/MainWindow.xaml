@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:KallitheaKlone.WPF.Views"
         xmlns:ViewModels="clr-namespace:KallitheaKlone.ViewModels;assembly=KallitheaKlone"
         xmlns:Properties="clr-namespace:KallitheaKlone.WPF.Properties"
         xmlns:Converters="clr-namespace:KallitheaKlone.WPF.Converters"
@@ -18,11 +17,11 @@
     <Window.DataContext>
         <ViewModels:MainWindowViewModel />
     </Window.DataContext>
-    <Grid>
+    <Grid x:Name="grid">
 
         <!-- ViewModel Event Buttons -->
         <Button Visibility="Hidden" Name="VMLoadSelectedChangeSetEvent" Command="{Binding LoadSelectedChangeSet}"/>
-        
+
         <!-- Main Content -->
         <TabControl x:Name="tabControl" Margin="0,30,0,0" ItemsSource="{Binding Repositories}">
             <TabControl.ItemTemplate>
@@ -60,6 +59,7 @@
                         <Grid x:Name="CenterGrid" Margin="0" Grid.Column="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
+                                <RowDefinition Height="5"/>
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
 
@@ -81,20 +81,26 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
+                            <!-- Grid Splitter -->
+                            <GridSplitter x:Name="BottomRowSplitter" Grid.Row="1" HorizontalAlignment="Stretch" MouseDoubleClick="BottomRowSplitter_MouseDoubleClick" Focusable="False"/>
+
                             <!-- Bottom Row -->
-                            <Grid Grid.Row="1">
+                            <Grid Grid.Row="2">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="3*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="40" />
                                     <RowDefinition Height="1*" />
                                 </Grid.RowDefinitions>
 
-                                <TextBox Text="{Binding SelectedChangeSet.Message, Mode=OneWay}" Grid.Column="0" Grid.Row="0" />
+                                <!-- Information -->
+                                <TextBox Margin="0" Padding="5" Text="{Binding SelectedChangeSet.Message, Mode=OneWay}" Grid.Column="0" Grid.Row="0" IsReadOnly="True" BorderThickness="1,0,1,0" />
 
-                                <ListView x:Name="ChangeSetFilesViewer" Margin="0" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding SelectedChangeSet.Files}">
+                                <!-- Files List -->
+                                <ListView x:Name="ChangeSetFilesViewer" Margin="0" Grid.Column="0" Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding SelectedChangeSet.Files}"
+                                          SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid x:Name="FileListTemplate" Height="30" Margin="0,0">
@@ -103,6 +109,15 @@
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListView>
+
+                                <!-- Diff List -->
+                                <ListBox ItemsSource="{Binding SelectedFile.Diffs}" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Text}" FontFamily="Consolas" />
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
                             </Grid>
                         </Grid>
                     </Grid>

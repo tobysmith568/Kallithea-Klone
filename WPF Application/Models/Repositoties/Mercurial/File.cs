@@ -2,6 +2,7 @@
 using KallitheaKlone.Models.Runner;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
@@ -27,7 +28,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
         public string Filename { get; }
 
-        public ICollection<IDiff> Diffs { get; } = new List<IDiff>();
+        public ObservableCollection<IDiff> Diffs { get; } = new ObservableCollection<IDiff>();
 
         public IChangeSet ChangeSet { get; }
 
@@ -54,10 +55,9 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
             string text = string.Empty;
             foreach (string line in runResult.StandardOut)
             {
-                if (!line.StartsWith(string.Empty)
-                 || !line.StartsWith("diff")
-                 || !line.StartsWith("+++")
-                 || !line.StartsWith("---"))
+                if (line.StartsWith("diff")
+                 || line.StartsWith("+++")
+                 || line.StartsWith("---"))
                 {
                     continue;
                 }
@@ -66,7 +66,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 {
                     if (text != string.Empty)
                     {
-                        Diffs.Add(new Diff(text));
+                        Diffs.Add(new Diff(text.Trim('\n', '\r')));
                         text = string.Empty;
                     }
                     continue;
@@ -75,7 +75,10 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
                 text += Environment.NewLine + line;
             }
 
-
+            if (text != string.Empty)
+            {
+                Diffs.Add(new Diff(text.Trim('\n', '\r')));
+            }
         }
     }
 }

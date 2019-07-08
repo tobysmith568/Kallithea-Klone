@@ -40,6 +40,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         public ObservableCollection<ITag> Tags { get; } = new ObservableCollection<ITag>();
 
         public IChangeSet SelectedChangeSet { get; set; }
+        public IFile SelectedFile { get; set; }
 
         //  Constructor
         //  ===========

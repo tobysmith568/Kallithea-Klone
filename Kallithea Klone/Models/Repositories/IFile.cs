@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace KallitheaKlone.Models.Repositories
@@ -9,7 +10,7 @@ namespace KallitheaKlone.Models.Repositories
         //  ==========
 
         string Filename { get; }
-        ICollection<IDiff> Diffs { get; }
+        ObservableCollection<IDiff> Diffs { get; }
 
         //  Methods
         //  =======

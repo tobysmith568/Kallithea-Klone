@@ -45,7 +45,15 @@ namespace KallitheaKlone.WPF.Views
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                ResetPartition();
+                ResetColumnPartition();
+            }
+        }
+
+        private void BottomRowSplitter_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                ResetRowPartition();
             }
         }
 
@@ -70,10 +78,15 @@ namespace KallitheaKlone.WPF.Views
         //  Methods
         //  =======
 
-        private void ResetPartition()
+        private void ResetColumnPartition()
         {
             Properties.MainWindow.Default.LeftColumnWidth = 150;
             Properties.MainWindow.Default.Save();
+        }
+
+        private void ResetRowPartition()
+        {
+#warning //TODO
         }
     }
 }
