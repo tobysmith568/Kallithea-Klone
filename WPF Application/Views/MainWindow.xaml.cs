@@ -49,12 +49,6 @@ namespace KallitheaKlone.WPF.Views
             }
         }
 
-        private void ResetPartition()
-        {
-            Properties.MainWindow.Default.LeftColumnWidth = 150;
-            Properties.MainWindow.Default.Save();
-        }
-
         private void DataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             ICollection<IChangeSet> processedChangeSets = new List<IChangeSet>();
@@ -71,6 +65,15 @@ namespace KallitheaKlone.WPF.Views
 
                 processedChangeSets.Add(changeSet);
             }
+        }
+
+        //  Methods
+        //  =======
+
+        private void ResetPartition()
+        {
+            Properties.MainWindow.Default.LeftColumnWidth = 150;
+            Properties.MainWindow.Default.Save();
         }
     }
 }
