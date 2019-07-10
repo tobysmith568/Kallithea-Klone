@@ -4,11 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ViewModels="clr-namespace:KallitheaKlone.ViewModels;assembly=KallitheaKlone"
+        xmlns:LocalViewModels="clr-namespace:KallitheaKlone.WPF.ViewModels"
         xmlns:Properties="clr-namespace:KallitheaKlone.WPF.Properties"
         xmlns:Converters="clr-namespace:KallitheaKlone.WPF.Converters"
         mc:Ignorable="d"
         Title="MainWindow"
         Loaded="Window_Loaded"
+        
         WindowState="{Binding Source={x:Static Properties:MainWindow.Default}, Path=WindowState, Mode=TwoWay, Converter={Converters:IntegerToWindowStateConverter}}"    
         Height="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Height, Mode=TwoWay}" 
         Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Width, Mode=TwoWay}"
@@ -20,7 +22,7 @@
     <Window.DataContext>
         <ViewModels:MainWindowViewModel />
     </Window.DataContext>
-    <Grid x:Name="grid">
+    <Grid x:Name="grid" d:DataContext="{d:DesignInstance Type=LocalViewModels:MainWindowMockViewModel, IsDesignTimeCreatable=True}">
 
         <!-- ViewModel Event Buttons -->
         <Button Visibility="Hidden" Name="VMLoadSelectedChangeSetEvent" Command="{Binding LoadSelectedChangeSet}"/>
