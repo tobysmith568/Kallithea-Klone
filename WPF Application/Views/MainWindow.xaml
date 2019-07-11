@@ -120,7 +120,7 @@
                                     <ItemsControl ItemsSource="{Binding SelectedFile.Diffs}" Margin="0">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <FlowDocumentScrollViewer Document="{Binding Converter={StaticResource IDiffToDocumentConverter}}" FontFamily="Consolas" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+                                                <FlowDocumentScrollViewer Document="{Binding Converter={StaticResource IDiffToDocumentConverter}}" FontFamily="Consolas" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Stretch" />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>

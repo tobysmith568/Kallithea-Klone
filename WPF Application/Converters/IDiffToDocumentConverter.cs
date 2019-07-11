@@ -32,6 +32,8 @@ namespace KallitheaKlone.WPF.Converters
             {
                 paragraph.Inlines.Add(new TextBlock()
                 {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Margin = new Thickness(0),
                     Text = lines[i],
                     TextWrapping = TextWrapping.NoWrap,
                     Background = GetBackgroundColour(lines[i]),
@@ -64,7 +66,7 @@ namespace KallitheaKlone.WPF.Converters
                 case '+':
                     return Brushes.LightGreen;
                 case '-':
-                    return Brushes.IndianRed;
+                    return new SolidColorBrush(Color.FromRgb(240, 156, 156));
                 default:
                     return Brushes.Transparent;
             }
