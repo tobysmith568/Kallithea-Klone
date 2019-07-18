@@ -7,25 +7,27 @@
         xmlns:LocalViewModels="clr-namespace:KallitheaKlone.WPF.ViewModels"
         xmlns:Properties="clr-namespace:KallitheaKlone.WPF.Properties"
         xmlns:Converters="clr-namespace:KallitheaKlone.WPF.Converters"
+        xmlns:local="clr-namespace:KallitheaKlone.WPF.Views"
         mc:Ignorable="d"
         Title="MainWindow"
         Loaded="Window_Loaded"
         
-        WindowState="{Binding Source={x:Static Properties:MainWindow.Default}, Path=WindowState, Mode=TwoWay, Converter={Converters:IntegerToWindowStateConverter}}"    
-        Height="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Height, Mode=TwoWay}" 
-        Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Width, Mode=TwoWay}"
-        Left="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Left, Mode=TwoWay}" 
-        Top="{Binding Source={x:Static Properties:MainWindow.Default}, Path=Top, Mode=TwoWay}">
+        WindowState="{Binding WindowState, Converter={Converters:IntegerToWindowStateConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}"    
+        Height="{Binding Height, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" 
+        Width="{Binding Width, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}"
+        Left="{Binding Left, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" 
+        Top="{Binding Top, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}">
     <Window.Resources>
+        <Converters:IsExpandedToAutoHeightConverter x:Key="IsExpandedToAutoHeightConverter"/>
         <Converters:IDiffToDocumentConverter x:Key="IDiffToDocumentConverter"/>
     </Window.Resources>
     <Window.DataContext>
         <ViewModels:MainWindowViewModel />
     </Window.DataContext>
-    <Grid x:Name="grid" d:DataContext="{d:DesignInstance Type=LocalViewModels:MainWindowMockViewModel, IsDesignTimeCreatable=True}">
+    <Grid x:Name="grid" d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type LocalViewModels:MainWindowMockViewModel}}">
 
         <!-- ViewModel Event Buttons -->
-        <Button Visibility="Hidden" Name="VMLoadSelectedChangeSetEvent" Command="{Binding LoadSelectedChangeSet}"/>
+        <Button Visibility="Hidden" x:Name="VMLoadSelectedChangeSetEvent" Command="{Binding LoadSelectedChangeSet}"/>
 
         <!-- Main Content -->
         <TabControl x:Name="tabControl" Margin="0,30,0,0" ItemsSource="{Binding Repositories}">
@@ -38,24 +40,61 @@
             <TabControl.ContentTemplate>
                 <!-- TabItem Template-->
                 <DataTemplate>
-                    <Grid Name="MainGrid">
+                    <Grid x:Name="MainGrid">
                         <!-- Column Definitions -->
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=LeftColumnWidth, Mode=TwoWay, Converter={Converters:DoubleToPixelGridWidthConverter}}" />
+                            <ColumnDefinition x:Name="LeftColumn" Width="{Binding LeftColumnWidth, Converter={Converters:DoubleToPixelGridWidthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
                             <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition x:Name="RightColumn" Width="1*" />
                         </Grid.ColumnDefinitions>
 
                         <!-- Left Column -->
-                        <ListBox x:Name="Branches" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Branches}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid x:Name="BranchesTemplate" Height="30" Margin="0,0">
-                                        <TextBlock Text="{Binding Name}" Margin="5" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <Grid Grid.Column="0" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="{Binding IsExpanded, Converter={StaticResource IsExpandedToAutoHeightConverter}, ElementName=BranchesExpander}"/>
+                                <RowDefinition Height="{Binding IsExpanded, Converter={StaticResource IsExpandedToAutoHeightConverter}, ElementName=TagsExpander}"/>
+                                <RowDefinition Height="{Binding IsExpanded, Converter={StaticResource IsExpandedToAutoHeightConverter}, ElementName=StashesExpander}"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Branches -->
+                            <Expander x:Name="BranchesExpander" Grid.Row="0" Header="Branches" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" VerticalAlignment="Top" Focusable="False" IsExpanded="False">
+                                <ListBox x:Name="Branches" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Branches}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid x:Name="BranchTemplate" Height="30" Margin="0,0">
+                                                <TextBlock Text="{Binding Name}" Margin="5" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Expander>
+
+                            <!-- Tags -->
+                            <Expander x:Name="TagsExpander" Grid.Row="1" Header="Tags" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" VerticalAlignment="Top">
+                                <ListBox x:Name="Tags" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Tags}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid x:Name="TagTemplate" Height="30" Margin="0,0">
+                                                <TextBlock Text="{Binding Name}" Margin="5" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Expander>
+
+                            <!-- Stashes -->
+                            <Expander x:Name="StashesExpander" Grid.Row="2" Header="Stashes" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" VerticalAlignment="Top">
+                                <ListBox x:Name="Stashes" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Branches}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid x:Name="StashTemplate" Height="30" Margin="0,0">
+                                                <TextBlock Text="{Binding Name}" Margin="5" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Expander>
+                        </Grid>
 
                         <!-- Grid Splitter -->
                         <GridSplitter x:Name="LeftColumnSplitter" Grid.Column="1" HorizontalAlignment="Stretch" MouseDoubleClick="LeftColumnSplitter_MouseDoubleClick" Grid.RowSpan="2" Focusable="False"/>
@@ -74,15 +113,15 @@
                                       CanUserSortColumns="False" GridLinesVisibility="None" SelectedCellsChanged="DataGrid_SelectedCellsChanged" SelectedItem="{Binding SelectedChangeSet, Mode=TwoWay}" >
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Revision" IsReadOnly="True" Binding="{Binding Number, Mode=OneTime}"
-                                                        Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=NumberColumnWidth, Mode=TwoWay, Converter={Converters:DoubleToStarDataGridLengthConverter}}" />
+                                                        Width="{Binding NumberColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
                                     <DataGridTextColumn Header="Message" IsReadOnly="True" Binding="{Binding Message, Mode=OneTime}"
-                                                        Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=MessageColumnWidth, Mode=TwoWay, Converter={Converters:DoubleToStarDataGridLengthConverter}}" />
+                                                        Width="{Binding MessageColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
                                     <DataGridTextColumn Header="Timestamp" IsReadOnly="True" Binding="{Binding Timestamp, Mode=OneTime}"
-                                                        Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=TimestampColumnWidth, Mode=TwoWay, Converter={Converters:DoubleToStarDataGridLengthConverter}}" />
+                                                        Width="{Binding TimestampColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
                                     <DataGridTextColumn Header="Author" IsReadOnly="True" Binding="{Binding Author, Mode=OneTime}"
-                                                        Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=AuthorColumnWidth, Mode=TwoWay, Converter={Converters:DoubleToStarDataGridLengthConverter}}" />
+                                                        Width="{Binding AuthorColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
                                     <DataGridTextColumn Header="Hash" IsReadOnly="True" Binding="{Binding Hash, Mode=OneTime}"
-                                                        Width="{Binding Source={x:Static Properties:MainWindow.Default}, Path=HashColumnWidth, Mode=TwoWay, Converter={Converters:DoubleToStarDataGridLengthConverter}}" />
+                                                        Width="{Binding HashColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
                                 </DataGrid.Columns>
                             </DataGrid>
 
@@ -106,13 +145,13 @@
                                 <!-- Files List -->
                                 <ListView x:Name="ChangeSetFilesViewer" Margin="0" Grid.Column="0" Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding SelectedChangeSet.Files}"
                                           SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
-                                    <ListBox.ItemTemplate>
+                                    <ListView.ItemTemplate>
                                         <DataTemplate>
                                             <Grid x:Name="FileListTemplate" Height="30" Margin="0,0">
                                                 <TextBlock Text="{Binding Filename, Mode=OneWay}" Margin="5" VerticalAlignment="Center"/>
                                             </Grid>
                                         </DataTemplate>
-                                    </ListBox.ItemTemplate>
+                                    </ListView.ItemTemplate>
                                 </ListView>
 
                                 <!-- Diff List -->

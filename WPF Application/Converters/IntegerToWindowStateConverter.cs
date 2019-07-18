@@ -6,8 +6,8 @@ namespace KallitheaKlone.WPF.Converters
 {
     public class IntegerToWindowStateConverter : BaseConverter<IntegerToWindowStateConverter>
     {
-        //  Converters
-        //  ==========
+        //  Constants
+        //  =========
 
         private const string MustBeAWindowState = "The given value must be a WindowState";
 

@@ -18,6 +18,7 @@ namespace KallitheaKlone.WPF.ViewModels
 
 
             IChangeSet changeSet = new ChangeSet("2", runner);
+            IChangeSet changeSet2 = new ChangeSet("3", runner);
 
             IFile file = new File(changeSet, "filename", runner);
 
@@ -42,6 +43,10 @@ namespace KallitheaKlone.WPF.ViewModels
 
             Repository repository = new Repository(@"D:\Users\Toby\Downloads\V21product", "V22 Product");
             repository.ChangeSets.Add(changeSet);
+
+            repository.Branches.Add(new Branch("Branch 1", changeSet));
+            repository.Branches.Add(new Branch("Branch 2", changeSet2));
+            repository.Branches.Add(new Branch("Branch 3", changeSet2));
 
             Repositories = new ObservableCollection<IRepository>()
             {

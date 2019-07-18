@@ -18,6 +18,9 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         private const string AllBranchesTemplate = "\"{branch}\\n{rev}\\n\"";
         private const int AllBranchesTemplateParts = 2;
 
+        private const string AllTagsTemplate = "\"{tag}\\n{rev}\\n\"";
+        private const int AllTagsTemplateParts = 2;
+
         private const string AllChangeSetsTemplate = "\"{rev}\\n{node}\\n{author}\\n{date|isodatesec}\\n{desc|firstline}\\n\"";
         private const int AllChangeSetsTemplateParts = 5;
 
@@ -37,7 +40,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         public string Name { get; set; }
         public ObservableCollection<IChangeSet> ChangeSets { get; } = new ObservableCollection<IChangeSet>();
         public ObservableCollection <IBranch> Branches { get; private set; } = new ObservableCollection<IBranch>();
-        public ObservableCollection<ITag> Tags { get; } = new ObservableCollection<ITag>();
+        public ObservableCollection<ITag> Tags { get; set; } = new ObservableCollection<ITag>();
 
         public IChangeSet SelectedChangeSet { get; set; }
         public IFile SelectedFile { get; set; }
@@ -61,7 +64,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         {
             await LoadAllChangeSets();
             await LoadAllBranches();
-#warning TODO await LoadAllTags();
+            await LoadAllTags();
         }
 
         /// <exception cref="VersionControlException"></exception>
@@ -109,9 +112,28 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
             Branches = new ObservableCollection<IBranch>(Branches.OrderBy(b => b.Name));
         }
 
+        /// <exception cref="VersionControlException"></exception>
         private async Task LoadAllTags()
         {
-            throw new NotImplementedException();
+            string command = $"hg tags {StandardArgs} --template {AllTagsTemplate}";
+
+            IRunResult runResult = await runner.Run(command);
+
+            List<string> lines = runResult.StandardOut.ToList();
+
+            if (lines.Count % AllTagsTemplateParts != 0)
+            {
+#warning TODO LOG
+                throw new HgException(command, $"Returned [{lines.Count}] lines which isn't a multiple of [{AllTagsTemplateParts}]");
+            }
+
+            for (int i = 0; i < lines.Count; i += AllTagsTemplateParts)
+            {
+                IChangeSet tagChangeSet = new ChangeSet(lines[i + 1], runner);
+                Tags.Add(new Tag(lines[i], tagChangeSet));
+            }
+
+            Tags = new ObservableCollection<ITag>(Tags.OrderBy(t => t.Name));
         }
     }
 }

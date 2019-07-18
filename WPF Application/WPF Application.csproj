@@ -78,6 +78,7 @@
     <Compile Include="Converters\DoubleToStarGridWidthConverter.cs" />
     <Compile Include="Converters\DoubleToPixelGridWidthConverter.cs" />
     <Compile Include="Converters\IntegerToWindowStateConverter.cs" />
+    <Compile Include="Converters\IsExpandedToAutoHeightConverter.cs" />
     <Compile Include="Models\Dialogs\MessagePrompts\MessagePrompt.cs" />
     <Compile Include="Models\JSONConverter\NewtonSoftJSONConverter.cs" />
     <Compile Include="Models\Repositoties\Mercurial\Branch.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Models\Repositoties\Mercurial\File.cs" />
     <Compile Include="Models\Repositoties\Mercurial\HgException.cs" />
     <Compile Include="Models\Repositoties\Mercurial\Repository.cs" />
+    <Compile Include="Models\Repositoties\Mercurial\Tag.cs" />
     <Compile Include="Models\Repositoties\RemoteRepositories\Repository.cs" />
     <Compile Include="Models\Repositoties\RemoteRepositories\RepositoryFolder.cs" />
     <Compile Include="Models\Repositoties\RemoteRepositories\RepositoryManager.cs" />
