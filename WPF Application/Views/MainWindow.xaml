@@ -57,11 +57,11 @@
                             </Grid.RowDefinitions>
                             
                             <!-- Branches -->
-                            <Expander x:Name="BranchesExpander" Grid.Row="0" Header="Branches" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" VerticalAlignment="Top" Focusable="False" IsExpanded="False">
+                            <Expander x:Name="BranchesExpander" Grid.Row="0" Header="Branches" Margin="0" Focusable="False" IsExpanded="False">
                                 <ListBox x:Name="Branches" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Branches}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid x:Name="BranchTemplate" Height="30" Margin="0,0">
+                                            <Grid x:Name="BranchTemplate" Height="30" Margin="0">
                                                 <TextBlock Text="{Binding Name}" Margin="5" VerticalAlignment="Center"/>
                                             </Grid>
                                         </DataTemplate>
@@ -70,7 +70,7 @@
                             </Expander>
 
                             <!-- Tags -->
-                            <Expander x:Name="TagsExpander" Grid.Row="1" Header="Tags" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" VerticalAlignment="Top">
+                            <Expander x:Name="TagsExpander" Grid.Row="1" Header="Tags" Margin="0" Focusable="False" IsExpanded="False">
                                 <ListBox x:Name="Tags" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Tags}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
@@ -83,7 +83,7 @@
                             </Expander>
 
                             <!-- Stashes -->
-                            <Expander x:Name="StashesExpander" Grid.Row="2" Header="Stashes" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" VerticalAlignment="Top">
+                            <Expander x:Name="StashesExpander" Grid.Row="2" Header="Stashes" Margin="0" Focusable="False" IsExpanded="False">
                                 <ListBox x:Name="Stashes" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Stashes}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
