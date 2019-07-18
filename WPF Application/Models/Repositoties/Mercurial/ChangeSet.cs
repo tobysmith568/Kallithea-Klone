@@ -13,10 +13,6 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  Constants
         //  =========
 
-        private const string CarriageReturn = "\r";
-        private const string NewLine = "\n";
-        private const string BothNewLines = CarriageReturn + NewLine;
-
         private const string StandardArgs = "-y --pager no";
 
         private const string ChangeSetFromNumberTemplate = "\"{node}\\n{author}\\n{date|isodatesec}\\n{desc}\\n\"";
@@ -25,9 +21,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  Variables
         //  =========
 
-        private IRunner runner;
-
-        private readonly static string[] lineEndings = { CarriageReturn, NewLine, BothNewLines };
+        private readonly IRunner runner;
 
         //  Properties
         //  ==========

@@ -19,6 +19,7 @@ namespace KallitheaKlone.Models.Repositories
         ObservableCollection<IChangeSet> ChangeSets { get; }
         ObservableCollection<IBranch> Branches { get; }
         ObservableCollection<ITag> Tags { get; }
+        ObservableCollection<IStash> Stashes { get; }
 
         IChangeSet SelectedChangeSet { get; set; }
         IFile SelectedFile { get; set; }

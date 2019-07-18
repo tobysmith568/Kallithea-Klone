@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
@@ -24,12 +25,17 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         private const string AllChangeSetsTemplate = "\"{rev}\\n{node}\\n{author}\\n{date|isodatesec}\\n{desc|firstline}\\n\"";
         private const int AllChangeSetsTemplateParts = 5;
 
+        private const string AllowStash = "--config \"extensions.shelve = \"";
+        private const string StashRegex = @"^[A-Za-z ]+?(?= *\([0-9]+?m ago\))";
+
         //  Variables
         //  =========
 
         private readonly IRunner runner;
 
-        private int maximumChangesets = 100;
+        private readonly int maximumChangesets = 100;
+
+        private readonly Regex stashRegex = new Regex(StashRegex);
 
         //  Properties
         //  ==========
@@ -39,8 +45,9 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         public string URI { get; set; }
         public string Name { get; set; }
         public ObservableCollection<IChangeSet> ChangeSets { get; } = new ObservableCollection<IChangeSet>();
-        public ObservableCollection <IBranch> Branches { get; private set; } = new ObservableCollection<IBranch>();
+        public ObservableCollection<IBranch> Branches { get; private set; } = new ObservableCollection<IBranch>();
         public ObservableCollection<ITag> Tags { get; set; } = new ObservableCollection<ITag>();
+        public ObservableCollection<IStash> Stashes { get; set; } = new ObservableCollection<IStash>();
 
         public IChangeSet SelectedChangeSet { get; set; }
         public IFile SelectedFile { get; set; }
@@ -65,6 +72,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
             await LoadAllChangeSets();
             await LoadAllBranches();
             await LoadAllTags();
+            await LoadAllStashes();
         }
 
         /// <exception cref="VersionControlException"></exception>
@@ -78,7 +86,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
             if (lines.Count % AllChangeSetsTemplateParts != 0)
             {
-#warning TODO LOG
+#warning //TODO LOG
                 throw new HgException(command, $"Returned [{lines.Count}] lines which isn't a multiple of [{AllChangeSetsTemplateParts}]");
             }
 
@@ -99,7 +107,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
             if (lines.Count % AllBranchesTemplateParts != 0)
             {
-#warning TODO LOG
+#warning //TODO LOG
                 throw new HgException(command, $"Returned [{lines.Count}] lines which isn't a multiple of [{AllBranchesTemplateParts}]");
             }
 
@@ -123,7 +131,7 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 
             if (lines.Count % AllTagsTemplateParts != 0)
             {
-#warning TODO LOG
+#warning //TODO LOG
                 throw new HgException(command, $"Returned [{lines.Count}] lines which isn't a multiple of [{AllTagsTemplateParts}]");
             }
 
@@ -134,6 +142,33 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
             }
 
             Tags = new ObservableCollection<ITag>(Tags.OrderBy(t => t.Name));
+        }
+
+        /// <exception cref="VersionControlException"></exception>
+        private async Task LoadAllStashes()
+        {
+            string command = $"hg {StandardArgs} {AllowStash} shelve --list";
+
+            IRunResult runResult = await runner.Run(command);
+
+            List<string> lines = runResult.StandardOut.ToList();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                try
+                {
+                    string name = stashRegex.Match(lines[i]).Value;
+                    IStash stash = new Stash(name, runner);
+                    Stashes.Add(stash);
+                }
+                catch (RegexMatchTimeoutException)
+                {
+#warning //TODO HANDLE
+#warning //TODO LOG
+                }
+            }
+
+            Stashes = new ObservableCollection<IStash>(Stashes.OrderBy(s => s.Name));
         }
     }
 }

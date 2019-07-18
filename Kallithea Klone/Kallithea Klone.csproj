@@ -59,6 +59,7 @@
     <Compile Include="Models\Repositories\IChangeSet.cs" />
     <Compile Include="Models\Repositories\IDiff.cs" />
     <Compile Include="Models\Repositories\IFile.cs" />
+    <Compile Include="Models\Repositories\IStash.cs" />
     <Compile Include="Models\Repositories\RemoteRepositories\IRepositoryFolder.cs" />
     <Compile Include="Models\Repositories\RemoteRepositories\IRepositoryManager.cs" />
     <Compile Include="Models\Repositories\RemoteRepositories\IRepository.cs" />

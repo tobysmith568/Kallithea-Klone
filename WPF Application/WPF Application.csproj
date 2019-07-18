@@ -87,6 +87,7 @@
     <Compile Include="Models\Repositoties\Mercurial\File.cs" />
     <Compile Include="Models\Repositoties\Mercurial\HgException.cs" />
     <Compile Include="Models\Repositoties\Mercurial\Repository.cs" />
+    <Compile Include="Models\Repositoties\Mercurial\Stash.cs" />
     <Compile Include="Models\Repositoties\Mercurial\Tag.cs" />
     <Compile Include="Models\Repositoties\RemoteRepositories\Repository.cs" />
     <Compile Include="Models\Repositoties\RemoteRepositories\RepositoryFolder.cs" />

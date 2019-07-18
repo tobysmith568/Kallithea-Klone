@@ -1,7 +1,6 @@
 ﻿using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.Models.Runner;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
@@ -9,19 +8,10 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
 {
     public class File : IFile
     {
-        //  Constants
-        //  =========
-
-        private const string CarriageReturn = "\r";
-        private const string NewLine = "\n";
-        private const string BothNewLines = CarriageReturn + NewLine;
-
         //  Variables
         //  =========
 
-        private IRunner runner;
-
-        private readonly static string[] lineEndings = { CarriageReturn, NewLine, BothNewLines };
+        private readonly IRunner runner;
 
         //  Properties
         //  ==========

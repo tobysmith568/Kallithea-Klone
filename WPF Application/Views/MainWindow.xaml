@@ -84,7 +84,7 @@
 
                             <!-- Stashes -->
                             <Expander x:Name="StashesExpander" Grid.Row="2" Header="Stashes" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" VerticalAlignment="Top">
-                                <ListBox x:Name="Stashes" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Branches}">
+                                <ListBox x:Name="Stashes" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Stashes}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid x:Name="StashTemplate" Height="30" Margin="0,0">
