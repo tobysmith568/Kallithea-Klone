@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
+namespace KallitheaKlone.WPF.Models.Repositories.Mercurial
 {
     public class HgException : VersionControlException
     {

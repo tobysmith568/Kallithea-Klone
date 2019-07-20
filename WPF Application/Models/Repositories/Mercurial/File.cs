@@ -4,7 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
+namespace KallitheaKlone.WPF.Models.Repositories.Mercurial
 {
     public class File : IFile
     {

@@ -1,7 +1,7 @@
 ﻿using KallitheaKlone.Models.Repositories;
 using System.Collections.ObjectModel;
 
-namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
+namespace KallitheaKlone.WPF.Models.Repositories.Mercurial
 {
     public class Diff : IDiff
     {

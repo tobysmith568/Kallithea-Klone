@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
+namespace KallitheaKlone.WPF.Models.Repositories.Mercurial
 {
     public class Repository : IRepository
     {

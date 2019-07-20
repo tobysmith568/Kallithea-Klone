@@ -1,7 +1,7 @@
 ﻿using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.Models.Runner;
 using KallitheaKlone.ViewModels;
-using KallitheaKlone.WPF.Models.Repositoties.Mercurial;
+using KallitheaKlone.WPF.Models.Repositories.Mercurial;
 using KallitheaKlone.WPF.Models.Runner;
 using System.Collections.ObjectModel;
 

@@ -6,7 +6,7 @@ using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.Models.Runner;
 using System.Collections.ObjectModel;
 
-namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
+namespace KallitheaKlone.WPF.Models.Repositories.Mercurial
 {
     public class ChangeSet : IChangeSet
     {

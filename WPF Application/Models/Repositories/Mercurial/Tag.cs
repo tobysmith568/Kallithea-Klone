@@ -1,9 +1,9 @@
 ﻿using KallitheaKlone.Models.Repositories;
 using System;
 
-namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
+namespace KallitheaKlone.WPF.Models.Repositories.Mercurial
 {
-    public struct Branch : IBranch
+    public class Tag : ITag
     {
         //  Properties
         //  ==========
@@ -14,10 +14,10 @@ namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
         //  Constructors
         //  ============
 
-        public Branch(string name, IChangeSet changeSet)
+        public Tag(string name, IChangeSet changeSet)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
-            ChangeSet = changeSet ?? throw new ArgumentNullException(nameof(changeSet));
+            ChangeSet = changeSet ?? throw new ArgumentNullException(nameof(name));
         }
     }
 }

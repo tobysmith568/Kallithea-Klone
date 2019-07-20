@@ -2,7 +2,7 @@
 using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.ViewModels;
 using KallitheaKlone.WPF.Models.Dialogs.MessagePrompts;
-using KallitheaKlone.WPF.Models.Repositoties.Mercurial;
+using KallitheaKlone.WPF.Models.Repositories.Mercurial;
 using KallitheaKlone.WPF.Views;
 using System;
 using System.Collections.Generic;

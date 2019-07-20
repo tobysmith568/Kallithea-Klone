@@ -2,7 +2,7 @@
 using KallitheaKlone.Models.Runner;
 using System;
 
-namespace KallitheaKlone.WPF.Models.Repositoties.Mercurial
+namespace KallitheaKlone.WPF.Models.Repositories.Mercurial
 {
     public class Stash : IStash
     {
