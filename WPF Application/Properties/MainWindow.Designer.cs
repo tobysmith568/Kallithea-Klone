@@ -97,10 +97,10 @@ namespace KallitheaKlone.WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
-        public double NumberColumnWidth {
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int NumberColumnWidth {
             get {
-                return ((double)(this["NumberColumnWidth"]));
+                return ((int)(this["NumberColumnWidth"]));
             }
             set {
                 this["NumberColumnWidth"] = value;
@@ -110,9 +110,9 @@ namespace KallitheaKlone.WPF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public double MessageColumnWidth {
+        public int MessageColumnWidth {
             get {
-                return ((double)(this["MessageColumnWidth"]));
+                return ((int)(this["MessageColumnWidth"]));
             }
             set {
                 this["MessageColumnWidth"] = value;
@@ -121,10 +121,10 @@ namespace KallitheaKlone.WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public double TimestampColumnWidth {
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int TimestampColumnWidth {
             get {
-                return ((double)(this["TimestampColumnWidth"]));
+                return ((int)(this["TimestampColumnWidth"]));
             }
             set {
                 this["TimestampColumnWidth"] = value;
@@ -133,10 +133,10 @@ namespace KallitheaKlone.WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
-        public double AuthorColumnWidth {
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int AuthorColumnWidth {
             get {
-                return ((double)(this["AuthorColumnWidth"]));
+                return ((int)(this["AuthorColumnWidth"]));
             }
             set {
                 this["AuthorColumnWidth"] = value;
@@ -145,10 +145,10 @@ namespace KallitheaKlone.WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
-        public double HashColumnWidth {
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int HashColumnWidth {
             get {
-                return ((double)(this["HashColumnWidth"]));
+                return ((int)(this["HashColumnWidth"]));
             }
             set {
                 this["HashColumnWidth"] = value;

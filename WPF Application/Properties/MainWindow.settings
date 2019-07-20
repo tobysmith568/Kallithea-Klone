@@ -20,20 +20,20 @@
     <Setting Name="Top" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">50</Value>
     </Setting>
-    <Setting Name="NumberColumnWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0.5</Value>
+    <Setting Name="NumberColumnWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">20</Value>
     </Setting>
-    <Setting Name="MessageColumnWidth" Type="System.Double" Scope="User">
+    <Setting Name="MessageColumnWidth" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
-    <Setting Name="TimestampColumnWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">1</Value>
+    <Setting Name="TimestampColumnWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">25</Value>
     </Setting>
-    <Setting Name="AuthorColumnWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">2</Value>
+    <Setting Name="AuthorColumnWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">25</Value>
     </Setting>
-    <Setting Name="HashColumnWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">2</Value>
+    <Setting Name="HashColumnWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">25</Value>
     </Setting>
   </Settings>
 </SettingsFile>

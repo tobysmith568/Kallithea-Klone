@@ -55,9 +55,13 @@ namespace WPF_Application
             IRepository repo = new Repository(@"D:\Users\Toby\Downloads\V21product", "V21 Product");
             await repo.Load();
 
+            IRepository repo2 = new Repository(@"D:\Users\Toby\Desktop\Jenkins-Bot", "Jenkins Bot");
+            await repo2.Load();
+
             mainWindowViewModel.Repositories = new System.Collections.ObjectModel.ObservableCollection<IRepository>()
             {
-                repo
+                repo,
+                repo2
             };
         }
     }

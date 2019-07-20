@@ -112,16 +112,20 @@
                                       SelectionUnit="FullRow" CanUserResizeRows="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserAddRows="False"
                                       CanUserSortColumns="False" GridLinesVisibility="None" SelectedCellsChanged="DataGrid_SelectedCellsChanged" SelectedItem="{Binding SelectedChangeSet, Mode=TwoWay}" >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Revision" IsReadOnly="True" Binding="{Binding Number, Mode=OneTime}"
-                                                        Width="{Binding NumberColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
-                                    <DataGridTextColumn Header="Message" IsReadOnly="True" Binding="{Binding Message, Mode=OneTime}"
-                                                        Width="{Binding MessageColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
-                                    <DataGridTextColumn Header="Timestamp" IsReadOnly="True" Binding="{Binding Timestamp, Mode=OneTime}"
-                                                        Width="{Binding TimestampColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
-                                    <DataGridTextColumn Header="Author" IsReadOnly="True" Binding="{Binding Author, Mode=OneTime}"
-                                                        Width="{Binding AuthorColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
-                                    <DataGridTextColumn Header="Hash" IsReadOnly="True" Binding="{Binding Hash, Mode=OneTime}"
-                                                        Width="{Binding HashColumnWidth, Converter={Converters:DoubleToStarDataGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+                                    <DataGridTextColumn Header="Revision" IsReadOnly="True" Binding="{Binding Number, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="{Binding NumberColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+                                    
+                                    <DataGridTextColumn Header="Message" IsReadOnly="True" Binding="{Binding Message, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="*" />
+                                    
+                                    <DataGridTextColumn Header="Timestamp" IsReadOnly="True" Binding="{Binding Timestamp, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="{Binding TimestampColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+                                    
+                                    <DataGridTextColumn Header="Author" IsReadOnly="True" Binding="{Binding Author, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="{Binding AuthorColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+                                    
+                                    <DataGridTextColumn Header="Hash" IsReadOnly="True" Binding="{Binding Hash, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="{Binding HashColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
                                 </DataGrid.Columns>
                             </DataGrid>
 
