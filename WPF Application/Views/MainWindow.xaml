@@ -13,7 +13,7 @@
         Loaded="Window_Loaded"
         
         WindowState="{Binding WindowState, Converter={Converters:IntegerToWindowStateConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}"    
-        Height="571" 
+        Height="{Binding Height, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}"
         Width="{Binding Width, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}"
         Left="{Binding Left, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" 
         Top="{Binding Top, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}">
@@ -178,6 +178,7 @@
             </TabControl.ContentTemplate>
         </TabControl>
 
+        <!-- Open Repository Dialog -->
         <local:OpenRepository Margin="0" Visibility="{Binding OpenDialogVisibility, Converter={StaticResource BooleanToVisibility}}"/>
     </Grid>
 </Window>
