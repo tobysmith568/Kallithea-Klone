@@ -1,5 +1,6 @@
 ﻿using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.Models.Runner;
+using KallitheaKlone.WFP.Models.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -40,7 +41,7 @@ namespace KallitheaKlone.WPF.Models.Repositories.Mercurial
         //  Properties
         //  ==========
 
-        public RepositoryType RepositoryType => RepositoryType.Mercurial;
+        public RepositoryType RepositoryType => WPFRepositoryType.Mercurial;
 
         public string URI { get; set; }
         public string Name { get; set; }

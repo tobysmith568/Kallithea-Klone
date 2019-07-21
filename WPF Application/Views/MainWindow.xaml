@@ -13,13 +13,14 @@
         Loaded="Window_Loaded"
         
         WindowState="{Binding WindowState, Converter={Converters:IntegerToWindowStateConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}"    
-        Height="{Binding Height, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" 
+        Height="571" 
         Width="{Binding Width, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}"
         Left="{Binding Left, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" 
         Top="{Binding Top, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}">
     <Window.Resources>
         <Converters:IsExpandedToAutoHeightConverter x:Key="IsExpandedToAutoHeightConverter"/>
         <Converters:IDiffToDocumentConverter x:Key="IDiffToDocumentConverter"/>
+        <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
     </Window.Resources>
     <Window.DataContext>
         <ViewModels:MainWindowViewModel />
@@ -29,6 +30,8 @@
         <!-- ViewModel Event Buttons -->
         <Button Visibility="Hidden" x:Name="VMLoadSelectedChangeSetEvent" Command="{Binding LoadSelectedChangeSet}"/>
 
+        <Button Content="Button" HorizontalAlignment="Right" VerticalAlignment="Top" Width="85" Height="30" Command="{Binding Path=ShowOpenDialogVisibility}"/>
+        
         <!-- Main Content -->
         <TabControl x:Name="tabControl" Margin="0,30,0,0" ItemsSource="{Binding Repositories}">
             <TabControl.ItemTemplate>
@@ -55,7 +58,7 @@
                                 <RowDefinition Height="{Binding IsExpanded, Converter={StaticResource IsExpandedToAutoHeightConverter}, ElementName=TagsExpander}"/>
                                 <RowDefinition Height="{Binding IsExpanded, Converter={StaticResource IsExpandedToAutoHeightConverter}, ElementName=StashesExpander}"/>
                             </Grid.RowDefinitions>
-                            
+
                             <!-- Branches -->
                             <Expander x:Name="BranchesExpander" Grid.Row="0" Header="Branches" Margin="0" Focusable="False" IsExpanded="False">
                                 <ListBox x:Name="Branches" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding Branches}">
@@ -114,16 +117,16 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Revision" IsReadOnly="True" Binding="{Binding Number, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
                                                         Width="{Binding NumberColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
-                                    
+
                                     <DataGridTextColumn Header="Message" IsReadOnly="True" Binding="{Binding Message, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
                                                         Width="*" />
-                                    
+
                                     <DataGridTextColumn Header="Timestamp" IsReadOnly="True" Binding="{Binding Timestamp, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
                                                         Width="{Binding TimestampColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
-                                    
+
                                     <DataGridTextColumn Header="Author" IsReadOnly="True" Binding="{Binding Author, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
                                                         Width="{Binding AuthorColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
-                                    
+
                                     <DataGridTextColumn Header="Hash" IsReadOnly="True" Binding="{Binding Hash, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
                                                         Width="{Binding HashColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
                                 </DataGrid.Columns>
@@ -174,5 +177,7 @@
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
+
+        <local:OpenRepository Margin="0" Visibility="{Binding OpenDialogVisibility, Converter={StaticResource BooleanToVisibility}}"/>
     </Grid>
 </Window>

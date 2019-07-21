@@ -1,7 +1,12 @@
-﻿using KallitheaKlone.Models.Dialogs.MessagePrompts;
+﻿using KallitheaKlone.Models.Dialogs.FolderPicker;
+using KallitheaKlone.Models.Dialogs.MessagePrompts;
+using KallitheaKlone.Models.Dialogs.RepositoryPicker;
 using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.ViewModels;
+using KallitheaKlone.WPF.Models.Dialogs.FolderPicker;
 using KallitheaKlone.WPF.Models.Dialogs.MessagePrompts;
+using KallitheaKlone.WPF.Models.Dialogs.RepositoryPicker;
+using KallitheaKlone.WPF.Models.Repositories;
 using KallitheaKlone.WPF.Models.Repositories.Mercurial;
 using KallitheaKlone.WPF.Views;
 using System;
@@ -42,6 +47,9 @@ namespace WPF_Application
         private void SetUpImplementations()
         {
             container.RegisterType<IMessagePrompt, MessagePrompt>();
+            container.RegisterType<IFolderPicker, FolderPicker>();
+            container.RegisterType<IRepositoryPicker, RepositoryPicker>();
+            container.RegisterType<IRepositoryFactory, RepositoryFactory>();
         }
 
         /// <exception cref="InvalidOperationException"></exception>
@@ -55,13 +63,9 @@ namespace WPF_Application
             IRepository repo = new Repository(@"D:\Users\Toby\Downloads\V21product", "V21 Product");
             await repo.Load();
 
-            IRepository repo2 = new Repository(@"D:\Users\Toby\Desktop\Jenkins-Bot", "Jenkins Bot");
-            await repo2.Load();
-
             mainWindowViewModel.Repositories = new System.Collections.ObjectModel.ObservableCollection<IRepository>()
             {
-                repo,
-                repo2
+                repo
             };
         }
     }

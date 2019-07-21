@@ -37,6 +37,15 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -45,6 +54,7 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -74,12 +84,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\BaseConverter.cs" />
+    <Compile Include="Converters\BooleanToVisibility.cs" />
     <Compile Include="Converters\IDiffToDocumentConverter.cs" />
     <Compile Include="Converters\DoubleToStarGridWidthConverter.cs" />
     <Compile Include="Converters\DoubleToPixelGridWidthConverter.cs" />
     <Compile Include="Converters\IntegerToWindowStateConverter.cs" />
     <Compile Include="Converters\IsExpandedToAutoHeightConverter.cs" />
+    <Compile Include="Models\Dialogs\FolderPicker\FolderPicker.cs" />
     <Compile Include="Models\Dialogs\MessagePrompts\MessagePrompt.cs" />
+    <Compile Include="Models\Dialogs\RepositoryPicker\RepositoryPicker.cs" />
     <Compile Include="Models\JSONConverter\NewtonSoftJSONConverter.cs" />
     <Compile Include="Models\Repositories\Mercurial\Branch.cs" />
     <Compile Include="Models\Repositories\Mercurial\ChangeSet.cs" />
@@ -92,6 +105,8 @@
     <Compile Include="Models\Repositories\RemoteRepositories\Repository.cs" />
     <Compile Include="Models\Repositories\RemoteRepositories\RepositoryFolder.cs" />
     <Compile Include="Models\Repositories\RemoteRepositories\RepositoryManager.cs" />
+    <Compile Include="Models\Repositories\RepositoryFactory.cs" />
+    <Compile Include="Models\Repositories\WPFRepositoryType.cs" />
     <Compile Include="Models\Runner\Runner.cs" />
     <Compile Include="Models\Runner\RunResult.cs" />
     <Compile Include="Properties\MainWindow.cs" />
@@ -104,6 +119,9 @@
     <Compile Include="ViewModels\MainWindowMockViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OpenRepository.xaml.cs">
+      <DependentUpon>OpenRepository.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +157,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OpenRepository.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

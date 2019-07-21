@@ -1,8 +1,25 @@
-﻿namespace KallitheaKlone.Models.Repositories
+﻿using KallitheaKlone.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KallitheaKlone.Models.Repositories
 {
-    public enum RepositoryType
+    public abstract class RepositoryType : Enumeration
     {
-        Git,
-        Mercurial
+        //  Properties
+        //  ==========
+
+        public string DataFolder { get; }
+
+        //  Constructors
+        //  ============
+
+        protected RepositoryType(int id, string name, string dataFolder) : base(id, name)
+        {
+            DataFolder = dataFolder;
+        }
     }
 }

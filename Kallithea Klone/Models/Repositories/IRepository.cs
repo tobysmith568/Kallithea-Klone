@@ -9,6 +9,7 @@ namespace KallitheaKlone.Models.Repositories
 {
     public interface IRepository
     {
+
         //  Properties
         //  ==========
 

@@ -50,15 +50,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\Enumeration.cs" />
+    <Compile Include="Models\Dialogs\FolderPicker\IFolderPicker.cs" />
     <Compile Include="Models\Dialogs\MessagePrompts\IMessagePrompt.cs" />
     <Compile Include="Models\Dialogs\MessagePrompts\MessageResult.cs" />
     <Compile Include="Models\Dialogs\MessagePrompts\MessageType.cs" />
+    <Compile Include="Models\Dialogs\RepositoryPicker\IRepositoryPicker.cs" />
     <Compile Include="Models\JSONConverter\IJSONConverter.cs" />
     <Compile Include="Models\Kallithea\IKallitheaAPI.cs" />
     <Compile Include="Models\Repositories\IAuthor.cs" />
     <Compile Include="Models\Repositories\IChangeSet.cs" />
     <Compile Include="Models\Repositories\IDiff.cs" />
     <Compile Include="Models\Repositories\IFile.cs" />
+    <Compile Include="Models\Repositories\IRepositoryFactory.cs" />
     <Compile Include="Models\Repositories\IStash.cs" />
     <Compile Include="Models\Repositories\RemoteRepositories\IRepositoryFolder.cs" />
     <Compile Include="Models\Repositories\RemoteRepositories\IRepositoryManager.cs" />
@@ -67,10 +71,10 @@
     <Compile Include="Models\Kallithea\KallitheaBaseResponse.cs" />
     <Compile Include="Models\Kallithea\User.cs" />
     <Compile Include="Models\Kallithea\Repository.cs" />
-    <Compile Include="Models\Repositories\RepositoryType.cs" />
     <Compile Include="Models\Repositories\IBranch.cs" />
     <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Models\Repositories\ITag.cs" />
+    <Compile Include="Models\Repositories\RepositoryType.cs" />
     <Compile Include="Models\Repositories\VersionControlException.cs" />
     <Compile Include="Models\Runner\IRunner.cs" />
     <Compile Include="Models\Runner\IRunResult.cs" />
