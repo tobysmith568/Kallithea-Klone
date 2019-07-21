@@ -33,7 +33,7 @@
         <Button Content="Button" HorizontalAlignment="Right" VerticalAlignment="Top" Width="85" Height="30" Command="{Binding Path=ShowOpenDialogVisibility}"/>
         
         <!-- Main Content -->
-        <TabControl x:Name="tabControl" Margin="0,30,0,0" ItemsSource="{Binding Repositories}">
+        <TabControl x:Name="tabControl" Margin="0,30,0,0" ItemsSource="{Binding Repositories}" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}">
             <TabControl.ItemTemplate>
                 <!-- Header Template-->
                 <DataTemplate>

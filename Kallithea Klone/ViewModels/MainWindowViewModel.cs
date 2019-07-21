@@ -1,12 +1,7 @@
-﻿using KallitheaKlone.Models.Dialogs.FolderPicker;
-using KallitheaKlone.Models.Dialogs.RepositoryPicker;
+﻿using KallitheaKlone.Models.Dialogs.RepositoryPicker;
 using KallitheaKlone.Models.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KallitheaKlone.ViewModels
 {
@@ -18,6 +13,7 @@ namespace KallitheaKlone.ViewModels
         private readonly IRepositoryPicker repositoryPicker;
 
         private ObservableCollection<IRepository> repositories;
+        private int selectedRepositoryIndex;
         private bool openDialogVisibility;
 
         //  Properties
@@ -27,6 +23,12 @@ namespace KallitheaKlone.ViewModels
         {
             get => repositories;
             set => PropertyChanging(value, ref repositories, nameof(Repositories));
+        }
+
+        public int SelectedRepositoryIndex
+        {
+            get => selectedRepositoryIndex;
+            set => PropertyChanging(value, ref selectedRepositoryIndex, nameof(SelectedRepositoryIndex));
         }
 
         public bool OpenDialogVisibility
@@ -85,8 +87,19 @@ namespace KallitheaKlone.ViewModels
 
             if (newRepository != null)
             {
+                for (int i = 0; i < Repositories.Count; i++)
+                {
+                    if (Repositories[i].URI == newRepository.URI)
+                    {
+                        OpenDialogVisibility = false;
+                        SelectedRepositoryIndex = i;
+                        return;
+                    }
+                }
+
                 OpenDialogVisibility = false;
                 Repositories.Add(newRepository);
+                SelectedRepositoryIndex = Repositories.Count - 1;
                 await newRepository.Load();
             }
         }

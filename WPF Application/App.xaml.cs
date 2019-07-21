@@ -57,7 +57,10 @@ namespace WPF_Application
         private async Task ShowMainWindow()
         {
             var mainWindowViewModel = container.Resolve<MainWindowViewModel>();
-            var window = new MainWindow { DataContext = mainWindowViewModel };
+            var window = new MainWindow
+            {
+                DataContext = mainWindowViewModel
+            };
             window.Show();
 
             IRepository repo = new Repository(@"D:\Users\Toby\Downloads\V21product", "V21 Product");
