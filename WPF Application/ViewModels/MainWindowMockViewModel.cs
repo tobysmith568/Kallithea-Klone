@@ -16,7 +16,6 @@ namespace KallitheaKlone.WPF.ViewModels
         {
             IRunner runner = new Runner(@"D:\Users\Toby\Downloads\V21product");
 
-
             IChangeSet changeSet = new ChangeSet("2", runner);
             IChangeSet changeSet2 = new ChangeSet("3", runner);
 

@@ -37,7 +37,10 @@
             <TabControl.ItemTemplate>
                 <!-- Header Template-->
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                        <Button Content="X" Margin="5,0,0,0" Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}" />
+                    </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
