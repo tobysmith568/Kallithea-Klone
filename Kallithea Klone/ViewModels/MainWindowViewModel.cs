@@ -12,17 +12,17 @@ namespace KallitheaKlone.ViewModels
 
         private readonly IRepositoryPicker repositoryPicker;
 
-        private ObservableCollection<IRepository> repositories;
+        private ObservableCollection<TabViewModel> tabs;
         private int selectedRepositoryIndex;
         private bool openDialogVisibility;
 
         //  Properties
         //  ==========
 
-        public ObservableCollection<IRepository> Repositories
+        public ObservableCollection<TabViewModel> Tabs
         {
-            get => repositories;
-            set => PropertyChanging(value, ref repositories, nameof(Repositories));
+            get => tabs;
+            set => PropertyChanging(value, ref tabs, nameof(Tabs));
         }
 
         public int SelectedRepositoryIndex
@@ -39,7 +39,6 @@ namespace KallitheaKlone.ViewModels
 
 
 
-        public Command<IChangeSet> LoadSelectedChangeSet { get; }
         public Command ShowOpenDialogVisibility { get; }
         public Command HideOpenDialogVisibility { get; }
         public Command OpenNewRepository { get; }
@@ -51,9 +50,8 @@ namespace KallitheaKlone.ViewModels
         /// <exception cref="VersionControlException"></exception>
         public MainWindowViewModel()
         {
-            Repositories = new ObservableCollection<IRepository>();
+            Tabs = new ObservableCollection<TabViewModel>();
 
-            LoadSelectedChangeSet = new Command<IChangeSet>(DoLoadSelectedChangeSet);
             ShowOpenDialogVisibility = new Command(DoShowOpenDialogVisibility);
             HideOpenDialogVisibility = new Command(DoHideOpenDialogVisibility);
             OpenNewRepository = new Command(DoOpenNewRepository);
@@ -68,16 +66,6 @@ namespace KallitheaKlone.ViewModels
         //  Methods
         //  =======
 
-        private async void DoLoadSelectedChangeSet(IChangeSet changeSet)
-        {
-            await changeSet.Load();
-
-            foreach (IFile file in changeSet.Files)
-            {
-                await file.Load();
-            }
-        }
-
         private void DoShowOpenDialogVisibility() => OpenDialogVisibility = true;
 
         private void DoHideOpenDialogVisibility() => OpenDialogVisibility = false;
@@ -89,9 +77,14 @@ namespace KallitheaKlone.ViewModels
 
             if (newRepository != null)
             {
-                for (int i = 0; i < Repositories.Count; i++)
+                for (int i = 0; i < Tabs.Count; i++)
                 {
-                    if (Repositories[i].URI == newRepository.URI)
+                    if (!(Tabs[i] is RepositoryViewModel))
+                    {
+                        continue;
+                    }
+
+                    if (((RepositoryViewModel)Tabs[i]).RepositorySource.URI == newRepository.URI)
                     {
                         OpenDialogVisibility = false;
                         SelectedRepositoryIndex = i;
@@ -100,19 +93,26 @@ namespace KallitheaKlone.ViewModels
                 }
 
                 OpenDialogVisibility = false;
-                Repositories.Add(newRepository);
-                SelectedRepositoryIndex = Repositories.Count - 1;
+
+                RepositoryViewModel newViewModel = new RepositoryViewModel
+                {
+                    RepositorySource = newRepository
+                };
+
+                Tabs.Add(newViewModel);
+
+                SelectedRepositoryIndex = Tabs.Count - 1;
                 await newRepository.Load();
             }
         }
 
         private void DoCloseRepository(string uri)
         {
-            for (int i = 0; i < Repositories.Count; i++)
+            for (int i = 0; i < Tabs.Count; i++)
             {
-                if (Repositories[i].URI == uri)
+                if (Tabs[i].URI == uri)
                 {
-                    Repositories.RemoveAt(i);
+                    Tabs.RemoveAt(i);
                     break;
                 }
             }

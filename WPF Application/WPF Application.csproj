@@ -90,6 +90,7 @@
     <Compile Include="Converters\DoubleToPixelGridWidthConverter.cs" />
     <Compile Include="Converters\IntegerToWindowStateConverter.cs" />
     <Compile Include="Converters\IsExpandedToAutoHeightConverter.cs" />
+    <Compile Include="DataTemplates\TabSelector.cs" />
     <Compile Include="Models\Dialogs\FolderPicker\FolderPicker.cs" />
     <Compile Include="Models\Dialogs\MessagePrompts\MessagePrompt.cs" />
     <Compile Include="Models\Dialogs\RepositoryPicker\RepositoryPicker.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Models\Repositories\RemoteRepositories\RepositoryManager.cs" />
     <Compile Include="Models\Repositories\RepositoryFactory.cs" />
     <Compile Include="Models\Repositories\WPFRepositoryType.cs" />
+    <Compile Include="Models\Runner\MockRunner.cs" />
     <Compile Include="Models\Runner\Runner.cs" />
     <Compile Include="Models\Runner\RunResult.cs" />
     <Compile Include="Properties\MainWindow.cs" />
@@ -116,12 +118,16 @@
       <DependentUpon>MainWindow.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="ViewModels\RepositoryMockViewModel.cs" />
     <Compile Include="ViewModels\MainWindowMockViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OpenRepository.xaml.cs">
       <DependentUpon>OpenRepository.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tabs\Repository.xaml.cs">
+      <DependentUpon>Repository.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +167,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\OpenRepository.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Tabs\Repository.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

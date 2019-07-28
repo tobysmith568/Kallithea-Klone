@@ -1,0 +1,153 @@
+﻿<UserControl x:Class="KallitheaKlone.WPF.Views.Tabs.Repository"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ViewModels="clr-namespace:KallitheaKlone.ViewModels;assembly=KallitheaKlone"
+             xmlns:LocalViewModels="clr-namespace:KallitheaKlone.WPF.ViewModels"
+             xmlns:Properties="clr-namespace:KallitheaKlone.WPF.Properties"
+             xmlns:Converters="clr-namespace:KallitheaKlone.WPF.Converters"
+             xmlns:local="clr-namespace:KallitheaKlone.WPF.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Converters:IsExpandedToAutoHeightConverter x:Key="IsExpandedToAutoHeightConverter"/>
+        <Converters:IDiffToDocumentConverter x:Key="IDiffToDocumentConverter"/>
+        <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
+    </UserControl.Resources>
+    <Grid x:Name="MainGrid" d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type LocalViewModels:RepositoryMockViewModel}}">
+        <!-- Column Definitions -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="LeftColumn" Width="{Binding LeftColumnWidth, Converter={Converters:DoubleToPixelGridWidthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition x:Name="RightColumn" Width="1*" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- ViewModel Event Buttons -->
+        <Button Visibility="Hidden" x:Name="VMLoadSelectedChangeSetEvent" Command="{Binding LoadSelectedChangeSet}"/>
+
+        <!-- Left Column -->
+        <Grid Grid.Column="0" Width="{Binding Width, ElementName=LeftColumn, Mode=OneWay}" Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{Binding IsExpanded, Converter={StaticResource IsExpandedToAutoHeightConverter}, ElementName=BranchesExpander}"/>
+                <RowDefinition Height="{Binding IsExpanded, Converter={StaticResource IsExpandedToAutoHeightConverter}, ElementName=TagsExpander}"/>
+                <RowDefinition Height="{Binding IsExpanded, Converter={StaticResource IsExpandedToAutoHeightConverter}, ElementName=StashesExpander}"/>
+            </Grid.RowDefinitions>
+
+            <!-- Branches -->
+            <Expander x:Name="BranchesExpander" Grid.Row="0" Header="Branches" Margin="0" Focusable="False" IsExpanded="False">
+                <ListBox x:Name="Branches" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding RepositorySource.Branches}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="BranchTemplate" Height="30" Margin="0">
+                                <TextBlock Text="{Binding Name}" Margin="5" VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Expander>
+
+            <!-- Tags -->
+            <Expander x:Name="TagsExpander" Grid.Row="1" Header="Tags" Margin="0" Focusable="False" IsExpanded="False">
+                <ListBox x:Name="Tags" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding RepositorySource.Tags}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="TagTemplate" Height="30" Margin="0,0">
+                                <TextBlock Text="{Binding Name}" Margin="5" VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Expander>
+
+            <!-- Stashes -->
+            <Expander x:Name="StashesExpander" Grid.Row="2" Header="Stashes" Margin="0" Focusable="False" IsExpanded="False">
+                <ListBox x:Name="Stashes" Focusable="False" Margin="0" Grid.Column="0" ItemsSource="{Binding RepositorySource.Stashes}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="StashTemplate" Height="30" Margin="0,0">
+                                <TextBlock Text="{Binding Name}" Margin="5" VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Expander>
+        </Grid>
+
+        <!-- Grid Splitter -->
+        <GridSplitter x:Name="LeftColumnSplitter" Grid.Column="1" HorizontalAlignment="Stretch" MouseDoubleClick="LeftColumnSplitter_MouseDoubleClick" Grid.RowSpan="2" Focusable="False"/>
+
+        <!-- Main Column -->
+        <Grid x:Name="CenterGrid" Margin="0" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top Row -->
+            <DataGrid x:Name="DataGrid" Grid.Row="0" ItemsSource="{Binding RepositorySource.ChangeSets, Mode=OneTime}" AutoGenerateColumns="False" Margin="0" SelectionMode="Single"
+                                      SelectionUnit="FullRow" CanUserResizeRows="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserAddRows="False"
+                                      CanUserSortColumns="False" GridLinesVisibility="None" SelectedCellsChanged="DataGrid_SelectedCellsChanged" SelectedItem="{Binding SelectedChangeSet, Mode=TwoWay}" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Revision" IsReadOnly="True" Binding="{Binding Number, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="{Binding NumberColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+
+                    <DataGridTextColumn Header="Message" IsReadOnly="True" Binding="{Binding Message, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="*" />
+
+                    <DataGridTextColumn Header="Timestamp" IsReadOnly="True" Binding="{Binding Timestamp, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="{Binding TimestampColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+
+                    <DataGridTextColumn Header="Author" IsReadOnly="True" Binding="{Binding Author, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="{Binding AuthorColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+
+                    <DataGridTextColumn Header="Hash" IsReadOnly="True" Binding="{Binding Hash, Mode=OneTime}" CanUserReorder="False" CanUserSort="False"
+                                                        Width="{Binding HashColumnWidth, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Grid Splitter -->
+            <GridSplitter x:Name="BottomRowSplitter" Grid.Row="1" HorizontalAlignment="Stretch" MouseDoubleClick="BottomRowSplitter_MouseDoubleClick" Focusable="False"/>
+
+            <!-- Bottom Row -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <!-- Information -->
+                <TextBox Margin="0" Padding="5" Text="{Binding RepositorySource.SelectedChangeSet.Message, Mode=OneWay}" Grid.Column="0" Grid.Row="0" IsReadOnly="True" BorderThickness="1,0,1,0" />
+
+                <!-- Files List -->
+                <ListView x:Name="ChangeSetFilesViewer" Margin="0" Grid.Column="0" Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding SelectedChangeSet.Files}"
+                                          SelectedItem="{Binding RepositorySource.SelectedFile, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="FileListTemplate" Height="30" Margin="0,0">
+                                <TextBlock Text="{Binding Filename, Mode=OneWay}" Margin="5" VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <!-- Diff List -->
+                <ScrollViewer Margin="0" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding RepositorySource.SelectedFile.Diffs}" Margin="0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <FlowDocumentScrollViewer Document="{Binding Converter={StaticResource IDiffToDocumentConverter}}" FontFamily="Consolas" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Stretch" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
