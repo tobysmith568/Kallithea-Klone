@@ -43,6 +43,7 @@ namespace KallitheaKlone.ViewModels
         public Command ShowOpenDialogVisibility { get; }
         public Command HideOpenDialogVisibility { get; }
         public Command OpenNewRepository { get; }
+        public Command<string> CloseRepository { get; }
 
         //  Constructors
         //  ============
@@ -56,6 +57,7 @@ namespace KallitheaKlone.ViewModels
             ShowOpenDialogVisibility = new Command(DoShowOpenDialogVisibility);
             HideOpenDialogVisibility = new Command(DoHideOpenDialogVisibility);
             OpenNewRepository = new Command(DoOpenNewRepository);
+            CloseRepository = new Command<string>(DoCloseRepository);
         }
 
         public MainWindowViewModel(IRepositoryPicker repositoryPicker) : this()
@@ -101,6 +103,18 @@ namespace KallitheaKlone.ViewModels
                 Repositories.Add(newRepository);
                 SelectedRepositoryIndex = Repositories.Count - 1;
                 await newRepository.Load();
+            }
+        }
+
+        private void DoCloseRepository(string uri)
+        {
+            for (int i = 0; i < Repositories.Count; i++)
+            {
+                if (Repositories[i].URI == uri)
+                {
+                    Repositories.RemoveAt(i);
+                    break;
+                }
             }
         }
     }

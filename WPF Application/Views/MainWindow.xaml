@@ -10,6 +10,7 @@
         xmlns:local="clr-namespace:KallitheaKlone.WPF.Views"
         mc:Ignorable="d"
         Title="MainWindow"
+        x:Name="TheMainWindow"
         Loaded="Window_Loaded"
         
         WindowState="{Binding WindowState, Converter={Converters:IntegerToWindowStateConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}"    
@@ -29,17 +30,18 @@
 
         <!-- ViewModel Event Buttons -->
         <Button Visibility="Hidden" x:Name="VMLoadSelectedChangeSetEvent" Command="{Binding LoadSelectedChangeSet}"/>
-
-        <Button Content="Button" HorizontalAlignment="Right" VerticalAlignment="Top" Width="85" Height="30" Command="{Binding Path=ShowOpenDialogVisibility}"/>
+        <Button Visibility="Hidden" x:Name="VMCloseTab" Command="{Binding CloseRepository}"/>
         
         <!-- Main Content -->
+        
+        <Button Content="Button" HorizontalAlignment="Right" VerticalAlignment="Top" Width="85" Height="30" Command="{Binding Path=ShowOpenDialogVisibility}"/>
         <TabControl x:Name="tabControl" Margin="0,30,0,0" ItemsSource="{Binding Repositories}" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}">
             <TabControl.ItemTemplate>
                 <!-- Header Template-->
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                        <Button Content="X" Margin="5,0,0,0" Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}" />
+                        <Button Content="X" Margin="5,0,0,0" Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}" Click="CloseTab_Click" />
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>

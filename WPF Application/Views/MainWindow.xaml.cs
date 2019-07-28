@@ -1,4 +1,5 @@
 ﻿using KallitheaKlone.Models.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -73,6 +74,25 @@ namespace KallitheaKlone.WPF.Views
         private void ResetRowPartition()
         {
 #warning //TODO
+        }
+
+        private void CloseTab_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button))
+            {
+                throw new ArgumentException("Argument needs to be of type [Button]", nameof(sender));
+            }
+
+            Button button = (Button)sender;
+
+            if (button.DataContext == null || !(button.DataContext is IRepository))
+            {
+                throw new ArgumentException("Button needs to have an dataContext of type [IRepository]", nameof(sender));
+            }
+
+            IRepository repository = (IRepository)button.DataContext;
+
+            VMCloseTab.Command.Execute(repository.URI);
         }
     }
 }
