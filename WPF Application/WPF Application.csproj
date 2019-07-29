@@ -126,6 +126,9 @@
     <Compile Include="Views\OpenRepository.xaml.cs">
       <DependentUpon>OpenRepository.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Tabs\NewTab.xaml.cs">
+      <DependentUpon>NewTab.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Tabs\Repository.xaml.cs">
       <DependentUpon>Repository.xaml</DependentUpon>
     </Compile>
@@ -167,6 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\OpenRepository.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Tabs\NewTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

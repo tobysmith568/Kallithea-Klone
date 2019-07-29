@@ -12,16 +12,21 @@ namespace KallitheaKlone.WPF.DataTemplates
     public class TabSelector : DataTemplateSelector
     {
         public DataTemplate RepositoryTemplate { get; set; }
+        public DataTemplate NewTabTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            FrameworkElement elemnt = container as FrameworkElement;
-
 #warning //TODO cast check
             TabViewModel tabViewModel = item as TabViewModel;
+
             if (tabViewModel is RepositoryViewModel)
             {
-                return RepositoryTemplate ?? throw new NotImplementedException("No RepositoryTemplate is bound in the TabSelector");
+                return RepositoryTemplate ?? throw new NotImplementedException($"No {nameof(RepositoryTemplate)} is bound in the TabSelector");
+            }
+
+            if (tabViewModel is NewTabViewModel)
+            {
+                return NewTabTemplate ?? throw new NotImplementedException($"No {nameof(NewTabTemplate)} is bound in the TabSelector");
             }
 
 #warning //TODO

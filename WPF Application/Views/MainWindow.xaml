@@ -25,12 +25,15 @@
         <Converters:IsExpandedToAutoHeightConverter x:Key="IsExpandedToAutoHeightConverter"/>
         <Converters:IDiffToDocumentConverter x:Key="IDiffToDocumentConverter"/>
         <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
-        
+
         <!-- Data Templates -->
         <DataTemplate x:Key="RepositoryDataTemplate">
             <Tabs:Repository/>
         </DataTemplate>
-        <DataTemplates:TabSelector x:Key="TabSelector" RepositoryTemplate="{StaticResource RepositoryDataTemplate}" />
+        <DataTemplate x:Key="NewTabDataTemplate">
+            <Tabs:NewTab/>
+        </DataTemplate>
+        <DataTemplates:TabSelector x:Key="TabSelector" RepositoryTemplate="{StaticResource RepositoryDataTemplate}" NewTabTemplate="{StaticResource NewTabDataTemplate}" />
     </Window.Resources>
     <Window.DataContext>
         <ViewModels:MainWindowViewModel />
@@ -42,13 +45,24 @@
         <!-- Main Content -->
         
         <Button Content="Button" HorizontalAlignment="Right" VerticalAlignment="Top" Width="85" Height="30" Command="{Binding Path=ShowOpenDialogVisibility}"/>
-        <TabControl x:Name="tabControl" Margin="0,30,0,0" ItemsSource="{Binding Tabs}" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}" ContentTemplateSelector="{DynamicResource TabSelector}" >
+        <TabControl x:Name="tabControl" Margin="0,30,0,0" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}" ContentTemplateSelector="{DynamicResource TabSelector}" >
+            <TabControl.Resources>
+                <CollectionViewSource x:Key="TabsCollection" Source="{Binding Tabs}"/>
+                <CollectionViewSource x:Key="NewTab" Source="{Binding NewTab}"/>
+            </TabControl.Resources>
+            <TabControl.ItemsSource>
+                <CompositeCollection>
+                    <CollectionContainer Collection="{Binding Source={StaticResource TabsCollection}}"/>
+                    <CollectionContainer Collection="{Binding Source={StaticResource NewTab}}"/>
+                </CompositeCollection>
+            </TabControl.ItemsSource>
             <TabControl.ItemTemplate>
                 <!-- Header Template-->
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                        <Button Content="X" Margin="5,0,0,0" Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}" Click="CloseTab_Click" />
+                        <Button Content="X" Margin="5,0,0,0" Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"
+                            Visibility="{Binding IsClosable, Converter={Converters:BooleanToVisibility}}" Click="CloseTab_Click" />
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>

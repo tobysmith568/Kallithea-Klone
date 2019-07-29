@@ -84,6 +84,7 @@
     <Compile Include="Models\Updater\IUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\Command.cs" />
+    <Compile Include="ViewModels\NewTabViewModel.cs" />
     <Compile Include="ViewModels\TabViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\RepositoryViewModel.cs" />

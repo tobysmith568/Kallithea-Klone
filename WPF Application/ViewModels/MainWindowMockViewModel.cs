@@ -20,6 +20,11 @@ namespace KallitheaKlone.WPF.ViewModels
             {
                 repositoryViewModel
             };
+
+            NewTab = new ObservableCollection<TabViewModel>()
+            {
+                new NewTabViewModel()
+            };
         }
     }
 }

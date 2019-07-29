@@ -50,6 +50,7 @@ namespace WPF_Application
         private void ShowMainWindow()
         {
             var mainWindowViewModel = container.Resolve<MainWindowViewModel>();
+            mainWindowViewModel.NewTab.Add(new NewTabViewModel());
             var window = new MainWindow
             {
                 DataContext = mainWindowViewModel

@@ -13,6 +13,7 @@ namespace KallitheaKlone.ViewModels
         private readonly IRepositoryPicker repositoryPicker;
 
         private ObservableCollection<TabViewModel> tabs;
+        private ObservableCollection<TabViewModel> newTab;
         private int selectedRepositoryIndex;
         private bool openDialogVisibility;
 
@@ -23,6 +24,12 @@ namespace KallitheaKlone.ViewModels
         {
             get => tabs;
             set => PropertyChanging(value, ref tabs, nameof(Tabs));
+        }
+
+        public ObservableCollection<TabViewModel> NewTab
+        {
+            get => newTab;
+            set => PropertyChanging(value, ref newTab, nameof(NewTab));
         }
 
         public int SelectedRepositoryIndex
@@ -51,6 +58,7 @@ namespace KallitheaKlone.ViewModels
         public MainWindowViewModel()
         {
             Tabs = new ObservableCollection<TabViewModel>();
+            NewTab = new ObservableCollection<TabViewModel>();
 
             ShowOpenDialogVisibility = new Command(DoShowOpenDialogVisibility);
             HideOpenDialogVisibility = new Command(DoHideOpenDialogVisibility);

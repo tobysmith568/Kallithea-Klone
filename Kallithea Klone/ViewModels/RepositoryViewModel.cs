@@ -13,6 +13,8 @@ namespace KallitheaKlone.ViewModels
         //  Properties
         //  ==========
 
+        public override bool IsClosable => true;
+
         public override string URI
         {
             get => RepositorySource?.URI ?? string.Empty;
