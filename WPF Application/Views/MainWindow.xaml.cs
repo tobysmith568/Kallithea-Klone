@@ -29,6 +29,18 @@ namespace KallitheaKlone.WPF.Views
         {
         }
 
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!(e.Source is TabControl))
+            {
+                return;
+            }
+
+            TabControl tabControl = e.Source as TabControl;
+
+            ((TabViewModel)tabControl.SelectedItem).OnFocus.DoExecute(e);
+        }
+
 
         //  Methods
         //  =======

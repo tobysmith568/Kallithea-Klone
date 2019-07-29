@@ -8,5 +8,6 @@
         public abstract bool IsClosable { get; }
         public abstract string URI { get; }
         public abstract string Name { get; }
+        public abstract Command OnFocus { get; }
     }
 }

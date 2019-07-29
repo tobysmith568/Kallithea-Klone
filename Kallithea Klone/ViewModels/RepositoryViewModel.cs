@@ -27,6 +27,7 @@ namespace KallitheaKlone.ViewModels
 
         public IRepository RepositorySource { get; set; }
         public Command<IChangeSet> LoadSelectedChangeSet { get; }
+        public override Command OnFocus { get; }
 
         //  Constructor
         //  ===========
@@ -34,6 +35,7 @@ namespace KallitheaKlone.ViewModels
         public RepositoryViewModel()
         {
             LoadSelectedChangeSet = new Command<IChangeSet>(DoLoadSelectedChangeSet);
+            OnFocus = new Command(DoOnFocus);
         }
 
         //  Methods
@@ -47,6 +49,11 @@ namespace KallitheaKlone.ViewModels
             {
                 await file.Load();
             }
+        }
+
+        private void DoOnFocus()
+        {
+            Console.WriteLine();
         }
     }
 }

@@ -44,8 +44,6 @@ namespace KallitheaKlone.ViewModels
             set => PropertyChanging(value, ref openDialogVisibility, nameof(OpenDialogVisibility));
         }
 
-
-
         public Command ShowOpenDialogVisibility { get; }
         public Command HideOpenDialogVisibility { get; }
         public Command OpenNewRepository { get; }

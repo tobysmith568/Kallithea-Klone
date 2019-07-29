@@ -8,10 +8,37 @@ namespace KallitheaKlone.ViewModels
 {
     public class NewTabViewModel : TabViewModel
     {
+        //  Constants
+        //  =========
+
+        private const string uri = "internal://NewTab";
+        private const string name = "+";
+
+        //  Properties
+        //  ==========
+
         public override bool IsClosable => false;
 
-        public override string URI => "internal://NewTab";
+        public override string URI => uri;
 
-        public override string Name => "+";
+        public override string Name => name;
+
+        public override Command OnFocus { get; }
+
+        //  Constructors
+        //  ============
+
+        public NewTabViewModel()
+        {
+            OnFocus = new Command(DoOnFocus);
+        }
+
+        //  Methods
+        //  =======
+
+        private void DoOnFocus()
+        {
+
+        }
     }
 }
