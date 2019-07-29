@@ -9,6 +9,7 @@
         xmlns:Converters="clr-namespace:KallitheaKlone.WPF.Converters"
         xmlns:DataTemplates="clr-namespace:KallitheaKlone.WPF.DataTemplates"
         xmlns:Tabs="clr-namespace:KallitheaKlone.WPF.Views.Tabs"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:KallitheaKlone.WPF.Views"
         mc:Ignorable="d"
         Title="MainWindow"
@@ -21,6 +22,14 @@
         Left="{Binding Left, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" 
         Top="{Binding Top, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}">
     <Window.Resources>
+        <!-- Booleans -->
+        <system:Boolean x:Key="True">
+            True
+        </system:Boolean>
+        <system:Boolean x:Key="False">
+            False
+        </system:Boolean>
+        
         <!-- Converters -->
         <Converters:IsExpandedToAutoHeightConverter x:Key="IsExpandedToAutoHeightConverter"/>
         <Converters:IDiffToDocumentConverter x:Key="IDiffToDocumentConverter"/>
@@ -62,7 +71,7 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
                         <Button Content="X" Margin="5,0,0,0" Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                            Visibility="{Binding IsClosable, Converter={Converters:BooleanToVisibility}}" Click="CloseTab_Click" />
+                            Visibility="{Binding IsClosable, Converter={Converters:BooleanToVisibility}, ConverterParameter={StaticResource True}}" Click="CloseTab_Click"/>
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>

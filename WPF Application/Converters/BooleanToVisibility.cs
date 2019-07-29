@@ -19,7 +19,9 @@ namespace KallitheaKlone.WPF.Converters
             if (!(value is bool))
                 throw new ArgumentException(MustBeABoolean);
 
-            return (bool)value ? Visibility.Visible : Visibility.Hidden;
+            Visibility hiddenType = parameter is bool && (bool)parameter ? Visibility.Collapsed : Visibility.Hidden;
+
+            return (bool)value ? Visibility.Visible : hiddenType;
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
