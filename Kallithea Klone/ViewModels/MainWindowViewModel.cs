@@ -129,11 +129,6 @@ namespace KallitheaKlone.ViewModels
         /// <exception cref="InvalidOperationException"></exception>
         private void DoCloseRepository(string uri)
         {
-            if (Tabs.Count == 1)
-            {
-                throw new InvalidOperationException("You cannot close all of the open tabs");
-            }
-
             for (int i = 0; i < Tabs.Count; i++)
             {
                 if (Tabs[i].URI == uri)
