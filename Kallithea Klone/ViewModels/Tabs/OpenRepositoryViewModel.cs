@@ -1,4 +1,5 @@
-﻿using KallitheaKlone.Models.Repositories;
+﻿using KallitheaKlone.Models.Dialogs.RepositoryPicker;
+using KallitheaKlone.Models.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,11 @@ namespace KallitheaKlone.ViewModels.Tabs
 {
     public class OpenRepositoryViewModel : TabViewModel
     {
+        //  Variables
+        //  =========
+
+        private readonly MainWindowViewModel mainWindowViewModel;
+
         //  Properties
         //  ==========
 
@@ -20,12 +26,17 @@ namespace KallitheaKlone.ViewModels.Tabs
 
         public override Command OnFocus { get; }
 
+        public Command OpenNewRepository { get; }
+
         //  Constructors
         //  ============
 
-        public OpenRepositoryViewModel()
+        public OpenRepositoryViewModel(MainWindowViewModel mainWindowViewModel)
         {
+            this.mainWindowViewModel = mainWindowViewModel;
+
             OnFocus = new Command(DoOnFocus);
+            OpenNewRepository = new Command(DoOpenNewRepository);
         }
 
         //  Methods
@@ -34,6 +45,16 @@ namespace KallitheaKlone.ViewModels.Tabs
         private void DoOnFocus()
         {
 
+        }
+
+        public void DoOpenNewRepository()
+        {
+            if (mainWindowViewModel == null)
+            {
+                throw new ArgumentNullException(nameof(mainWindowViewModel));
+            }
+
+            mainWindowViewModel.OpenNewRepositoryTab.DoExecute(null);
         }
     }
 }

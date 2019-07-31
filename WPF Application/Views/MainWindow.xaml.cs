@@ -39,9 +39,13 @@ namespace KallitheaKlone.WPF.Views
 
             TabControl tabControl = e.Source as TabControl;
 
+            if (tabControl.SelectedItem == null)
+            {
+                return;
+            }
+
 #warning //TODO needs checks
             ((TabViewModel)tabControl.SelectedItem).OnFocus.DoExecute(e);
-
         }
 
 

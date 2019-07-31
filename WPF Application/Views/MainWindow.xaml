@@ -10,7 +10,6 @@
         xmlns:DataTemplates="clr-namespace:KallitheaKlone.WPF.DataTemplates"
         xmlns:Tabs="clr-namespace:KallitheaKlone.WPF.Views.Tabs"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:local="clr-namespace:KallitheaKlone.WPF.Views"
         mc:Ignorable="d"
         Title="MainWindow"
         x:Name="TheMainWindow"
@@ -29,7 +28,7 @@
         <system:Boolean x:Key="False">
             False
         </system:Boolean>
-        
+
         <!-- Converters -->
         <Converters:IsExpandedToAutoHeightConverter x:Key="IsExpandedToAutoHeightConverter"/>
         <Converters:IDiffToDocumentConverter x:Key="IDiffToDocumentConverter"/>
@@ -58,7 +57,7 @@
         <Button Visibility="Hidden" x:Name="VMCloseTab" Command="{Binding CloseRepository}"/>
         
         <!-- Main Content -->
-        
+
         <TabControl x:Name="tabControl" Margin="0,0,0,0" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}" ContentTemplateSelector="{DynamicResource TabSelector}" 
                     SelectionChanged="TabControl_SelectionChanged">
             <TabControl.Resources>
@@ -82,8 +81,5 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>
-
-        <!-- Open Repository Dialog -->
-        <Tabs:OpenRepository Margin="0" Visibility="{Binding OpenDialogVisibility, Converter={StaticResource BooleanToVisibility}}"/>
     </Grid>
 </Window>

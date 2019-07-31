@@ -51,13 +51,10 @@ namespace WPF_Application
         private void ShowMainWindow()
         {
             MainWindowViewModel mainWindowViewModel = container.Resolve<MainWindowViewModel>();
-            mainWindowViewModel.NewTab.Add(new NewTabViewModel()
-            {
-                MainWindowViewModel = mainWindowViewModel
-            });
-            mainWindowViewModel.Tabs.Add(new OpenRepositoryViewModel());
+            mainWindowViewModel.NewTab.Add(new NewTabViewModel(mainWindowViewModel));
+            mainWindowViewModel.Tabs.Add(new OpenRepositoryViewModel(mainWindowViewModel));
 
-            var window = new MainWindow
+            MainWindow window = new MainWindow
             {
                 DataContext = mainWindowViewModel
             };

@@ -35,9 +35,11 @@ namespace KallitheaKlone.Enums
         {
             var fields = typeof(T).GetFields(BindingFlags.Public |
                                              BindingFlags.Static |
-                                             BindingFlags.DeclaredOnly);
+                                             BindingFlags.DeclaredOnly)
+                .Where(f => f.FieldType == typeof(T));
 
-            return fields.Select(f => f.GetValue(null)).Cast<T>();
+            return fields.Select(f => f.GetValue(null))
+                         .Cast<T>();
         }
 
         public override bool Equals(object obj)

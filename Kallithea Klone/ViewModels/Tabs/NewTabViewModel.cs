@@ -8,6 +8,11 @@ namespace KallitheaKlone.ViewModels.Tabs
 {
     public class NewTabViewModel : TabViewModel
     {
+        //  Variables
+        //  =========
+
+        private readonly MainWindowViewModel mainWindowViewModel;
+
         //  Properties
         //  ==========
 
@@ -19,14 +24,14 @@ namespace KallitheaKlone.ViewModels.Tabs
 
         public override Command OnFocus { get; }
 
-        public MainWindowViewModel MainWindowViewModel { get; set; }
-
         //  Constructors
         //  ============
 
         /// <exception cref="InvalidOperationException"></exception>
-        public NewTabViewModel()
+        public NewTabViewModel(MainWindowViewModel mainWindowViewModel)
         {
+            this.mainWindowViewModel = mainWindowViewModel ?? throw new ArgumentNullException(nameof(mainWindowViewModel));
+
             OnFocus = new Command(DoOnFocus);
         }
 
@@ -36,13 +41,7 @@ namespace KallitheaKlone.ViewModels.Tabs
         /// <exception cref="InvalidOperationException"></exception>
         private void DoOnFocus()
         {
-            if (MainWindowViewModel == null)
-            {
-                throw new InvalidOperationException($"The [{nameof(MainWindowViewModel)}] needs to not be null in order to open a new tab");
-            }
-
-            MainWindowViewModel.Tabs.Add(Models.URIs.URI.OpenRepository.ViewModel.Invoke());
-            MainWindowViewModel.SelectedRepositoryIndex = MainWindowViewModel.Tabs.Count - 1;
+            mainWindowViewModel.OpenNewInternalTab.DoExecute(Models.URIs.URI.OpenRepository.Value);
         }
     }
 }

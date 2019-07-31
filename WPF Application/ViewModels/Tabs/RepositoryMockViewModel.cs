@@ -5,7 +5,7 @@ using KallitheaKlone.WPF.Models.Repositories.Mercurial;
 using KallitheaKlone.WPF.Models.Runner;
 using System.Collections.ObjectModel;
 
-namespace KallitheaKlone.WPF.ViewModels
+namespace KallitheaKlone.WPF.ViewModels.Tabs
 {
     public class RepositoryMockViewModel : RepositoryViewModel
     {

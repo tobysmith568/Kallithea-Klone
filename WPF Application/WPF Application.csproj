@@ -118,7 +118,8 @@
       <DependentUpon>MainWindow.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="ViewModels\RepositoryMockViewModel.cs" />
+    <Compile Include="ViewModels\Tabs\OpenRepositoryMockViewModel.cs" />
+    <Compile Include="ViewModels\Tabs\RepositoryMockViewModel.cs" />
     <Compile Include="ViewModels\MainWindowMockViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
