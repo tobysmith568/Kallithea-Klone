@@ -1,5 +1,6 @@
 ﻿using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.ViewModels;
+using KallitheaKlone.ViewModels.Tabs;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -38,7 +39,9 @@ namespace KallitheaKlone.WPF.Views
 
             TabControl tabControl = e.Source as TabControl;
 
+#warning //TODO needs checks
             ((TabViewModel)tabControl.SelectedItem).OnFocus.DoExecute(e);
+
         }
 
 
@@ -54,12 +57,12 @@ namespace KallitheaKlone.WPF.Views
 
             Button button = (Button)sender;
 
-            if (button.DataContext == null || !(button.DataContext is RepositoryViewModel))
+            if (button.DataContext == null || !(button.DataContext is TabViewModel))
             {
-                throw new ArgumentException("Button needs to have an dataContext of type [RepositoryViewModel]", nameof(sender));
+                throw new ArgumentException("Button needs to have an dataContext of type [TabViewModel]", nameof(sender));
             }
 
-            RepositoryViewModel viewModel = (RepositoryViewModel)button.DataContext;
+            TabViewModel viewModel = (TabViewModel)button.DataContext;
 
             VMCloseTab.Command.Execute(viewModel.URI);
         }

@@ -3,6 +3,7 @@ using KallitheaKlone.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.Models.Dialogs.RepositoryPicker;
 using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.ViewModels;
+using KallitheaKlone.ViewModels.Tabs;
 using KallitheaKlone.WPF.Models.Dialogs.FolderPicker;
 using KallitheaKlone.WPF.Models.Dialogs.MessagePrompts;
 using KallitheaKlone.WPF.Models.Dialogs.RepositoryPicker;
@@ -49,8 +50,13 @@ namespace WPF_Application
         /// <exception cref="InvalidOperationException"></exception>
         private void ShowMainWindow()
         {
-            var mainWindowViewModel = container.Resolve<MainWindowViewModel>();
-            mainWindowViewModel.NewTab.Add(new NewTabViewModel());
+            MainWindowViewModel mainWindowViewModel = container.Resolve<MainWindowViewModel>();
+            mainWindowViewModel.NewTab.Add(new NewTabViewModel()
+            {
+                MainWindowViewModel = mainWindowViewModel
+            });
+            mainWindowViewModel.Tabs.Add(new OpenRepositoryViewModel());
+
             var window = new MainWindow
             {
                 DataContext = mainWindowViewModel

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KallitheaKlone.ViewModels
+namespace KallitheaKlone.ViewModels.Tabs
 {
     public class RepositoryViewModel : TabViewModel
     {

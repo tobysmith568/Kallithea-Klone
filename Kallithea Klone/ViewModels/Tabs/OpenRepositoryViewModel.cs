@@ -1,34 +1,29 @@
-﻿using System;
+﻿using KallitheaKlone.Models.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KallitheaKlone.ViewModels
+namespace KallitheaKlone.ViewModels.Tabs
 {
-    public class NewTabViewModel : TabViewModel
+    public class OpenRepositoryViewModel : TabViewModel
     {
-        //  Constants
-        //  =========
-
-        private const string uri = "internal://NewTab";
-        private const string name = "+";
-
         //  Properties
         //  ==========
 
-        public override bool IsClosable => false;
+        public override bool IsClosable => true;
 
-        public override string URI => uri;
+        public override string URI => Models.URIs.URI.OpenRepository.Value;
 
-        public override string Name => name;
+        public override string Name => "Open";
 
         public override Command OnFocus { get; }
 
         //  Constructors
         //  ============
 
-        public NewTabViewModel()
+        public OpenRepositoryViewModel()
         {
             OnFocus = new Command(DoOnFocus);
         }

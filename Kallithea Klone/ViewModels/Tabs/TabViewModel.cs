@@ -1,4 +1,4 @@
-﻿namespace KallitheaKlone.ViewModels
+﻿namespace KallitheaKlone.ViewModels.Tabs
 {
     public abstract class TabViewModel : ViewModelBase
     {

@@ -1,6 +1,6 @@
 ﻿using KallitheaKlone.Models.Repositories;
 using KallitheaKlone.Models.Runner;
-using KallitheaKlone.ViewModels;
+using KallitheaKlone.ViewModels.Tabs;
 using KallitheaKlone.WPF.Models.Repositories.Mercurial;
 using KallitheaKlone.WPF.Models.Runner;
 using System.Collections.ObjectModel;

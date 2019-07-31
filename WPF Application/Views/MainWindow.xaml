@@ -42,7 +42,13 @@
         <DataTemplate x:Key="NewTabDataTemplate">
             <Tabs:NewTab/>
         </DataTemplate>
-        <DataTemplates:TabSelector x:Key="TabSelector" RepositoryTemplate="{StaticResource RepositoryDataTemplate}" NewTabTemplate="{StaticResource NewTabDataTemplate}" />
+        <DataTemplate x:Key="OpenRepositoryDataTemplate">
+            <Tabs:OpenRepository/>
+        </DataTemplate>
+        <DataTemplates:TabSelector x:Key="TabSelector"
+                                   RepositoryTemplate="{StaticResource RepositoryDataTemplate}"
+                                   NewTabTemplate="{StaticResource NewTabDataTemplate}"
+                                   OpenRepositoryTemplate="{StaticResource OpenRepositoryDataTemplate}"/>
     </Window.Resources>
     <Window.DataContext>
         <ViewModels:MainWindowViewModel />
@@ -53,8 +59,7 @@
         
         <!-- Main Content -->
         
-        <Button Content="Button" HorizontalAlignment="Right" VerticalAlignment="Top" Width="85" Height="30" Command="{Binding Path=ShowOpenDialogVisibility}"/>
-        <TabControl x:Name="tabControl" Margin="0,30,0,0" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}" ContentTemplateSelector="{DynamicResource TabSelector}" 
+        <TabControl x:Name="tabControl" Margin="0,0,0,0" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}" ContentTemplateSelector="{DynamicResource TabSelector}" 
                     SelectionChanged="TabControl_SelectionChanged">
             <TabControl.Resources>
                 <CollectionViewSource x:Key="TabsCollection" Source="{Binding Tabs}"/>
@@ -79,6 +84,6 @@
         </TabControl>
 
         <!-- Open Repository Dialog -->
-        <local:OpenRepository Margin="0" Visibility="{Binding OpenDialogVisibility, Converter={StaticResource BooleanToVisibility}}"/>
+        <Tabs:OpenRepository Margin="0" Visibility="{Binding OpenDialogVisibility, Converter={StaticResource BooleanToVisibility}}"/>
     </Grid>
 </Window>

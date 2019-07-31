@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace KallitheaKlone.WPF.Views
+namespace KallitheaKlone.WPF.Views.Tabs
 {
     /// <summary>
     /// Interaction logic for OpenRepository.xaml

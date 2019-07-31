@@ -12,22 +12,22 @@ namespace KallitheaKlone.Enums
         //  Properties
         //  ==========
 
-        public string Name { get; private set; }
+        public string Value { get; private set; }
         public int Id { get; private set; }
 
         //  Constructors
         //  ============
 
-        protected Enumeration(int id, string name)
+        protected Enumeration(int id, string value)
         {
             Id = id;
-            Name = name;
+            Value = value;
         }
 
         //  Methods
         //  =======
 
-        public override string ToString() => Name ?? string.Empty;
+        public override string ToString() => Value ?? string.Empty;
 
         /// <exception cref="TargetException">Ignore.</exception>
         /// <exception cref="FieldAccessException">Ignore.</exception>
