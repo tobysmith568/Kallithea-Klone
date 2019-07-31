@@ -30,7 +30,7 @@ namespace KallitheaKlone.ViewModels
             }
         }
 
-        protected void RaisePropertyChanged(string property)
+        public void RaisePropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }

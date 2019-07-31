@@ -58,7 +58,8 @@
         
         <!-- Main Content -->
 
-        <TabControl x:Name="tabControl" Margin="0,0,0,0" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}" ContentTemplateSelector="{DynamicResource TabSelector}" 
+        <TabControl x:Name="tabControl" Margin="0,0,0,0" SelectedIndex="{Binding SelectedRepositoryIndex, Mode=TwoWay}" SelectedItem="{Binding SelectedRepository, Mode=TwoWay}"
+                    ContentTemplateSelector="{DynamicResource TabSelector}" 
                     SelectionChanged="TabControl_SelectionChanged">
             <TabControl.Resources>
                 <CollectionViewSource x:Key="TabsCollection" Source="{Binding Tabs}"/>

@@ -12,7 +12,7 @@ namespace KallitheaKlone.WPF.ViewModels.Tabs
         //  Constructors
         //  ============
 
-        public RepositoryMockViewModel()
+        public RepositoryMockViewModel() : base(null)
         {
             IRunner runner = new MockRunner();
 

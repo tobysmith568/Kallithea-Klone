@@ -10,10 +10,15 @@ namespace KallitheaKlone.ViewModels.Tabs
 {
     public class RepositoryViewModel : TabViewModel
     {
+        //  Variables
+        //  =========
+
+        private readonly MainWindowViewModel mainWindowViewModel;
+
         //  Properties
         //  ==========
 
-        public override bool IsClosable => true;
+        public override bool IsClosable => mainWindowViewModel?.SelectedRepository?.URI == URI;
 
         public override string URI
         {
@@ -32,8 +37,10 @@ namespace KallitheaKlone.ViewModels.Tabs
         //  Constructor
         //  ===========
 
-        public RepositoryViewModel()
+        public RepositoryViewModel(MainWindowViewModel mainWindowViewModel)
         {
+            this.mainWindowViewModel = mainWindowViewModel;
+
             LoadSelectedChangeSet = new Command<IChangeSet>(DoLoadSelectedChangeSet);
             OnFocus = new Command(DoOnFocus);
         }

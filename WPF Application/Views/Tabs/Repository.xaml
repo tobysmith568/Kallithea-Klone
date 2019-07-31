@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ViewModels="clr-namespace:KallitheaKlone.ViewModels;assembly=KallitheaKlone"
-             xmlns:LocalViewModels="clr-namespace:KallitheaKlone.WPF.ViewModels"
+             xmlns:Tabs="clr-namespace:KallitheaKlone.WPF.ViewModels.Tabs"
              xmlns:Properties="clr-namespace:KallitheaKlone.WPF.Properties"
              xmlns:Converters="clr-namespace:KallitheaKlone.WPF.Converters"
              xmlns:local="clr-namespace:KallitheaKlone.WPF.Views"
@@ -16,7 +16,7 @@
         <Converters:IDiffToDocumentConverter x:Key="IDiffToDocumentConverter"/>
         <Converters:BooleanToVisibility x:Key="BooleanToVisibility"/>
     </UserControl.Resources>
-    <Grid x:Name="MainGrid" d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type LocalViewModels:RepositoryMockViewModel}}">
+    <Grid x:Name="MainGrid" d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type Tabs:RepositoryMockViewModel}}">
         <!-- Column Definitions -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="LeftColumn" Width="{Binding LeftColumnWidth, Converter={Converters:DoubleToPixelGridWidthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />

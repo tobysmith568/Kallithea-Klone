@@ -4,7 +4,7 @@ using KallitheaKlone.Models.URIs;
 using KallitheaKlone.ViewModels.Tabs;
 using System;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace KallitheaKlone.ViewModels
 {
@@ -17,6 +17,7 @@ namespace KallitheaKlone.ViewModels
 
         private ObservableCollection<TabViewModel> tabs;
         private ObservableCollection<TabViewModel> newTab;
+        private TabViewModel selectedRepository;
         private int selectedRepositoryIndex;
         private bool openDialogVisibility;
 
@@ -33,6 +34,19 @@ namespace KallitheaKlone.ViewModels
         {
             get => newTab;
             set => PropertyChanging(value, ref newTab, nameof(NewTab));
+        }
+
+        public TabViewModel SelectedRepository
+        {
+            get => selectedRepository;
+            set
+            {
+                PropertyChanging(value, ref selectedRepository, nameof(SelectedRepository));
+                foreach (TabViewModel tabViewModel in Tabs)
+                {
+                    tabViewModel.RaisePropertyChanged(nameof(tabViewModel.IsClosable));
+                }
+            }
         }
 
         public int SelectedRepositoryIndex
@@ -113,7 +127,7 @@ namespace KallitheaKlone.ViewModels
                 return;
             }
 
-            RepositoryViewModel newViewModel = new RepositoryViewModel
+            RepositoryViewModel newViewModel = new RepositoryViewModel(this)
             {
                 RepositorySource = newRepository
             };

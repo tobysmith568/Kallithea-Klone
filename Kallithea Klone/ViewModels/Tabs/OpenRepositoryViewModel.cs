@@ -18,7 +18,7 @@ namespace KallitheaKlone.ViewModels.Tabs
         //  Properties
         //  ==========
 
-        public override bool IsClosable => true;
+        public override bool IsClosable => mainWindowViewModel?.SelectedRepository?.URI == URI && mainWindowViewModel.Tabs.Count > 1;
 
         public override string URI => Models.URIs.URI.OpenRepository.Value;
 
