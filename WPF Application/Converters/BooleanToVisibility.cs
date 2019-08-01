@@ -17,11 +17,11 @@ namespace KallitheaKlone.WPF.Converters
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is bool))
+            {
                 throw new ArgumentException(MustBeABoolean);
+            }
 
-            Visibility hiddenType = parameter is bool && (bool)parameter ? Visibility.Collapsed : Visibility.Hidden;
-
-            return (bool)value ? Visibility.Visible : hiddenType;
+            return (bool)value ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

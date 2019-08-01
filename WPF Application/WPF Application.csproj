@@ -87,7 +87,7 @@
     <Compile Include="Converters\BooleanToVisibility.cs" />
     <Compile Include="Converters\IDiffToDocumentConverter.cs" />
     <Compile Include="Converters\DoubleToStarGridWidthConverter.cs" />
-    <Compile Include="Converters\DoubleToPixelGridWidthConverter.cs" />
+    <Compile Include="Converters\DoubleToPixelGridLengthConverter.cs" />
     <Compile Include="Converters\IntegerToWindowStateConverter.cs" />
     <Compile Include="Converters\IsExpandedToAutoHeightConverter.cs" />
     <Compile Include="DataTemplates\TabSelector.cs" />

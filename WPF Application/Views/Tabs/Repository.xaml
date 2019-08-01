@@ -19,7 +19,7 @@
     <Grid x:Name="MainGrid" d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type Tabs:RepositoryMockViewModel}}">
         <!-- Column Definitions -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="LeftColumn" Width="{Binding LeftColumnWidth, Converter={Converters:DoubleToPixelGridWidthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
+            <ColumnDefinition x:Name="LeftColumn" Width="{Binding LeftColumnWidth, Converter={Converters:DoubleToPixelGridLengthConverter}, Mode=TwoWay, Source={x:Static Properties:MainWindow.Default}}" />
             <ColumnDefinition Width="5" />
             <ColumnDefinition x:Name="RightColumn" Width="1*" />
         </Grid.ColumnDefinitions>
